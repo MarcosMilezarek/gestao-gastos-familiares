@@ -1,0 +1,31 @@
+# Segredos locais
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Node e build do front
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+playwright-report/
+test-results/
+coverage/
+
+# IDEs e sistema
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Uploads e dumps locais
+uploads/
+*.sql.gz
+*.dump

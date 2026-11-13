@@ -1,0 +1,76 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  padding: var(--espaco-4);
+}
+
+.titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--cor-texto);
+}
+
+.controles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+}
+
+.seletor {
+  width: 100%;
+  min-height: var(--alvo-min);
+  padding: var(--espaco-2) var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+  font: inherit;
+  font-size: 1rem;
+}
+
+.aviso {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--cor-texto-suave);
+}
+
+.erro {
+  margin: 0;
+  color: var(--cor-saida);
+}
+
+.contorno {
+  min-width: 0;
+  overflow-x: auto;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-superficie);
+}
+
+.tabela {
+  width: 100%;
+  min-width: 48rem;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  color: var(--cor-texto);
+}
+
+.tabela th,
+.tabela td {
+  padding: var(--espaco-2) var(--espaco-3);
+  border-bottom: 1px solid var(--cor-borda);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tabela th[scope='row'] {
+  text-align: left;
+}
+
+.previsto {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--cor-texto-suave);
+}

@@ -1,0 +1,188 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  padding: var(--espaco-4);
+}
+
+.cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-2);
+}
+
+.titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--cor-texto);
+}
+
+.engrenagem {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--alvo-min);
+  min-width: var(--alvo-min);
+  border: 1px solid var(--cor-primaria);
+  border-radius: var(--raio);
+  color: var(--cor-primaria);
+  text-decoration: none;
+}
+
+.engrenagem:focus-visible,
+.aporte:focus-visible {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 2px;
+}
+
+.aviso {
+  margin: 0;
+  color: var(--cor-texto-suave);
+}
+
+.erro {
+  margin: 0;
+  color: var(--cor-saida);
+}
+
+.bloco {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+}
+
+.tituloBloco {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--cor-texto);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  padding: var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-superficie);
+}
+
+.nome {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--cor-texto);
+}
+
+.aporte {
+  min-height: var(--alvo-min);
+  min-width: var(--alvo-min);
+  padding: 0 var(--espaco-3);
+  border: 1px solid var(--cor-primaria);
+  border-radius: var(--raio);
+  background: transparent;
+  color: var(--cor-primaria);
+  font: inherit;
+  cursor: pointer;
+}
+
+.pendentes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+}
+
+.lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.atrasada {
+  border-left: 4px solid var(--cor-alerta);
+  border-radius: var(--raio);
+}
+
+.par {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+}
+
+.rotulo {
+  margin: 0;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.valores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-1) var(--espaco-4);
+  margin: 0;
+}
+
+.valores > div {
+  display: flex;
+  gap: var(--espaco-1);
+}
+
+.valores dt,
+.valores dd {
+  margin: 0;
+}
+
+.linkFatura {
+  color: inherit;
+  text-decoration: none;
+}
+
+.linkFatura:focus-visible,
+.atalho:focus-visible {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 2px;
+}
+
+.situacaoFatura {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-1);
+}
+
+.aberta,
+.fechada {
+  color: var(--cor-texto);
+}
+
+.zerada {
+  color: var(--cor-texto-suave);
+}
+
+.vencida {
+  color: var(--cor-alerta);
+}
+
+.paga {
+  color: var(--cor-entrada);
+}
+
+.linhaProjecao {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-2);
+  min-height: var(--alvo-min);
+}
+
+.atalho {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  min-height: var(--alvo-min);
+  padding: 0 var(--espaco-3);
+  border: 1px solid var(--cor-primaria);
+  border-radius: var(--raio);
+  color: var(--cor-primaria);
+  text-decoration: none;
+}

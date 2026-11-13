@@ -1,0 +1,139 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  padding: var(--espaco-4);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-superficie);
+}
+
+.cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--espaco-2);
+}
+
+.nome {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--cor-texto);
+  overflow-wrap: anywhere;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-1);
+  font-size: 0.875rem;
+}
+
+.aberta,
+.fechada {
+  color: var(--cor-texto);
+}
+
+.zerada {
+  color: var(--cor-texto-suave);
+}
+
+.vencida {
+  color: var(--cor-alerta);
+}
+
+.paga {
+  color: var(--cor-entrada);
+}
+
+.rotulo {
+  font-size: 0.875rem;
+  color: var(--cor-texto-suave);
+}
+
+.dados {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  margin: 0;
+}
+
+.dados > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--espaco-2);
+}
+
+.dados dd {
+  margin: 0;
+}
+
+.valor {
+  text-align: right;
+}
+
+.uso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+}
+
+.barra {
+  height: 0.5rem;
+  border-radius: var(--raio);
+  background: var(--cor-borda);
+  overflow: hidden;
+}
+
+.preenchimento {
+  height: 100%;
+  max-width: 100%;
+  background: var(--cor-primaria);
+}
+
+.usoTexto {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--cor-texto-suave);
+}
+
+.linkNome {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--alvo-min);
+  color: var(--cor-texto);
+  overflow-wrap: anywhere;
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}
+
+.pagar,
+.editar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--alvo-min);
+  min-width: var(--alvo-min);
+  padding: 0 var(--espaco-4);
+  border: 1px solid var(--cor-primaria);
+  border-radius: var(--raio);
+  color: var(--cor-primaria);
+  text-decoration: none;
+}
+
+.pagar {
+  align-self: flex-start;
+}
+
+.linkNome:focus-visible,
+.pagar:focus-visible,
+.editar:focus-visible {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 2px;
+}

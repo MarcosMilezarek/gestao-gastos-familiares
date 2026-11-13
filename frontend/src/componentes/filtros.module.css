@@ -1,0 +1,84 @@
+.bloco {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  padding: var(--espaco-2) var(--espaco-4);
+  min-width: 0;
+}
+
+.barra {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  min-width: 0;
+}
+
+/* Os chips rolam aqui dentro, não a página inteira. */
+.rolagem {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--espaco-2);
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.chip,
+.chipRemovivel,
+.botaoFiltros,
+.limpar {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--espaco-1);
+  min-height: var(--alvo-min);
+  min-width: var(--alvo-min);
+  padding: 0 var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: 999px;
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+  font: inherit;
+  cursor: pointer;
+}
+
+.chipAtivo {
+  border-color: var(--cor-primaria);
+  color: var(--cor-primaria);
+  font-weight: 600;
+}
+
+.limpar {
+  border: 0;
+  background: transparent;
+  color: var(--cor-primaria);
+  font-weight: 600;
+}
+
+.grupo {
+  margin: 0 0 var(--espaco-4);
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.legenda {
+  padding: 0;
+  margin-bottom: var(--espaco-2);
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.opcao {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  min-height: var(--alvo-min);
+  cursor: pointer;
+}
+
+.opcao input {
+  width: 22px;
+  height: 22px;
+  margin: 0;
+}

@@ -1,0 +1,82 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  padding: var(--espaco-4);
+}
+
+.titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--cor-texto);
+}
+
+.aviso {
+  margin: 0;
+  color: var(--cor-texto-suave);
+}
+
+.erro {
+  margin: 0;
+  color: var(--cor-saida);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--alvo-min);
+  padding: 0 var(--espaco-3);
+  border: 1px solid var(--cor-primaria);
+  border-radius: var(--raio);
+  color: var(--cor-primaria);
+  text-decoration: none;
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 2px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  padding: var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-superficie);
+}
+
+.nome {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--cor-texto);
+}
+
+.valores {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  margin: 0;
+}
+
+.valores > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--espaco-2);
+}
+
+.valores dt {
+  color: var(--cor-texto-suave);
+}
+
+.valores dd {
+  margin: 0;
+}

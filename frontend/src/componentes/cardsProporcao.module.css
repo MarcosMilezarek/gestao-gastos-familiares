@@ -1,0 +1,54 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  padding: var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-superficie);
+}
+
+.nome {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--cor-texto);
+}
+
+.porcentagem {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--cor-texto);
+}
+
+.valores {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  margin: 0;
+}
+
+.valores > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--espaco-2);
+}
+
+.valores dt {
+  color: var(--cor-texto-suave);
+}
+
+.valores dd {
+  margin: 0;
+}
+
+.origem {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--cor-texto-suave);
+}

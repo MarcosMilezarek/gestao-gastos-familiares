@@ -1,0 +1,152 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  padding: var(--espaco-4);
+}
+
+.titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--cor-texto);
+  overflow-wrap: anywhere;
+}
+
+.aviso {
+  margin: 0;
+  color: var(--cor-texto-suave);
+}
+
+.secao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+}
+
+.cabecalhoSecao {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espaco-3);
+}
+
+.subtitulo {
+  margin: 0;
+  font-size: 1.125rem;
+  color: var(--cor-texto);
+}
+
+.grupo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  padding: var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-superficie);
+}
+
+.textoItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  min-width: 0;
+}
+
+.descricao {
+  font-weight: 600;
+  color: var(--cor-texto);
+  overflow-wrap: anywhere;
+}
+
+.secundario {
+  font-size: 0.875rem;
+  color: var(--cor-texto-suave);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}
+
+.indicadores {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espaco-3);
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .indicadores {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.indicador {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  padding: var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-superficie);
+}
+
+.rotulo {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--cor-texto-suave);
+}
+
+.valor {
+  margin: 0;
+}
+
+.pessoas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espaco-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .pessoas {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.pessoa {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  padding: var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-superficie);
+}
+
+.nomePessoa {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--cor-texto);
+  overflow-wrap: anywhere;
+}

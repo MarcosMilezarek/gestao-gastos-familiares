@@ -1,0 +1,99 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  padding: var(--espaco-4);
+}
+
+.topo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espaco-3);
+}
+
+.titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--cor-texto);
+}
+
+.novo {
+  min-height: var(--alvo-min);
+  min-width: var(--alvo-min);
+  padding: 0 var(--espaco-4);
+  border: 1px solid var(--cor-primaria);
+  border-radius: var(--raio);
+  background: transparent;
+  color: var(--cor-primaria);
+  font: inherit;
+  cursor: pointer;
+}
+
+.aviso {
+  margin: 0;
+  color: var(--cor-texto-suave);
+}
+
+.erro {
+  margin: 0;
+  color: var(--cor-saida);
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  min-height: var(--alvo-min);
+  padding: var(--espaco-4);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+  text-decoration: none;
+}
+
+.nome {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.saldo {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--espaco-2);
+}
+
+.rotulo {
+  font-size: 0.875rem;
+  color: var(--cor-texto-suave);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}
+
+.novo:focus-visible,
+.card:focus-visible {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 2px;
+}

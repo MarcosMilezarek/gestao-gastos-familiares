@@ -1,0 +1,145 @@
+.historico {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+}
+
+.titulo {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-2) var(--espaco-3);
+  padding: var(--espaco-3);
+  border-radius: var(--raio);
+  background: var(--cor-superficie);
+}
+
+.detalhes {
+  display: flex;
+  flex: 1 1 60%;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  min-width: 0;
+}
+
+.rotulo {
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.secundario {
+  font-size: 0.875rem;
+  color: var(--cor-texto-suave);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .acoes {
+    width: auto;
+  }
+}
+
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  padding: var(--espaco-4);
+}
+
+.cabecalho {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+}
+
+.nome {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--cor-texto);
+  overflow-wrap: anywhere;
+}
+
+.aviso {
+  margin: 0;
+  color: var(--cor-texto-suave);
+}
+
+.indicadores {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espaco-3);
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .indicadores {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.indicador {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  padding: var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-superficie);
+}
+
+.rotuloIndicador {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--cor-texto-suave);
+}
+
+.valorIndicador {
+  margin: 0;
+}
+
+.progresso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+}
+
+.barra {
+  height: 0.5rem;
+  border-radius: var(--raio);
+  background: var(--cor-borda);
+  overflow: hidden;
+}
+
+.preenchimento {
+  height: 100%;
+  max-width: 100%;
+}
+
+.porcentagem {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--cor-texto-suave);
+}
