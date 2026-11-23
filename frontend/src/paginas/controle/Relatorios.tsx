@@ -24,7 +24,7 @@ export function Relatorios() {
   const { mes, setMes } = useMes()
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4 md:p-6 lg:mx-auto lg:w-full lg:max-w-160">
       <SeletorMes mes={mes} onMudar={setMes} />
       <CabecalhoTela titulo="Relatórios" />
       <VisoesControle mes={mes} />
@@ -64,7 +64,7 @@ export function RelatorioPorTipo() {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4 md:p-6 lg:mx-auto lg:w-full lg:max-w-160">
       <CabecalhoTela titulo="Relatórios" voltarPara={`/controle/relatorios?mes=${mes}`} />
       <Card>
         <EstadoVazio frase="Relatório não encontrado." compacto />
