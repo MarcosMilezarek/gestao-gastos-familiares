@@ -1,5 +1,6 @@
+import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
 import { Campo } from '../componentes/Campo'
-import css from './formularios.module.css'
 
 // `null` no pai significa "não parcelada". `valor` fica como texto (campo numérico); a faixa de 2 a 36 é validada no servidor.
 type Props = {
@@ -12,23 +13,14 @@ export function CampoParcelas({ valor, aoMudar, erro }: Props) {
   const ligada = valor !== null
 
   return (
-    <div className={css.campos}>
+    <div className="flex flex-col gap-4">
       <Campo rotulo="Parcelada" erro={erro}>
-        <button
-          type="button"
-          className={css.atalho}
-          role="switch"
-          aria-checked={ligada}
-          onClick={() => aoMudar(ligada ? null : '')}
-        >
-          {ligada ? 'Ligado' : 'Desligado'}
-        </button>
+        <Switch checked={ligada} onCheckedChange={(marcado) => aoMudar(marcado ? '' : null)} />
       </Campo>
 
       {valor !== null && (
         <Campo rotulo="Número de parcelas">
-          <input
-            className={css.controle}
+          <Input
             type="number"
             inputMode="numeric"
             min={2}
