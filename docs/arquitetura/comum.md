@@ -49,6 +49,12 @@ Runtimes: **Python 3.14**, **Node 26**, **MySQL 8.4**. Os números abaixo são *
 | @tanstack/react-query | ^5.90 | dep | estado do servidor (cache e invalidação) |
 | recharts | ^3.3 | dep | rosca, área e barras (fatia 5 em diante) |
 | lucide-react | >=0.540.0 <1 | dep | ícones (inclui os ícones escolhidos para categorias e metas) |
+| radix-ui | ^1.4 | dep | primitivos acessíveis (dialog, alert-dialog, tabs, switch, checkbox, radio-group, toggle-group, avatar, progress, label, separator, slot) que os arquivos do shadcn/ui importam; pacote único em vez de `@radix-ui/*` |
+| class-variance-authority | ^0.7 | dep | variantes de `Button`, `Badge` e afins |
+| clsx, tailwind-merge | ^2.1, ^3.3 | dep | `cn()` em `src/lib/utils.ts` (`tailwind-merge` 3 é o da v4 do Tailwind) |
+| @fontsource-variable/geist | ^5.2 | dep | fonte Geist empacotada (sem CDN), importada em `main.tsx` |
+| tailwindcss, @tailwindcss/vite | ^4.1 | dev | estilo por classes utilitárias; plugin do Vite, sem `tailwind.config` nem PostCSS |
+| tw-animate-css | ^1.3 | dev | animações de entrada e saída das camadas (CSS importado em `tokens.css`) |
 | vite | ^7.1 | dev | bundler e servidor de desenvolvimento |
 | @vitejs/plugin-react | ^5.0 | dev | |
 | typescript | ^5.9 | dev | |
@@ -64,7 +70,7 @@ Runtimes: **Python 3.14**, **Node 26**, **MySQL 8.4**. Os números abaixo são *
 
 `scripts` do `package.json`: `dev` = `vite`; `build` = `tsc --noEmit && vite build`; `lint` = `eslint .`; `preview` = `vite preview`; `test` = `vitest run`; `test:e2e` = `playwright test`.
 
-Não há biblioteca de formulário, de UI pronta nem de datas/dinheiro: ver `front.md` §5 a §7 para o motivo.
+Não há biblioteca de formulário nem de datas/dinheiro (`front.md` §5 a §8). Os componentes de interface são o shadcn/ui, copiado para `frontend/src/components/ui/` (não é pacote do manifesto; o CLI `shadcn` roda com `npx` e não entra nas dependências); estilo, tokens e fonte em `front.md` §6 e componentes em `front.md` §10.
 
 ## 3. Estrutura de pastas e camadas
 
