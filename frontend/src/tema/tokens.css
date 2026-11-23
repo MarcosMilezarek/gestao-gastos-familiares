@@ -67,7 +67,6 @@
 
   --radius: 18px;
 
-  --alvo-min: 44px;
   --altura-barra: 144px;
 }
 
@@ -235,9 +234,4 @@
     @apply bg-background text-foreground font-sans antialiased;
     margin: 0;
   }
-}
-
-.alvo-toque {
-  min-height: var(--alvo-min);
-  min-width: var(--alvo-min);
 }

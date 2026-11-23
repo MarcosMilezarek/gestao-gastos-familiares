@@ -6,6 +6,7 @@ import type { LancamentoSaida } from '../../api/lancamentos'
 import type { ProporcaoSaida } from '../../api/proporcao'
 import { CardsProporcao } from '../../componentes/CardsProporcao'
 import { CartaoDestaque } from '../../componentes/CartaoDestaque'
+import { Dinheiro } from '../../componentes/Dinheiro'
 import { EstadoVazio } from '../../componentes/EstadoVazio'
 import { ItemLancamento, type LancamentoItem } from '../../componentes/ItemLancamento'
 import { TituloBloco } from '../../componentes/TituloBloco'
@@ -32,12 +33,16 @@ export function BlocosResumo({ inicio }: BlocosResumoProps) {
   const [confirmando, setConfirmando] = useState<LancamentoSaida | null>(null)
   const { saldos, total_faturas_mes } = inicio.cards
   const conjunta = saldos.find((conta) => conta.dono_usuario_id === null)
+  const individuais = saldos.filter((conta) => conta.dono_usuario_id !== null)
   const chips = [
-    ...saldos
-      .filter((conta) => conta.dono_usuario_id !== null)
-      .map((conta) => ({ rotulo: conta.nome, valor: conta.saldo_atual })),
+    ...(conjunta ? individuais.slice(0, 2) : []).map((conta) => ({
+      rotulo: conta.nome,
+      valor: conta.saldo_atual,
+    })),
     { rotulo: 'Faturas do mês', valor: total_faturas_mes },
   ]
+  // Sem conta conjunta todas as contas vão para a lista; com ela, só as individuais excedentes.
+  const contasNaLista = conjunta ? individuais.slice(2) : saldos
 
   // Aporte vai da conta individual da pessoa para a conjunta; sem uma das duas, não há botão.
   // Só a primeira pessoa tem o botão primário: a tela tem um único primário.
@@ -63,11 +68,31 @@ export function BlocosResumo({ inicio }: BlocosResumoProps) {
 
   return (
     <>
-      <CartaoDestaque
-        rotulo="Saldo da conta conjunta"
-        valor={conjunta?.saldo_atual ?? '0.00'}
-        chips={chips}
-      />
+      {conjunta && (
+        <CartaoDestaque rotulo="Saldo da conta conjunta" valor={conjunta.saldo_atual} chips={chips} />
+      )}
+
+      {saldos.length === 0 && <EstadoVazio compacto frase="Nenhuma conta ativa ainda." />}
+
+      {(contasNaLista.length > 0 || (saldos.length > 0 && !conjunta)) && (
+        <section className="flex flex-col gap-2">
+          <TituloBloco titulo="Saldos" />
+          <ul className="flex flex-col gap-2">
+            {contasNaLista.map((conta) => (
+              <li key={conta.conta_id} className="flex items-center justify-between gap-3 text-14">
+                <span className="min-w-0 truncate">{conta.nome}</span>
+                <Dinheiro valor={conta.saldo_atual} />
+              </li>
+            ))}
+            {!conjunta && (
+              <li className="flex items-center justify-between gap-3 text-14">
+                <span className="min-w-0 truncate">Faturas do mês</span>
+                <Dinheiro valor={total_faturas_mes} />
+              </li>
+            )}
+          </ul>
+        </section>
+      )}
 
       <section className="flex flex-col gap-2">
         <TituloBloco titulo="Aporte do mês" />

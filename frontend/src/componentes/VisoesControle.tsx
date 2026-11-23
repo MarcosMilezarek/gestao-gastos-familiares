@@ -20,7 +20,7 @@ export function VisoesControle({ mes }: { mes: string }) {
           end={end}
           className={({ isActive }) =>
             cn(
-              tabsTriggerClasses,
+              tabsTriggerClasses.replace('px-4', 'px-1').replace('text-14', 'text-13'),
               isActive && 'bg-primary font-semibold text-primary-foreground',
             )
           }

@@ -34,7 +34,7 @@ export function SeletorCor({ valor, onChange }: Props) {
             aria-pressed={selecionado}
             onClick={() => onChange(hex)}
             style={{ background: hex, color: visto }}
-            className="inline-flex size-11 cursor-pointer items-center justify-center rounded-full border-2 border-border p-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none aria-pressed:ring-2 aria-pressed:ring-primary aria-pressed:ring-offset-2 aria-pressed:ring-offset-background"
+            className="inline-flex size-11 cursor-pointer items-center justify-center rounded-full border-2 border-input p-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none aria-pressed:ring-2 aria-pressed:ring-primary aria-pressed:ring-offset-2 aria-pressed:ring-offset-background"
           >
             {selecionado && <Check aria-hidden="true" size={20} strokeWidth={3} />}
           </button>
