@@ -48,7 +48,7 @@ export function Vinculo() {
   const dados = consulta.data
   if (!dados) {
     return (
-      <div className="flex flex-col gap-4 p-4">
+      <div className="flex flex-col gap-4 p-4 md:mx-auto md:w-full md:max-w-120 md:p-6">
         <CabecalhoTela titulo="Vínculo do casal" voltarPara="/configuracoes" />
         {consulta.isError ? (
           <p role="alert" className="text-14 text-saida-texto">
@@ -82,7 +82,7 @@ export function Vinculo() {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4 md:mx-auto md:w-full md:max-w-120 md:p-6">
       <CabecalhoTela titulo="Vínculo do casal" voltarPara="/configuracoes" />
 
       {erroGeral && (

@@ -5,7 +5,7 @@ Requisitos: `docs/requisitos.md`. Cada arquivo guarda só o que é dele; regra c
 | Arquivo | Conteúdo | Estado |
 |---|---|---|
 | `comum.md` | §1 stack e decisões · §2 versões e pacotes · §3 pastas e camadas · §4 convenções do modelo físico · §5 visão geral do modelo de dados · §6 convenções da API (dinheiro, erros e códigos) · §7 sessão, autenticação, autorização · §8 configuração · §9 validação bruta e como subir · §12 estratégia de testes · §13 riscos · §14 cobertura de RF-0/RNF | pronto |
-| `front.md` | §1 visão · §2 estrutura de `src/` · §3 navegação mobile first · §4 rotas · §5 estado · §6 estilo, tokens e tema (Tailwind v4, shadcn/ui, Geist, gráficos) · §7 formatação de R$ e datas · §8 formulários de lançamento · §9 acessibilidade · §10 componentes de interface (primitivos, compostos, camadas e unidades de implementação) | pronto |
+| `front.md` | §1 visão · §2 estrutura de `src/` · §3 navegação mobile first · §4 rotas · §5 estado · §6 estilo, tokens e tema (Tailwind v4, shadcn/ui, Geist, gráficos) · §7 formatação de R$ e datas · §8 formulários de lançamento · §9 acessibilidade · §10 componentes de interface (primitivos, compostos, camadas e unidades de implementação) · §11 responsivo (breakpoints, barra lateral do desktop, larguras, padrões de arranjo, grade por tela, camadas em tela larga e unidades D1 a D13) | pronto |
 | `fatia-1.md` | Cadastro, login e vínculo do casal: tabelas e migrações, rotas, services, telas | pronto |
 | `fatia-2.md` | Contas, categorias, tags e lançamentos | pronto |
 | `fatia-3.md` | Recorrências, proporção do mês e aporte | pronto |

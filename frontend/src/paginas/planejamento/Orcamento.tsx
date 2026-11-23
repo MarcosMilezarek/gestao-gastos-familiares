@@ -93,7 +93,7 @@ export function Orcamento() {
   )
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="mx-auto flex w-full max-w-240 flex-col gap-4 p-4 md:p-6">
       <CabecalhoTela titulo="Orçamento" voltarPara="/planejamento" />
       <SeletorMes mes={mes} onMudar={trocarMes} />
 

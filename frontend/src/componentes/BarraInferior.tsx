@@ -1,17 +1,10 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router'
-import { CalendarDays, ChartColumn, CreditCard, House, Plus, Target, type LucideIcon } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { ABAS } from './abas'
 import { MenuMais } from './MenuMais'
-
-const ABAS: { para: string; rotulo: string; icone: LucideIcon; fim?: boolean }[] = [
-  { para: '/', rotulo: 'Início', icone: House, fim: true },
-  { para: '/controle', rotulo: 'Controle', icone: ChartColumn },
-  { para: '/cartoes', rotulo: 'Cartões', icone: CreditCard },
-  { para: '/metas', rotulo: 'Metas', icone: Target },
-  { para: '/planejamento', rotulo: 'Planejamento', icone: CalendarDays },
-]
 
 export function BarraInferior() {
   const [menuAberto, setMenuAberto] = useState(false)

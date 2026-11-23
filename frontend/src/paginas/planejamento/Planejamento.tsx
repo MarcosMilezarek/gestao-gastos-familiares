@@ -14,11 +14,11 @@ const ENTRADAS = [
 // Menu da aba Planejamento (RF-7.02): só links para as telas da fatia.
 export function Planejamento() {
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4 md:p-6">
       <CabecalhoTela titulo="Planejamento" />
 
       <nav aria-label="Planejamento">
-        <ul className="flex flex-col gap-3">
+        <ul className="flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-4 lg:grid-cols-3">
           {ENTRADAS.map((entrada) => (
             <li key={entrada.caminho}>
               <Link

@@ -27,7 +27,7 @@ export function RelatorioProporcao() {
   const semVinculo = consulta.error instanceof ApiError && consulta.error.codigo === 'SEM_VINCULO'
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4 md:p-6 lg:mx-auto lg:w-full lg:max-w-240">
       <SeletorMes mes={mes} onMudar={setMes} />
       <CabecalhoTela titulo="Proporção e aporte" voltarPara={`/controle/relatorios?mes=${mes}`} />
 
@@ -49,12 +49,16 @@ export function RelatorioProporcao() {
       )}
       {!dados && !consulta.isError && <p className="text-14 text-muted-foreground">Carregando…</p>}
 
-      {dados?.meses.map((item) => (
-        <section key={item.mes} className="flex flex-col gap-3">
-          <TituloBloco titulo={rotuloMes(item.mes)} />
-          <CardsProporcao proporcao={item} />
-        </section>
-      ))}
+      {dados && (
+        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6">
+          {dados.meses.map((item) => (
+            <section key={item.mes} className="flex min-w-0 flex-col gap-3">
+              <TituloBloco titulo={rotuloMes(item.mes)} />
+              <CardsProporcao proporcao={item} />
+            </section>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

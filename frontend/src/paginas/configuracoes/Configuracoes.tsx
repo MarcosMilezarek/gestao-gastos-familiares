@@ -28,7 +28,7 @@ export function Configuracoes() {
   })
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4 md:mx-auto md:w-full md:max-w-160 md:p-6">
       <CabecalhoTela titulo="Configurações" voltarPara="/" />
       <Card className="gap-0 p-0">
         <Link to="/configuracoes/perfil" className={linha}>

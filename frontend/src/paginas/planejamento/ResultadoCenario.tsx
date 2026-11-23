@@ -66,7 +66,7 @@ export function ResultadoCenario({ resultado }: ResultadoCenarioProps) {
   const semProporcao = resultado.sem_proporcao
 
   return (
-    <section className="flex flex-col gap-3">
+    <section className="flex min-w-0 flex-col gap-3">
       <TituloBloco titulo="Resultado" />
       <CartaoDestaque
         rotulo="Saldo mensal"

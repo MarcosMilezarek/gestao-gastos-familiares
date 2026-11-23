@@ -35,7 +35,7 @@ export function Cartoes() {
   const arquivados = consultaArquivadas.data
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4 md:p-6">
       <CabecalhoTela
         titulo="Cartões"
         acao={
@@ -70,9 +70,9 @@ export function Cartoes() {
               onAcao={() => navigate('/cartoes/novo')}
             />
           ) : (
-            <ul className="flex flex-col gap-3">
+            <ul className="flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-4 lg:grid-cols-3">
               {dados.cartoes.map((cartao) => (
-                <li key={cartao.id}>
+                <li key={cartao.id} className="min-w-0">
                   <CardCartao cartao={cartao} />
                 </li>
               ))}
@@ -111,9 +111,9 @@ export function Cartoes() {
               (arquivados.cartoes.length === 0 ? (
                 <p className="text-14 text-muted-foreground">Nenhum cartão em contas arquivadas.</p>
               ) : (
-                <ul className="flex flex-col gap-3">
+                <ul className="flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-4 lg:grid-cols-3">
                   {arquivados.cartoes.map((cartao) => (
-                    <li key={cartao.id}>
+                    <li key={cartao.id} className="min-w-0">
                       <CardCartao cartao={cartao} />
                     </li>
                   ))}
