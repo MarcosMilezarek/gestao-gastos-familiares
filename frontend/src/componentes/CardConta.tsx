@@ -1,5 +1,8 @@
-import styles from './cardConta.module.css'
+import { Landmark } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
 import { Dinheiro } from './Dinheiro'
+import { IconeQuadrado } from './IconeQuadrado'
 
 type CardContaProps = {
   nome: string
@@ -24,43 +27,46 @@ export function CardConta({
   onArquivar,
 }: CardContaProps) {
   return (
-    <article className={styles.card}>
-      <header>
-        <h2 className={styles.nomeConta}>{nome}</h2>
-        {instituicao && <p className={styles.instituicao}>{instituicao}</p>}
+    <article className="flex flex-col gap-4 rounded-xl border bg-card p-5 text-card-foreground shadow-card">
+      <header className="flex items-center gap-3">
+        <IconeQuadrado icone={Landmark} />
+        <div className="min-w-0 flex-1">
+          <h2 className="truncate text-16 font-semibold">{nome}</h2>
+          {instituicao && <p className="truncate text-14 text-muted-foreground">{instituicao}</p>}
+        </div>
       </header>
-      <dl className={styles.saldos}>
-        <div>
-          <dt className={styles.rotulo}>Saldo atual</dt>
-          <dd className={styles.valor}>
+      <dl className="grid grid-cols-2 gap-3">
+        <div className="flex min-w-0 flex-col gap-1">
+          <dt className="text-13 text-muted-foreground">Saldo atual</dt>
+          <dd className="m-0 truncate">
             <Dinheiro valor={saldoAtual} />
           </dd>
         </div>
-        <div>
-          <dt className={styles.rotulo}>Saldo previsto</dt>
-          <dd className={styles.valor}>
+        <div className="flex min-w-0 flex-col gap-1">
+          <dt className="text-13 text-muted-foreground">Saldo previsto</dt>
+          <dd className="m-0 truncate">
             <Dinheiro valor={saldoPrevisto} />
           </dd>
         </div>
       </dl>
-      <div className={styles.acoes}>
-        <button type="button" className={styles.acao} onClick={onVerLancamentos}>
+      <div className="flex flex-wrap gap-2">
+        <Button variant="outline" size="sm" onClick={onVerLancamentos}>
           Ver lançamentos
-        </button>
+        </Button>
         {onEditar && (
-          <button type="button" className={styles.acao} onClick={onEditar}>
+          <Button variant="ghost" size="sm" onClick={onEditar}>
             Editar
-          </button>
+          </Button>
         )}
         {onReajustar && (
-          <button type="button" className={styles.acao} onClick={onReajustar}>
+          <Button variant="ghost" size="sm" onClick={onReajustar}>
             Reajustar
-          </button>
+          </Button>
         )}
         {onArquivar && (
-          <button type="button" className={styles.acao} onClick={onArquivar}>
+          <Button variant="ghost" size="sm" onClick={onArquivar}>
             Arquivar
-          </button>
+          </Button>
         )}
       </div>
     </article>
