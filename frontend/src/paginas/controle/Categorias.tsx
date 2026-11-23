@@ -86,7 +86,7 @@ export function Categorias() {
   )
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4 md:mx-auto md:w-full md:max-w-160">
       <CabecalhoTela
         titulo="Categorias"
         voltarPara="/controle"
