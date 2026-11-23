@@ -69,7 +69,7 @@ export function BlocosAnalise({ inicio }: BlocosAnaliseProps) {
 
   return (
     <>
-      <section className="flex flex-col gap-2">
+      <section className="flex flex-col gap-2 lg:min-w-0">
         <TituloBloco titulo="Despesas por categoria" />
         {despesas_por_categoria.categorias.length === 0 ? (
           <EstadoVazio compacto frase="Nenhuma despesa no mês." />
@@ -80,7 +80,7 @@ export function BlocosAnalise({ inicio }: BlocosAnaliseProps) {
         )}
       </section>
 
-      <section className="flex flex-col gap-2">
+      <section className="flex flex-col gap-2 lg:min-w-0">
         <TituloBloco titulo="Balanço do mês por conta" />
         {balanco_contas.length === 0 ? (
           <EstadoVazio compacto frase="Nenhuma conta ativa ainda." />
@@ -98,7 +98,7 @@ export function BlocosAnalise({ inicio }: BlocosAnaliseProps) {
         )}
       </section>
 
-      <section className="flex flex-col gap-2">
+      <section className="flex flex-col gap-2 lg:min-w-0">
         <TituloBloco titulo="Próximas faturas" />
         {proximas_faturas.length === 0 ? (
           <EstadoVazio compacto frase="Nenhuma fatura em aberto." />
@@ -138,7 +138,7 @@ export function BlocosAnalise({ inicio }: BlocosAnaliseProps) {
         )}
       </section>
 
-      <section className="flex flex-col gap-2">
+      <section className="flex flex-col gap-2 lg:min-w-0">
         <TituloBloco titulo="Projeção de saldo" acaoRotulo="Ver projeção" acaoPara="/projecao" />
         {projecao.meses.length === 0 ? (
           <EstadoVazio compacto frase="Sem projeção para mostrar." />
