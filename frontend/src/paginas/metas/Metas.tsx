@@ -89,7 +89,7 @@ export function Metas() {
                   {dados.metas
                     .filter((meta) => meta.situacao === situacao)
                     .map((meta) => (
-                      <li key={meta.id}>
+                      <li key={meta.id} className="min-w-0">
                         <CardMeta meta={meta} />
                       </li>
                     ))}

@@ -31,7 +31,7 @@ export function Tags() {
   })
 
   return (
-    <div className="flex flex-col gap-4 p-4 md:mx-auto md:w-full md:max-w-160">
+    <div className="flex flex-col gap-4 p-4 md:mx-auto md:w-full md:max-w-160 md:p-6">
       <CabecalhoTela
         titulo="Tags"
         voltarPara="/controle"
