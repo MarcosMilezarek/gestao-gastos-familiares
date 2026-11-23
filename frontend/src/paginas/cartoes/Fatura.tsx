@@ -190,7 +190,6 @@ export function Fatura() {
                   </Button>
                 </div>
               )}
-
             </div>
 
             <Card className="min-w-0">
