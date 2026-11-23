@@ -3,8 +3,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { FaturaSaida } from '../../api/cartoes'
 import { ApiError } from '../../api/cliente'
 import { confirmarPagamento, desfazerPagamento } from '../../api/itensFatura'
+import { Button } from '@/components/ui/button'
 import { DialogoConfirmacao } from '../../componentes/DialogoConfirmacao'
-import styles from './fatura.module.css'
 
 type Props = {
   fatura: FaturaSaida
@@ -34,7 +34,7 @@ export function AcoesPagamento({ fatura, aoPagar }: Props) {
   })
 
   if (fatura.conta_arquivada) {
-    return <p className={styles.aviso}>Conta arquivada: a fatura é só para consulta</p>
+    return <p className="text-14 text-muted-foreground">Conta arquivada: a fatura é só para consulta</p>
   }
 
   const falha = confirmar.error ?? desfazer.error
@@ -44,40 +44,50 @@ export function AcoesPagamento({ fatura, aoPagar }: Props) {
   return (
     <>
       {!pagamento && fatura.pode_pagar && (
-        <button type="button" className={styles.acao} onClick={aoPagar}>
+        <Button type="button" size="lg" className="w-full" onClick={aoPagar}>
           Pagar fatura
-        </button>
+        </Button>
       )}
 
       {pagamento?.situacao === 'prevista' && (
         <>
-          <button
+          <Button
             type="button"
-            className={styles.acao}
+            variant="secondary"
+            size="lg"
+            className="w-full"
             disabled={confirmar.isPending || desfazer.isPending}
             onClick={() => confirmar.mutate()}
           >
             Confirmar pagamento
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            className={styles.acao}
+            variant="secondary"
+            size="lg"
+            className="w-full"
             disabled={confirmar.isPending || desfazer.isPending}
             onClick={() => desfazer.mutate()}
           >
             Cancelar pagamento previsto
-          </button>
+          </Button>
         </>
       )}
 
       {pagamento?.situacao === 'confirmada' && (
-        <button type="button" className={styles.acao} onClick={() => setDesfazendo(true)}>
+        <Button
+          type="button"
+          variant="secondary"
+          size="lg"
+          className="w-full"
+          onClick={() => setDesfazendo(true)}
+        >
           Desfazer pagamento
-        </button>
+        </Button>
       )}
 
       {erroAcao && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="text-14 text-saida-texto">
           {erroAcao}
         </p>
       )}
@@ -87,6 +97,7 @@ export function AcoesPagamento({ fatura, aoPagar }: Props) {
           titulo="Desfazer pagamento"
           texto="Desfazer o pagamento desta fatura?"
           rotuloAcao="Desfazer"
+          destrutivo
           onConfirmar={() => desfazer.mutate()}
           onCancelar={() => setDesfazendo(false)}
         />
