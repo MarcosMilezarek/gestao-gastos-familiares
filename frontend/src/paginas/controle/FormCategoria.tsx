@@ -8,10 +8,11 @@ import {
   type TipoCategoria,
 } from '../../api/categorias'
 import { BottomSheet } from '../../componentes/BottomSheet'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Campo } from '../../componentes/Campo'
 import { SeletorCor } from '../../componentes/SeletorCor'
 import { SeletorIcone } from '../../componentes/SeletorIcone'
-import configuracoes from '../configuracoes/configuracoes.module.css'
 
 type CategoriaItem = CategoriaSaida['subcategorias'][number]
 
@@ -96,27 +97,25 @@ export function FormCategoria({ tipo, pai, categoria, aoFechar }: FormCategoriaP
       titulo={titulo}
       aoFechar={aoFechar}
       rodape={
-        <button
+        <Button
           type="submit"
           form="form-categoria"
-          className={configuracoes.botao}
           disabled={salvar.isPending}
         >
           Salvar
-        </button>
+        </Button>
       }
     >
       {aviso && (
-        <p role="alert" className={configuracoes.aviso}>
+        <p role="alert" className="text-14 text-saida-texto">
           {aviso}
         </p>
       )}
 
-      <form ref={formRef} id="form-categoria" className={configuracoes.secao} onSubmit={enviar}>
+      <form ref={formRef} id="form-categoria" className="flex flex-col gap-4" onSubmit={enviar}>
         <Campo rotulo="Nome" erro={erros.nome}>
-          <input
+          <Input
             id="categoria-nome"
-            className={configuracoes.entrada}
             value={nome}
             disabled={nomeTravado}
             onChange={(evento) => setNome(evento.target.value)}
@@ -128,7 +127,7 @@ export function FormCategoria({ tipo, pai, categoria, aoFechar }: FormCategoriaP
           <SeletorIcone valor={icone} onChange={setIcone} />
         </div>
         {erros.icone && (
-          <p role="alert" className={configuracoes.aviso}>
+          <p role="alert" className="text-14 text-saida-texto">
             {erros.icone}
           </p>
         )}
@@ -139,7 +138,7 @@ export function FormCategoria({ tipo, pai, categoria, aoFechar }: FormCategoriaP
               <SeletorCor valor={cor} onChange={setCor} />
             </div>
             {erros.cor && (
-              <p role="alert" className={configuracoes.aviso}>
+              <p role="alert" className="text-14 text-saida-texto">
                 {erros.cor}
               </p>
             )}
