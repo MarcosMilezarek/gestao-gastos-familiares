@@ -51,14 +51,14 @@ function ChartTooltipContent({ active, payload }: Partial<TooltipContentProps<nu
   )
 }
 
-export type ItemLegenda = { nome: string; cor: string; valor?: string; porcentagem?: string }
+export type ItemLegenda = { chave?: string; nome: string; cor: string; valor?: string; porcentagem?: string }
 
 // Lista em HTML: nome, valor e porcentagem à direita; o estado não depende só da cor.
 function ChartLegend({ itens, className }: { itens: ItemLegenda[]; className?: string }) {
   return (
     <ul data-slot="chart-legend" className={cn('flex flex-col gap-2', className)}>
       {itens.map((item) => (
-        <li key={item.nome} className="flex min-h-6 items-center gap-2 text-14 text-foreground">
+        <li key={item.chave ?? item.nome} className="flex min-h-6 items-center gap-2 text-14 text-foreground">
           <span aria-hidden="true" className="size-3 shrink-0 rounded-full" style={{ backgroundColor: item.cor }} />
           <span className="min-w-0 flex-1 truncate">{item.nome}</span>
           {item.valor && <span className="font-semibold tabular-nums">{item.valor}</span>}

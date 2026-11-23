@@ -44,17 +44,18 @@ function Progress({
   ...props
 }: React.ComponentProps<typeof ProgressPrimitive.Root> &
   VariantProps<typeof progressVariants>) {
+  const limitado = Math.min(100, Math.max(0, value ?? 0))
   return (
     <ProgressPrimitive.Root
       data-slot="progress"
-      value={value}
+      value={limitado}
       className={cn(progressVariants({ tom }), className)}
       {...props}
     >
       <ProgressPrimitive.Indicator
         data-slot="progress-indicator"
         className={indicatorVariants({ tom })}
-        style={{ transform: `translateX(-${100 - (value ?? 0)}%)` }}
+        style={{ transform: `translateX(-${100 - limitado}%)` }}
       />
     </ProgressPrimitive.Root>
   )
