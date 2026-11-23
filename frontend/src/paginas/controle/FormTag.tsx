@@ -3,8 +3,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ApiError } from '../../api/cliente'
 import { criarTag, editarTag, type TagSaida } from '../../api/categorias'
 import { BottomSheet } from '../../componentes/BottomSheet'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Campo } from '../../componentes/Campo'
-import configuracoes from '../configuracoes/configuracoes.module.css'
 
 const TAMANHO_MAXIMO = 40
 
@@ -65,27 +66,25 @@ export function FormTag({ tag, aoFechar }: FormTagProps) {
       titulo={tag ? 'Renomear tag' : 'Nova tag'}
       aoFechar={aoFechar}
       rodape={
-        <button
+        <Button
           type="submit"
           form="form-tag"
-          className={configuracoes.botao}
           disabled={salvar.isPending}
         >
           Salvar
-        </button>
+        </Button>
       }
     >
       {aviso && (
-        <p role="alert" className={configuracoes.aviso}>
+        <p role="alert" className="text-14 text-saida-texto">
           {aviso}
         </p>
       )}
 
-      <form ref={formRef} id="form-tag" className={configuracoes.secao} onSubmit={enviar}>
+      <form ref={formRef} id="form-tag" className="flex flex-col gap-4" onSubmit={enviar}>
         <Campo rotulo="Nome" erro={erros.nome}>
-          <input
+          <Input
             id="tag-nome"
-            className={configuracoes.entrada}
             value={nome}
             onChange={(evento) => setNome(evento.target.value)}
             autoComplete="off"

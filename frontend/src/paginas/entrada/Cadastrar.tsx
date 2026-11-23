@@ -3,9 +3,11 @@ import { Link, Navigate, useNavigate } from 'react-router'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ApiError } from '../../api/cliente'
 import { cadastrar } from '../../api/sessao'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import { Campo } from '../../componentes/Campo'
 import { useSessao } from '../../hooks/useSessao'
-import css from './entrada.module.css'
 
 type Valores = { nome: string; email: string; senha: string; senha_confirmacao: string }
 
@@ -52,61 +54,59 @@ export function Cadastrar() {
   }
 
   return (
-    <main className={css.pagina}>
-      <form ref={formRef} className={css.formulario} onSubmit={enviar}>
-        <h1 className={css.titulo}>Cadastrar</h1>
+    <main className="mx-auto flex min-h-dvh w-full max-w-[360px] flex-col justify-center gap-6 p-4">
+      <h1 className="text-center text-22 font-bold">Cadastrar</h1>
+      <Card>
+      <form ref={formRef} className="flex flex-col gap-4" onSubmit={enviar}>
         <Campo rotulo="Nome" erro={campos.nome}>
-          <input
+          <Input
             type="text"
             autoComplete="name"
             required
-            className={css.controle}
             value={valores.nome}
             onChange={alterar('nome')}
           />
         </Campo>
         <Campo rotulo="E-mail" erro={campos.email}>
-          <input
+          <Input
             type="email"
             autoComplete="email"
             required
-            className={css.controle}
             value={valores.email}
             onChange={alterar('email')}
           />
         </Campo>
         <Campo rotulo="Senha" erro={campos.senha} ajuda="Use de 8 a 128 caracteres.">
-          <input
+          <Input
             type="password"
             autoComplete="new-password"
             required
-            className={css.controle}
             value={valores.senha}
             onChange={alterar('senha')}
           />
         </Campo>
         <Campo rotulo="Confirmar senha" erro={campos.senha_confirmacao}>
-          <input
+          <Input
             type="password"
             autoComplete="new-password"
             required
-            className={css.controle}
             value={valores.senha_confirmacao}
             onChange={alterar('senha_confirmacao')}
           />
         </Campo>
         {erroGeral && (
-          <p role="alert" className={css.erroGeral}>
+          <p role="alert" className="text-14 text-saida-texto">
             {erroGeral}
           </p>
         )}
-        <button type="submit" className={css.botao} disabled={mutation.isPending}>
+        <Button type="submit" disabled={mutation.isPending} className="w-full">
           Cadastrar
-        </button>
-        <p className={css.apoio}>
-          Já tem conta? <Link to="/entrar" className={css.link}>Entrar</Link>
+        </Button>
+        <p className="text-center text-14 [&_a]:inline-flex [&_a]:min-h-11 [&_a]:items-center">
+          Já tem conta? <Link to="/entrar" className="font-semibold text-primary-texto underline underline-offset-4">Entrar</Link>
         </p>
       </form>
+      </Card>
     </main>
   )
 }

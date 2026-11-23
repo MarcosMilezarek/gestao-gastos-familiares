@@ -2,10 +2,11 @@ import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ApiError } from '../api/cliente'
 import { confirmarLancamento, type LancamentoSaida } from '../api/lancamentos'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { BottomSheet } from '../componentes/BottomSheet'
 import { Campo } from '../componentes/Campo'
 import { mascararEntrada, paraApi } from '../formatacao/dinheiro'
-import css from './formularios.module.css'
 
 type Props = { lancamento: Pick<LancamentoSaida, 'id' | 'valor'>; aoFechar(): void }
 
@@ -50,25 +51,19 @@ export function ConfirmarLancamento({ lancamento, aoFechar }: Props) {
       aoFechar={aoFechar}
       rodape={
         <>
-          <button type="button" className={css.atalho} onClick={aoFechar}>
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            form={idFormulario}
-            className={css.atalho}
-            disabled={confirmar.isPending}
-          >
+          <Button type="submit" form={idFormulario} disabled={confirmar.isPending}>
             Confirmar
-          </button>
+          </Button>
+          <Button type="button" variant="ghost" onClick={aoFechar}>
+            Cancelar
+          </Button>
         </>
       }
     >
-      <form ref={formRef} id={idFormulario} className={css.campos} onSubmit={enviar}>
+      <form ref={formRef} id={idFormulario} className="flex flex-col gap-4" onSubmit={enviar}>
         <Campo rotulo="Valor real" erro={erroCampo}>
-          <input
+          <Input
             id={idValor}
-            className={css.controle}
             type="text"
             inputMode="numeric"
             value={valor}
@@ -76,7 +71,7 @@ export function ConfirmarLancamento({ lancamento, aoFechar }: Props) {
           />
         </Campo>
         {erroGeral && (
-          <p role="alert" className={css.erro}>
+          <p role="alert" className="text-14 text-saida-texto">
             {erroGeral}
           </p>
         )}

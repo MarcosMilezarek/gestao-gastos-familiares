@@ -1,14 +1,15 @@
 import { useQuery } from '@tanstack/react-query'
-import { Link, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
+import { Card } from '@/components/ui/card'
 import { ApiError, repetirSem4xx } from '../../api/cliente'
 import { obterRelatorioProporcao } from '../../api/relatorios'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
 import { CardsProporcao } from '../../componentes/CardsProporcao'
 import { EstadoVazio } from '../../componentes/EstadoVazio'
-import estado from '../../componentes/estado.module.css'
 import { SeletorMes } from '../../componentes/SeletorMes'
+import { TituloBloco } from '../../componentes/TituloBloco'
 import { rotuloMes } from '../../formatacao/data'
 import { useMes } from '../../hooks/useMes'
-import styles from './relatorios.module.css'
 
 export function RelatorioProporcao() {
   const navigate = useNavigate()
@@ -26,32 +27,31 @@ export function RelatorioProporcao() {
   const semVinculo = consulta.error instanceof ApiError && consulta.error.codigo === 'SEM_VINCULO'
 
   return (
-    <div className={styles.pagina}>
+    <div className="flex flex-col gap-4">
       <SeletorMes mes={mes} onMudar={setMes} />
-      <Link to={`/controle/relatorios?mes=${mes}`} className={estado.voltar}>
-        Relatórios
-      </Link>
-      <h1 className={styles.titulo}>Proporção e aporte</h1>
+      <CabecalhoTela titulo="Proporção e aporte" voltarPara={`/controle/relatorios?mes=${mes}`} />
 
       {semVinculo && (
-        <EstadoVazio
-          frase="Você ainda não está vinculado a um casal."
-          acaoRotulo="Ir para o vínculo"
-          onAcao={() => navigate('/configuracoes/vinculo')}
-        />
+        <Card>
+          <EstadoVazio
+            frase="Você ainda não está vinculado a um casal."
+            acaoRotulo="Ir para o vínculo"
+            onAcao={() => navigate('/configuracoes/vinculo')}
+          />
+        </Card>
       )}
       {consulta.isError && !semVinculo && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="text-14 text-saida-texto">
           {consulta.error instanceof ApiError
             ? consulta.error.mensagem
             : 'Erro inesperado. Tente novamente.'}
         </p>
       )}
-      {!dados && !consulta.isError && <p className={styles.aviso}>Carregando…</p>}
+      {!dados && !consulta.isError && <p className="text-14 text-muted-foreground">Carregando…</p>}
 
       {dados?.meses.map((item) => (
-        <section key={item.mes} className={styles.grupo}>
-          <h2 className={styles.nome}>{rotuloMes(item.mes)}</h2>
+        <section key={item.mes} className="flex flex-col gap-3">
+          <TituloBloco titulo={rotuloMes(item.mes)} />
           <CardsProporcao proporcao={item} />
         </section>
       ))}

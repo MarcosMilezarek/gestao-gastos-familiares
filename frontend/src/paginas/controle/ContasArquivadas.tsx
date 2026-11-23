@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router'
 import { ApiError } from '../../api/cliente'
 import { desarquivarConta, listarContas } from '../../api/contas'
 import { CardConta } from '../../componentes/CardConta'
+import { Button } from '@/components/ui/button'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
 import { EstadoVazio } from '../../componentes/EstadoVazio'
-import cardConta from '../../componentes/cardConta.module.css'
-import styles from './contas.module.css'
 
 export function ContasArquivadas() {
   const navigate = useNavigate()
@@ -23,24 +23,24 @@ export function ContasArquivadas() {
   })
 
   return (
-    <div className={styles.pagina}>
-      <h1 className={styles.titulo}>Contas arquivadas</h1>
+    <div className="flex flex-col gap-4 p-4">
+      <CabecalhoTela titulo="Contas arquivadas" voltarPara="/controle/contas" />
 
       {consulta.isError && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="text-saida-texto">
           {consulta.error instanceof ApiError
             ? consulta.error.mensagem
             : 'Erro inesperado. Tente novamente.'}
         </p>
       )}
       {desarquivar.isError && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="text-saida-texto">
           {desarquivar.error instanceof ApiError
             ? desarquivar.error.mensagem
             : 'Erro inesperado. Tente novamente.'}
         </p>
       )}
-      {!dados && !consulta.isError && <p className={styles.aviso}>Carregando…</p>}
+      {!dados && !consulta.isError && <p className="text-muted-foreground">Carregando…</p>}
 
       {dados &&
         (dados.contas.length === 0 ? (
@@ -50,9 +50,9 @@ export function ContasArquivadas() {
             onAcao={() => navigate('/controle/contas')}
           />
         ) : (
-          <ul className={cardConta.lista}>
+          <ul className="m-0 flex list-none flex-col gap-3 p-0 sm:grid sm:grid-cols-2">
             {dados.contas.map((conta) => (
-              <li key={conta.id}>
+              <li key={conta.id} className="flex flex-col gap-2">
                 <CardConta
                   nome={conta.nome}
                   instituicao={conta.instituicao}
@@ -61,16 +61,15 @@ export function ContasArquivadas() {
                   onVerLancamentos={() => navigate(`/controle/contas/${conta.id}`)}
                 />
                 {!conta.casal_encerrado && (
-                  <div className={cardConta.acoes}>
-                    <button
-                      type="button"
-                      className={cardConta.acao}
-                      disabled={desarquivar.isPending}
-                      onClick={() => desarquivar.mutate(conta.id)}
-                    >
-                      Desarquivar
-                    </button>
-                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="self-start"
+                    disabled={desarquivar.isPending}
+                    onClick={() => desarquivar.mutate(conta.id)}
+                  >
+                    Desarquivar
+                  </Button>
                 )}
               </li>
             ))}
