@@ -39,7 +39,7 @@ export function Metas() {
   const dados = consulta.data
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4 md:p-6">
       <CabecalhoTela
         titulo="Metas"
         acao={
@@ -85,7 +85,7 @@ export function Metas() {
               {dados.metas.filter((meta) => meta.situacao === situacao).length === 0 ? (
                 <EstadoVazio compacto frase={FRASE_ABA_VAZIA[situacao]} />
               ) : (
-                <ul className="flex flex-col gap-3">
+                <ul className="grid gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-3">
                   {dados.metas
                     .filter((meta) => meta.situacao === situacao)
                     .map((meta) => (
