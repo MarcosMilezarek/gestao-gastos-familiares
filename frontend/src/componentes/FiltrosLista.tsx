@@ -5,6 +5,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { TipoLista } from '../api/controle'
 import type { SituacaoLancamento } from '../api/lancamentos'
 import type { AtalhoTipo, ChaveFiltro, ControleFiltros, Rascunho } from '../hooks/useFiltros'
+import { entradaDeCamadaAtiva } from '../hooks/useFecharComVoltar'
 import { BottomSheet } from './BottomSheet'
 
 type Valor = string | number
@@ -101,9 +102,11 @@ export function FiltrosLista({ controle, opcoes }: Props) {
   }
 
   function aplicarRascunho() {
-    // O BottomSheet volta uma entrada no histórico ao fechar, de forma assíncrona:
-    // a URL só é gravada depois dessa volta, para não ser desfeita por ela.
-    const esperaVolta = history.state?.bottomSheet === true
+    // O BottomSheet volta uma entrada no histórico ao fechar, adiada por setTimeout:
+    // a URL só é gravada depois dessa volta, para não ser desfeita por ela. O
+    // listener de popstate (once) continua valendo, pois o back ainda gera o
+    // popstate depois do fechamento.
+    const esperaVolta = entradaDeCamadaAtiva()
     setSheetAberto(false)
     if (!esperaVolta) {
       aplicar(rascunho)
