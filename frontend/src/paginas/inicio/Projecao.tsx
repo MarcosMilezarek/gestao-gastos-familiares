@@ -46,7 +46,7 @@ export function Projecao() {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="mx-auto flex w-full max-w-240 flex-col gap-4 p-4 md:p-6">
       <CabecalhoTela titulo="Projeção de saldo" voltarPara="/" />
 
       <div className="flex flex-col gap-3">
@@ -85,7 +85,7 @@ export function Projecao() {
 
       {dados && (
         <>
-          <Card>
+          <Card className="lg:[&_[data-slot=chart]]:h-72">
             <GraficoArea
               meses={dados.meses.map((mes) => ({ rotulo: rotuloMes(mes.mes), valor: mes.saldo_previsto }))}
             />
