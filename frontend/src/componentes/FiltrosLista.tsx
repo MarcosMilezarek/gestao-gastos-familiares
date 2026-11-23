@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { SlidersHorizontal, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { TipoLista } from '../api/controle'
 import type { SituacaoLancamento } from '../api/lancamentos'
 import type { AtalhoTipo, ChaveFiltro, ControleFiltros, Rascunho } from '../hooks/useFiltros'
 import { BottomSheet } from './BottomSheet'
-import estado from './estado.module.css'
-import estilos from './filtros.module.css'
 
 type Valor = string | number
 type Opcao = { valor: Valor; nome: string }
@@ -59,12 +59,13 @@ function Grupo({ titulo, chave, opcoes, selecionados, mudar }: GrupoProps) {
   if (opcoes.length === 0) return null
 
   return (
-    <fieldset className={estilos.grupo}>
-      <legend className={estilos.legenda}>{titulo}</legend>
+    <fieldset className="m-0 mb-4 min-w-0 border-0 p-0">
+      <legend className="mb-1 p-0 text-14 font-semibold">{titulo}</legend>
       {opcoes.map((o) => (
-        <label key={String(o.valor)} className={estilos.opcao}>
+        <label key={String(o.valor)} className="flex min-h-11 items-center gap-3 text-16">
           <input
             type="checkbox"
+            className="size-5 accent-primary"
             checked={selecionados.includes(o.valor)}
             onChange={(e) =>
               mudar(
@@ -135,52 +136,51 @@ export function FiltrosLista({ controle, opcoes }: Props) {
   ]
 
   return (
-    <div className={estilos.bloco}>
-      <div className={estilos.barra}>
-        <div className={estilos.rolagem} role="group" aria-label="Tipo de lançamento">
-          {ATALHOS_TELA.map((a) => (
-            <button
-              key={a.id}
-              type="button"
-              className={
-                atalho === a.id ? `${estilos.chip} ${estilos.chipAtivo}` : estilos.chip
-              }
-              aria-pressed={atalho === a.id}
-              onClick={() => escolherAtalho(a.id)}
-            >
-              {a.rotulo}
-            </button>
-          ))}
-        </div>
-        <button
-          type="button"
-          className={estilos.botaoFiltros}
-          onClick={abrirSheet}
+    <div className="flex min-w-0 flex-col gap-2">
+      <div className="flex min-w-0 items-center gap-2">
+        <ToggleGroup
+          type="multiple"
+          value={[atalho ?? '']}
+          onValueChange={(v) => {
+            // Tocar no chip já ligado não desliga: sempre há um atalho de tipo escolhido.
+            const novo = v.find((id) => id !== atalho)
+            if (novo) escolherAtalho(novo as AtalhoTipo)
+          }}
+          role="group"
+          aria-label="Tipo de lançamento"
+          className="min-w-0 flex-1 flex-nowrap overflow-x-auto"
         >
+          {ATALHOS_TELA.map((a) => (
+            <ToggleGroupItem key={a.id} value={a.id} className="shrink-0">
+              {a.rotulo}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+        <Button type="button" variant="secondary" size="sm" className="shrink-0" onClick={abrirSheet}>
           <SlidersHorizontal aria-hidden="true" />
           Filtros
-        </button>
+        </Button>
       </div>
 
       {ativos && (
-        <div className={estilos.barra}>
-          <div className={estilos.rolagem}>
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto">
             {chips.map((c) => (
               <button
                 key={c.id}
                 type="button"
-                className={estilos.chipRemovivel}
+                className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full border border-primary bg-primary-suave px-4 text-14 font-medium text-primary-texto outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 aria-label={`Remover filtro ${c.rotulo}`}
                 onClick={c.remover}
               >
                 {c.rotulo}
-                <X aria-hidden="true" />
+                <X aria-hidden="true" className="size-4" />
               </button>
             ))}
           </div>
-          <button type="button" className={estilos.limpar} onClick={limpar}>
+          <Button type="button" variant="ghost" size="sm" className="shrink-0" onClick={limpar}>
             Limpar filtros
-          </button>
+          </Button>
         </div>
       )}
 
@@ -189,9 +189,9 @@ export function FiltrosLista({ controle, opcoes }: Props) {
           titulo="Filtros"
           aoFechar={() => setSheetAberto(false)}
           rodape={
-            <button type="button" className={estado.acao} onClick={aplicarRascunho}>
+            <Button type="button" className="w-full" onClick={aplicarRascunho}>
               Aplicar
-            </button>
+            </Button>
           }
         >
           <Grupo
