@@ -1,8 +1,10 @@
 import type { ReactNode } from 'react'
 import type { PessoaResultado, ResultadoSaida } from '../../api/cenarios'
+import { Card } from '@/components/ui/card'
+import { CartaoDestaque } from '../../componentes/CartaoDestaque'
 import { Dinheiro } from '../../componentes/Dinheiro'
+import { TituloBloco } from '../../componentes/TituloBloco'
 import { formatarPercentual } from '../../formatacao/percentual'
-import css from './cenario.module.css'
 
 type ResultadoCenarioProps = {
   resultado: ResultadoSaida
@@ -15,9 +17,9 @@ type IndicadorProps = {
 
 function Indicador({ rotulo, children }: IndicadorProps) {
   return (
-    <div className={css.indicador}>
-      <dt className={css.rotulo}>{rotulo}</dt>
-      <dd className={css.valor}>{children}</dd>
+    <div className="flex items-center justify-between gap-3 text-14">
+      <dt className="text-muted-foreground">{rotulo}</dt>
+      <dd className="m-0 tabular-nums">{children}</dd>
     </div>
   )
 }
@@ -30,29 +32,31 @@ type PessoaProps = {
 // Sem proporção, porcentagem, aporte e sobra não aparecem (CA-7.12).
 function Pessoa({ pessoa, semProporcao }: PessoaProps) {
   return (
-    <li className={css.pessoa}>
-      <h3 className={css.nomePessoa}>{pessoa.nome}</h3>
-      <dl className={css.indicadores}>
-        <Indicador rotulo="Renda">
-          <Dinheiro valor={pessoa.renda} />
-        </Indicador>
-        <Indicador rotulo="Despesas próprias">
-          <Dinheiro valor={pessoa.despesas_proprias} />
-        </Indicador>
-        {!semProporcao && (
-          <>
-            <Indicador rotulo="Porcentagem">
-              {pessoa.porcentagem !== null ? formatarPercentual(pessoa.porcentagem) : '—'}
-            </Indicador>
-            <Indicador rotulo="Aporte">
-              {pessoa.aporte !== null ? <Dinheiro valor={pessoa.aporte} /> : '—'}
-            </Indicador>
-            <Indicador rotulo="Sobra">
-              {pessoa.sobra !== null ? <Dinheiro valor={pessoa.sobra} /> : '—'}
-            </Indicador>
-          </>
-        )}
-      </dl>
+    <li>
+      <Card className="flex flex-col gap-2 p-4">
+        <h3 className="text-16 font-semibold">{pessoa.nome}</h3>
+        <dl className="m-0 flex flex-col gap-2">
+          <Indicador rotulo="Renda">
+            <Dinheiro valor={pessoa.renda} />
+          </Indicador>
+          <Indicador rotulo="Despesas próprias">
+            <Dinheiro valor={pessoa.despesas_proprias} />
+          </Indicador>
+          {!semProporcao && (
+            <>
+              <Indicador rotulo="Porcentagem">
+                {pessoa.porcentagem !== null ? formatarPercentual(pessoa.porcentagem) : '—'}
+              </Indicador>
+              <Indicador rotulo="Aporte">
+                {pessoa.aporte !== null ? <Dinheiro valor={pessoa.aporte} /> : '—'}
+              </Indicador>
+              <Indicador rotulo="Sobra">
+                {pessoa.sobra !== null ? <Dinheiro valor={pessoa.sobra} /> : '—'}
+              </Indicador>
+            </>
+          )}
+        </dl>
+      </Card>
     </li>
   )
 }
@@ -62,21 +66,22 @@ export function ResultadoCenario({ resultado }: ResultadoCenarioProps) {
   const semProporcao = resultado.sem_proporcao
 
   return (
-    <section className={css.secao}>
-      <h2 className={css.subtitulo}>Resultado</h2>
-      <dl className={css.indicadores}>
-        <Indicador rotulo="Total de rendas">
-          <Dinheiro valor={resultado.total_rendas} />
-        </Indicador>
-        <Indicador rotulo="Total de despesas">
-          <Dinheiro valor={resultado.total_despesas} />
-        </Indicador>
-        <Indicador rotulo="Saldo mensal">
-          <Dinheiro valor={resultado.saldo_mensal} />
-        </Indicador>
-      </dl>
-      {semProporcao && <p className={css.aviso}>Por pessoa: sem proporção (não há renda no cenário).</p>}
-      <ul className={css.pessoas}>
+    <section className="flex flex-col gap-3">
+      <TituloBloco titulo="Resultado" />
+      <CartaoDestaque
+        rotulo="Saldo mensal"
+        valor={resultado.saldo_mensal}
+        chips={[
+          { rotulo: 'Total de rendas', valor: resultado.total_rendas },
+          { rotulo: 'Total de despesas', valor: resultado.total_despesas },
+        ]}
+      />
+      {semProporcao && (
+        <p className="text-14 text-muted-foreground">
+          Por pessoa: sem proporção (não há renda no cenário).
+        </p>
+      )}
+      <ul className="m-0 flex list-none flex-col gap-3 p-0">
         {resultado.pessoas.map((pessoa) => (
           <Pessoa key={pessoa.usuario_id} pessoa={pessoa} semProporcao={semProporcao} />
         ))}

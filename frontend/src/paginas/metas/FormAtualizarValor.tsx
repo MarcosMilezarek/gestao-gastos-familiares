@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { ApiError } from '../../api/cliente'
 import {
   editarRendimento,
@@ -8,8 +10,6 @@ import {
 } from '../../api/metas'
 import { BottomSheet } from '../../componentes/BottomSheet'
 import { Campo } from '../../componentes/Campo'
-import estado from '../../componentes/estado.module.css'
-import css from '../../formularios/formularios.module.css'
 import { mascararEntrada, paraApi } from '../../formatacao/dinheiro'
 import { CampoValor, paraTexto, paraValorApi } from '../controle/FormConta'
 
@@ -97,24 +97,19 @@ export function FormAtualizarValor({ metaId, movimento, valorAtual, aoFechar }: 
       titulo={editando ? 'Editar rendimento' : 'Atualizar valor atual'}
       aoFechar={aoFechar}
       rodape={
-        <button
-          type="submit"
-          form="form-atualizar-valor"
-          className={estado.acao}
-          disabled={pendente}
-        >
+        <Button type="submit" form="form-atualizar-valor" className="w-full" disabled={pendente}>
           Salvar
-        </button>
+        </Button>
       }
     >
       <div ref={corpoRef}>
         {aviso && (
-          <p role="alert" className={css.erro}>
+          <p role="alert" className="mb-4 text-14 text-saida-texto">
             {aviso}
           </p>
         )}
 
-        <form id="form-atualizar-valor" className={css.campos} onSubmit={enviar}>
+        <form id="form-atualizar-valor" className="flex flex-col gap-4" onSubmit={enviar}>
           {editando ? (
             <>
               <CampoValor
@@ -125,8 +120,7 @@ export function FormAtualizarValor({ metaId, movimento, valorAtual, aoFechar }: 
                 aoMudar={setValor}
               />
               <Campo rotulo="Data" erro={erros.data}>
-                <input
-                  className={css.controle}
+                <Input
                   type="date"
                   value={data}
                   onChange={(e) => setData(e.target.value)}
@@ -135,8 +129,8 @@ export function FormAtualizarValor({ metaId, movimento, valorAtual, aoFechar }: 
             </>
           ) : (
             <Campo rotulo="Valor atual" erro={erros.valor_atual ?? erros.valor}>
-              <input
-                className={css.controle}
+              <Input
+                className="text-28 font-semibold"
                 type="text"
                 inputMode="numeric"
                 placeholder="0,00"

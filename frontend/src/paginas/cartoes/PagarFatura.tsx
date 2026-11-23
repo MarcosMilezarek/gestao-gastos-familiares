@@ -4,19 +4,20 @@ import type { FaturaSaida } from '../../api/cartoes'
 import { ApiError, repetirSem4xx } from '../../api/cliente'
 import { listarContas } from '../../api/contas'
 import { pagarFatura } from '../../api/itensFatura'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { BottomSheet } from '../../componentes/BottomSheet'
 import { Campo } from '../../componentes/Campo'
 import { Dinheiro } from '../../componentes/Dinheiro'
 import { diaAnterior } from '../../formularios/CamposLancamento'
-import css from '../../formularios/formularios.module.css'
 import { useSessao } from '../../hooks/useSessao'
-import estado from '../../componentes/estado.module.css'
-import styles from './fatura.module.css'
 
 type Props = {
   fatura: FaturaSaida
   aoFechar: () => void
 }
+
+const CLASSE_ATALHO = 'aria-pressed:border-primary aria-pressed:bg-primary-suave'
 
 // Pagamento sempre pelo total da fatura, na conta dona do cartão: sem campo de valor nem de conta (CA-4.14).
 export function PagarFatura({ fatura, aoFechar }: Props) {
@@ -52,67 +53,66 @@ export function PagarFatura({ fatura, aoFechar }: Props) {
       aoFechar={aoFechar}
       rodape={
         <>
-          <button type="button" className={estado.acao} onClick={aoFechar}>
+          <Button type="button" variant="outline" size="lg" onClick={aoFechar}>
             Cancelar
-          </button>
-          <button
-            type="button"
-            className={estado.acao}
-            disabled={!data || pagar.isPending}
-            onClick={() => pagar.mutate()}
-          >
+          </Button>
+          <Button type="button" size="lg" disabled={!data || pagar.isPending} onClick={() => pagar.mutate()}>
             Pagar
-          </button>
+          </Button>
         </>
       }
     >
-      <div className={css.campos}>
-        <dl className={styles.dados}>
-          <div className={styles.campo}>
-            <dt className={styles.rotulo}>Valor da fatura</dt>
-            <dd className={styles.valor}>
+      <div className="flex flex-col gap-4">
+        <dl className="flex flex-col gap-2 text-16">
+          <div className="flex items-center justify-between gap-3">
+            <dt className="text-muted-foreground">Valor da fatura</dt>
+            <dd className="tabular-nums">
               <Dinheiro valor={fatura.valor} />
             </dd>
           </div>
-          <div className={styles.campo}>
-            <dt className={styles.rotulo}>Conta</dt>
-            <dd className={styles.valor}>
+          <div className="flex items-center justify-between gap-3">
+            <dt className="text-muted-foreground">Conta</dt>
+            <dd className="min-w-0 truncate text-right font-semibold">
               {conta?.nome ?? (contas.isError ? 'Não carregada' : 'Carregando conta…')}
             </dd>
           </div>
         </dl>
 
-        <div className={css.atalhos} role="group" aria-label="Atalhos de data">
-          <button
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Atalhos de data">
+          <Button
             type="button"
-            className={css.atalho}
+            variant="secondary"
+            size="sm"
+            className={CLASSE_ATALHO}
             disabled={!hoje}
             aria-pressed={hoje !== undefined && data === hoje}
             onClick={() => setDataEscolhida(hoje ?? null)}
           >
             Hoje
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            className={css.atalho}
+            variant="secondary"
+            size="sm"
+            className={CLASSE_ATALHO}
             disabled={!hoje}
             aria-pressed={hoje !== undefined && data === diaAnterior(hoje)}
             onClick={() => setDataEscolhida(hoje ? diaAnterior(hoje) : null)}
           >
             Ontem
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            className={css.atalho}
+            variant="secondary"
+            size="sm"
             onClick={() => inputData.current?.focus()}
           >
             Outra data
-          </button>
+          </Button>
         </div>
         <Campo rotulo="Data" erro={erroData}>
-          <input
+          <Input
             ref={inputData}
-            className={css.controle}
             type="date"
             value={data}
             onChange={(e) => setDataEscolhida(e.target.value)}
@@ -120,13 +120,13 @@ export function PagarFatura({ fatura, aoFechar }: Props) {
         </Campo>
 
         {contas.isError && (
-          <p role="alert" className={css.erro}>
+          <p role="alert" className="text-14 text-saida-texto">
             Não foi possível carregar a conta.
           </p>
         )}
 
         {pagar.isError && (
-          <p role="alert" className={css.erro}>
+          <p role="alert" className="text-14 text-saida-texto">
             {erroPagar}
           </p>
         )}
