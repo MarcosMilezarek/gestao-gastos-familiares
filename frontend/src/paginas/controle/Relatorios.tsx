@@ -1,39 +1,48 @@
+import { ChartColumn, ChartPie, ChevronRight, Percent, User, Wallet } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { Link, useParams } from 'react-router'
-import estado from '../../componentes/estado.module.css'
+import { Card } from '@/components/ui/card'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
+import { EstadoVazio } from '../../componentes/EstadoVazio'
+import { IconeQuadrado } from '../../componentes/IconeQuadrado'
+import { SeletorMes } from '../../componentes/SeletorMes'
+import { VisoesControle } from '../../componentes/VisoesControle'
 import { useMes } from '../../hooks/useMes'
 import { RelatorioBalanco } from './RelatorioBalanco'
 import { RelatorioDespesas } from './RelatorioDespesas'
 import { RelatorioProporcao } from './RelatorioProporcao'
-import styles from './relatorios.module.css'
 
-const RELATORIOS = [
-  { tipo: 'categorias', rotulo: 'Despesas por categoria' },
-  { tipo: 'donos', rotulo: 'Despesas por dono' },
-  { tipo: 'contas', rotulo: 'Despesas por conta' },
-  { tipo: 'balanco', rotulo: 'Balanço mensal' },
-  { tipo: 'proporcao', rotulo: 'Proporção e aporte' },
+const RELATORIOS: { tipo: string; rotulo: string; icone: LucideIcon }[] = [
+  { tipo: 'categorias', rotulo: 'Despesas por categoria', icone: ChartPie },
+  { tipo: 'donos', rotulo: 'Despesas por dono', icone: User },
+  { tipo: 'contas', rotulo: 'Despesas por conta', icone: Wallet },
+  { tipo: 'balanco', rotulo: 'Balanço mensal', icone: ChartColumn },
+  { tipo: 'proporcao', rotulo: 'Proporção e aporte', icone: Percent },
 ]
 
 export function Relatorios() {
-  const { mes } = useMes()
+  const { mes, setMes } = useMes()
 
   return (
-    <div className={styles.pagina}>
-      <Link to={`/controle?mes=${mes}`} className={estado.voltar}>
-        Controle
-      </Link>
-      <h1 className={styles.titulo}>Relatórios</h1>
-      <nav className={styles.menu}>
-        {RELATORIOS.map((relatorio) => (
-          <Link
-            key={relatorio.tipo}
-            to={`/controle/relatorios/${relatorio.tipo}?mes=${mes}`}
-            className={styles.opcao}
-          >
-            {relatorio.rotulo}
-          </Link>
-        ))}
-      </nav>
+    <div className="flex flex-col gap-4">
+      <SeletorMes mes={mes} onMudar={setMes} />
+      <CabecalhoTela titulo="Relatórios" />
+      <VisoesControle mes={mes} />
+      <Card className="gap-0 p-2">
+        <nav aria-label="Relatórios" className="flex flex-col">
+          {RELATORIOS.map(({ tipo, rotulo, icone }) => (
+            <Link
+              key={tipo}
+              to={`/controle/relatorios/${tipo}?mes=${mes}`}
+              className="flex min-h-16 items-center gap-3 rounded-lg px-2 text-16 font-semibold outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <IconeQuadrado icone={icone} />
+              <span className="min-w-0 flex-1">{rotulo}</span>
+              <ChevronRight aria-hidden="true" className="size-5 text-muted-foreground" />
+            </Link>
+          ))}
+        </nav>
+      </Card>
     </div>
   )
 }
@@ -55,13 +64,11 @@ export function RelatorioPorTipo() {
   }
 
   return (
-    <div className={styles.pagina}>
-      <Link to={`/controle/relatorios?mes=${mes}`} className={estado.voltar}>
-        Relatórios
-      </Link>
-      <div className={estado.vazio}>
-        <p className={estado.frase}>Relatório não encontrado.</p>
-      </div>
+    <div className="flex flex-col gap-4">
+      <CabecalhoTela titulo="Relatórios" voltarPara={`/controle/relatorios?mes=${mes}`} />
+      <Card>
+        <EstadoVazio frase="Relatório não encontrado." compacto />
+      </Card>
     </div>
   )
 }
