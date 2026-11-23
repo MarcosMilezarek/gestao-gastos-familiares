@@ -3,13 +3,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { FaturaSaida } from '../../api/cartoes'
 import { ApiError } from '../../api/cliente'
 import { ajustarFatura } from '../../api/itensFatura'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { BottomSheet } from '../../componentes/BottomSheet'
 import { Campo } from '../../componentes/Campo'
 import { Dinheiro } from '../../componentes/Dinheiro'
 import { mascararEntrada, paraApi } from '../../formatacao/dinheiro'
-import css from '../../formularios/formularios.module.css'
-import estado from '../../componentes/estado.module.css'
-import styles from './fatura.module.css'
 
 type Props = {
   fatura: FaturaSaida
@@ -40,33 +39,25 @@ export function AjustarFatura({ fatura, aoFechar }: Props) {
       aoFechar={aoFechar}
       rodape={
         <>
-          <button type="button" className={estado.acao} onClick={aoFechar}>
+          <Button type="button" variant="outline" size="lg" onClick={aoFechar}>
             Cancelar
-          </button>
-          <button
-            type="button"
-            className={estado.acao}
-            disabled={ajustar.isPending}
-            onClick={() => ajustar.mutate()}
-          >
+          </Button>
+          <Button type="button" size="lg" disabled={ajustar.isPending} onClick={() => ajustar.mutate()}>
             Salvar
-          </button>
+          </Button>
         </>
       }
     >
-      <div className={css.campos}>
-        <dl className={styles.dados}>
-          <div className={styles.campo}>
-            <dt className={styles.rotulo}>Valor atual</dt>
-            <dd className={styles.valor}>
-              <Dinheiro valor={fatura.valor} />
-            </dd>
-          </div>
+      <div className="flex flex-col gap-4">
+        <dl className="flex items-center justify-between gap-3 text-16">
+          <dt className="text-muted-foreground">Valor atual</dt>
+          <dd className="tabular-nums">
+            <Dinheiro valor={fatura.valor} />
+          </dd>
         </dl>
 
         <Campo rotulo="Valor conforme o banco" erro={erroValor}>
-          <input
-            className={css.controle}
+          <Input
             type="text"
             inputMode="numeric"
             placeholder="0,00"
@@ -76,7 +67,7 @@ export function AjustarFatura({ fatura, aoFechar }: Props) {
         </Campo>
 
         {ajustar.isError && (
-          <p role="alert" className={css.erro}>
+          <p role="alert" className="text-14 text-saida-texto">
             {erroAjustar}
           </p>
         )}
