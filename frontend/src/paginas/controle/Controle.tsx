@@ -233,44 +233,55 @@ export function Controle() {
   }
 
   return (
-    <div className="flex flex-col gap-4 px-4 pb-4">
-      <div className="sticky top-0 z-10 flex flex-col gap-2 bg-background pb-2">
-        <SeletorMes mes={mes} onMudar={setMes} />
-        <CabecalhoTela
-          titulo="Controle"
-          acao={
-            <Button type="button" variant="ghost" size="sm" aria-haspopup="dialog" onClick={() => setMenuAberto(true)}>
-              Cadastros
-            </Button>
-          }
-        />
-        <VisoesControle mes={mes} />
+    <div className="flex flex-col gap-4 px-4 pb-4 md:px-6 md:pb-6">
+      <div className="sticky top-0 z-10 flex flex-col gap-2 bg-background pb-2 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-4 lg:gap-y-2">
+        <div className="lg:col-start-2 lg:row-start-2 lg:w-72">
+          <SeletorMes mes={mes} onMudar={setMes} />
+        </div>
+        <div className="lg:col-span-2 lg:row-start-1">
+          <CabecalhoTela
+            titulo="Controle"
+            acao={
+              <Button type="button" variant="ghost" size="sm" aria-haspopup="dialog" onClick={() => setMenuAberto(true)}>
+                Cadastros
+              </Button>
+            }
+          />
+        </div>
+        <div className="lg:col-start-1 lg:row-start-2">
+          <VisoesControle mes={mes} />
+        </div>
       </div>
       {menuAberto && <MenuCadastros aoFechar={() => setMenuAberto(false)} />}
 
-      {lista && (
-        <CardsResumo>
-          <CardResumo rotulo="Saldo atual total" valor={lista.resumo.saldo_atual_total} />
-          {cardsMes.map((card) => (
-            <CardResumo
-              key={card.rotulo}
-              rotulo={card.rotulo}
-              valor={card.par.realizado}
-              apoio={`Previsto ${formatarBRL(card.par.previsto)}`}
-              tom={card.tipo}
-            />
-          ))}
-        </CardsResumo>
-      )}
-      {proporcao.data && <CardsProporcao proporcao={proporcao.data} />}
-
-      <FiltrosLista controle={controle} opcoes={opcoes} />
-      <ListaDoMes
-        mes={mes}
-        podeEscrever
-        filtros={controle.filtros}
-        aoLimparFiltros={controle.limpar}
-      />
+      <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start lg:gap-6">
+        <div className="contents lg:col-start-2 lg:row-start-1 lg:flex lg:min-w-0 lg:flex-col lg:gap-4">
+          {lista && (
+            <CardsResumo>
+              <CardResumo rotulo="Saldo atual total" valor={lista.resumo.saldo_atual_total} />
+              {cardsMes.map((card) => (
+                <CardResumo
+                  key={card.rotulo}
+                  rotulo={card.rotulo}
+                  valor={card.par.realizado}
+                  apoio={`Previsto ${formatarBRL(card.par.previsto)}`}
+                  tom={card.tipo}
+                />
+              ))}
+            </CardsResumo>
+          )}
+          {proporcao.data && <CardsProporcao proporcao={proporcao.data} />}
+        </div>
+        <div className="contents lg:flex lg:min-w-0 lg:flex-col lg:gap-4">
+          <FiltrosLista controle={controle} opcoes={opcoes} />
+          <ListaDoMes
+            mes={mes}
+            podeEscrever
+            filtros={controle.filtros}
+            aoLimparFiltros={controle.limpar}
+          />
+        </div>
+      </div>
     </div>
   )
 }

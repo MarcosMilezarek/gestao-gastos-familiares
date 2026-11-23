@@ -21,7 +21,7 @@ export function ControleConta() {
 
   if (!Number.isInteger(id)) {
     return (
-      <div className="flex flex-col gap-4 px-4 pb-4">
+      <div className="mx-auto flex w-full max-w-160 flex-col gap-4 px-4 pb-4 md:px-6 md:pb-6">
         <p role="alert" className="m-0 text-saida-texto">
           Conta não encontrada.
         </p>
@@ -30,7 +30,7 @@ export function ControleConta() {
   }
 
   return (
-    <div className="flex flex-col gap-4 px-4 pb-4">
+    <div className="mx-auto flex w-full max-w-160 flex-col gap-4 px-4 pb-4 md:px-6 md:pb-6">
       <SeletorMes mes={mes} onMudar={setMes} />
       <CabecalhoTela titulo={conta?.nome ?? ''} voltarPara="/controle/contas" />
 
