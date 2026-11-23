@@ -65,7 +65,7 @@ function CorpoGrafico({
   }
 
   return (
-    <Card>
+    <Card className="lg:[&_[data-slot=chart]]:h-48">
       <p className="text-14 text-muted-foreground">
         Total <Dinheiro valor={total} />
       </p>
@@ -85,7 +85,7 @@ function CorpoCategorias({ dados }: { dados: RelatorioCategorias }) {
   const comSubcategorias = dados.categorias.filter((categoria) => categoria.subcategorias.length > 0)
 
   return (
-    <>
+    <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6">
       <CorpoGrafico total={dados.total} itens={itens} rotulo="Distribuição por categoria" />
       {!eZero(dados.total) && comSubcategorias.length > 0 && (
         <Card>
@@ -111,7 +111,7 @@ function CorpoCategorias({ dados }: { dados: RelatorioCategorias }) {
           ))}
         </Card>
       )}
-    </>
+    </div>
   )
 }
 
@@ -141,7 +141,7 @@ export function RelatorioDespesas({ tipo }: { tipo: TipoDespesa }) {
   const consulta = tipo === 'categorias' ? categorias : tipo === 'donos' ? donos : contas
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4 md:p-6 lg:mx-auto lg:w-full lg:max-w-240">
       <SeletorMes mes={mes} onMudar={setMes} />
       <CabecalhoTela titulo={TITULOS[tipo]} voltarPara={`/controle/relatorios?mes=${mes}`} />
 

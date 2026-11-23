@@ -54,7 +54,7 @@ export function RelatorioBalanco() {
   const dados = consulta.data
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4 md:p-6 lg:mx-auto lg:w-full lg:max-w-240">
       <SeletorMes mes={mes} onMudar={setMes} />
       <CabecalhoTela titulo="Balanço mensal" voltarPara={`/controle/relatorios?mes=${mes}`} />
 
@@ -69,7 +69,7 @@ export function RelatorioBalanco() {
 
       {dados && (
         <>
-          <Card>
+          <Card className="lg:[&_[data-slot=chart]]:h-72">
             <TituloBloco titulo="Entradas × saídas (previsto)" />
             <GraficoBarras
               meses={dados.meses.map((item) => ({
@@ -80,14 +80,16 @@ export function RelatorioBalanco() {
             />
           </Card>
 
-          {dados.meses.map((item) => (
-            <Card key={item.mes}>
-              <TituloBloco titulo={rotuloMes(item.mes)} />
-              <BlocoPar rotulo="Entradas" par={item.entradas} tipo="entrada" />
-              <BlocoPar rotulo="Saídas" par={item.saidas} tipo="saida" />
-              <BlocoPar rotulo="Saldo do mês" par={item.saldo} />
-            </Card>
-          ))}
+          <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start">
+            {dados.meses.map((item) => (
+              <Card key={item.mes} className="min-w-0">
+                <TituloBloco titulo={rotuloMes(item.mes)} />
+                <BlocoPar rotulo="Entradas" par={item.entradas} tipo="entrada" />
+                <BlocoPar rotulo="Saídas" par={item.saidas} tipo="saida" />
+                <BlocoPar rotulo="Saldo do mês" par={item.saldo} />
+              </Card>
+            ))}
+          </div>
         </>
       )}
     </div>
