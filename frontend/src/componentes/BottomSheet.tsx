@@ -1,4 +1,5 @@
-import { useEffect, useEffectEvent, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
+import { useFecharComVoltar } from '../hooks/useFecharComVoltar'
 import {
   Sheet,
   SheetContent,
@@ -16,23 +17,7 @@ type Props = {
 
 // Foco, Esc, aria-modal e trava de rolagem vêm do Sheet (Radix).
 export function BottomSheet({ titulo, aoFechar, rodape, children }: Props) {
-  const fechar = useEffectEvent(aoFechar)
-
-  useEffect(() => {
-    history.pushState({ bottomSheet: true }, '')
-
-    // Voltar do navegador sai da entrada criada acima: fecha o sheet.
-    function aoVoltar(e: PopStateEvent) {
-      if (!e.state?.bottomSheet) fechar()
-    }
-
-    window.addEventListener('popstate', aoVoltar)
-    return () => {
-      window.removeEventListener('popstate', aoVoltar)
-      // Fechado por botão ou Esc, a entrada ainda está no histórico: remove-a.
-      if (history.state?.bottomSheet) history.back()
-    }
-  }, [])
+  useFecharComVoltar(aoFechar)
 
   return (
     <Sheet open onOpenChange={(aberto) => !aberto && aoFechar()}>

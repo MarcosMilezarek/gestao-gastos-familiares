@@ -34,6 +34,7 @@ type ItemLancamentoProps = {
   aoEditar?: () => void
   aoExcluir?: () => void
   aoAbrir?: () => void
+  variante?: 'lista' | 'confirmar'
 }
 
 type TipoValor = 'entrada' | 'saida' | 'neutro'
@@ -65,7 +66,7 @@ function rotuloContas(item: LancamentoItem): string {
   return `${origem} → ${item.conta_destino_nome ?? 'Conta externa'}`
 }
 
-export function ItemLancamento({ item, aoConfirmar, aoEditar, aoExcluir, aoAbrir }: ItemLancamentoProps) {
+export function ItemLancamento({ item, aoConfirmar, aoEditar, aoExcluir, aoAbrir, variante = 'lista' }: ItemLancamentoProps) {
   const categoria = rotuloCategoria(item.categoria)
   const tipoDinheiro = TIPO_DINHEIRO[item.tipo]
   const { Icone, tom } =
@@ -113,7 +114,7 @@ export function ItemLancamento({ item, aoConfirmar, aoEditar, aoExcluir, aoAbrir
   )
 
   return (
-    <li className={cn('flex flex-col gap-3 py-3', confirmar && 'rounded-xl bg-primary-suave p-3')}>
+    <li className={cn('flex flex-col gap-3 py-3', confirmar && variante === 'confirmar' && 'rounded-xl bg-primary-suave p-3')}>
       {aoAbrir ? (
         <button type="button" className={cn(classesCorpo, 'cursor-pointer')} onClick={aoAbrir}>
           {conteudo}

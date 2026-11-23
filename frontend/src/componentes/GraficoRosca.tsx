@@ -54,6 +54,7 @@ export function GraficoRosca({ itens, rotulo = 'Distribuição por categoria' }:
 
       <ChartLegend
         itens={itens.map((item) => ({
+          chave: item.chave,
           nome: item.nome,
           cor: item.cor ?? COR_SEM_CATEGORIA,
           valor: formatarBRL(item.valor),

@@ -91,6 +91,7 @@ export function BlocosResumo({ inicio }: BlocosResumoProps) {
                   key={item.lancamento.id}
                   item={paraLancamentoItem(item)}
                   aoConfirmar={() => setConfirmando(item.lancamento)}
+                  variante="confirmar"
                 />
               )
             })}

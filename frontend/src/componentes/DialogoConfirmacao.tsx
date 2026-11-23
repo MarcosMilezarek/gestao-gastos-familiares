@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent } from 'react'
+import { useFecharComVoltar } from '../hooks/useFecharComVoltar'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,23 +29,7 @@ export function DialogoConfirmacao({
   onCancelar,
   destrutivo = false,
 }: Props) {
-  const cancelar = useEffectEvent(onCancelar)
-
-  useEffect(() => {
-    history.pushState({ bottomSheet: true }, '')
-
-    // Voltar do navegador sai da entrada criada acima: cancela.
-    function aoVoltar(e: PopStateEvent) {
-      if (!e.state?.bottomSheet) cancelar()
-    }
-
-    window.addEventListener('popstate', aoVoltar)
-    return () => {
-      window.removeEventListener('popstate', aoVoltar)
-      // Fechado por botão ou Esc, a entrada ainda está no histórico: remove-a.
-      if (history.state?.bottomSheet) history.back()
-    }
-  }, [])
+  useFecharComVoltar(onCancelar)
 
   return (
     <AlertDialog open onOpenChange={(aberto) => !aberto && onCancelar()}>
