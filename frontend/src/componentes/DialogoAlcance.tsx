@@ -1,5 +1,5 @@
+import { Button } from '@/components/ui/button'
 import { BottomSheet } from './BottomSheet'
-import estado from './estado.module.css'
 
 export type Alcance = 'somente_este' | 'este_e_pendentes' | 'todos'
 
@@ -39,21 +39,24 @@ export function DialogoAlcance({
       }
       aoFechar={onCancelar}
       rodape={
-        <button type="button" className={estado.acao} onClick={onCancelar}>
+        <Button type="button" variant="outline" size="lg" onClick={onCancelar}>
           Cancelar
-        </button>
+        </Button>
       }
     >
-      {opcoes.map((opcao) => (
-        <button
-          key={opcao.alcance}
-          type="button"
-          className={estado.acao}
-          onClick={() => onEscolher(opcao.alcance)}
-        >
-          {rotulos?.[opcao.alcance] ?? opcao.rotulo}
-        </button>
-      ))}
+      <div className="flex flex-col gap-3">
+        {opcoes.map((opcao) => (
+          <Button
+            key={opcao.alcance}
+            type="button"
+            variant="secondary"
+            size="lg"
+            onClick={() => onEscolher(opcao.alcance)}
+          >
+            {rotulos?.[opcao.alcance] ?? opcao.rotulo}
+          </Button>
+        ))}
+      </div>
     </BottomSheet>
   )
 }
