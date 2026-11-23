@@ -6,6 +6,12 @@ let proximoId = 0
 // a próxima camada registre sua entrada no mesmo commit de limpeza.
 let voltaPendente: ReturnType<typeof setTimeout> | null = null
 
+// Diz se a entrada atual do histórico pertence a uma camada aberta. O formato do
+// estado gravado fica só neste arquivo.
+export function entradaDeCamadaAtiva(): boolean {
+  return typeof history.state?.bottomSheet === 'number'
+}
+
 // Voltar do navegador fecha o elemento: cria uma entrada no histórico e a remove ao desmontar.
 export function useFecharComVoltar(aoFechar: () => void) {
   const fechar = useEffectEvent(aoFechar)
@@ -15,7 +21,9 @@ export function useFecharComVoltar(aoFechar: () => void) {
 
     // Se há um back pendente, a camada anterior está se limpando. Cancela o timeout
     // e reusa a entrada com replaceState em vez de pushState, impedindo múltiplas
-    // entradas quando uma camada abre logo após outra fechar.
+    // entradas quando uma camada abre logo após outra fechar. O reuso só vale se a
+    // camada nova monta no mesmo commit da que saiu (antes do setTimeout 0); uma
+    // troca depois de uma espera não é coberta.
     if (voltaPendente !== null) {
       clearTimeout(voltaPendente)
       voltaPendente = null
