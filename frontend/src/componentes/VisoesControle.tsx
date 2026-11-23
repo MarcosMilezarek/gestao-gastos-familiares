@@ -12,7 +12,7 @@ const visoes = [
 
 export function VisoesControle({ mes }: { mes: string }) {
   return (
-    <nav aria-label="Visões do controle" className={tabsListClasses}>
+    <nav aria-label="Visões do controle" className={cn(tabsListClasses, 'md:w-fit')}>
       {visoes.map(({ para, rotulo, end }) => (
         <NavLink
           key={para}
@@ -20,7 +20,8 @@ export function VisoesControle({ mes }: { mes: string }) {
           end={end}
           className={({ isActive }) =>
             cn(
-              tabsTriggerClasses.replace('px-4', 'px-1').replace('text-14', 'text-13'),
+              tabsTriggerClasses,
+              'px-1 text-13 md:flex-none md:px-4 md:text-14',
               isActive && 'bg-primary font-semibold text-primary-foreground',
             )
           }

@@ -4,7 +4,7 @@
 
 ## 1. Visão
 
-SPA React 19 + TypeScript (estrito) em `frontend/`, mobile first (360 px é o piso, RNF-01), em português do Brasil (RNF-10), servida na mesma origem da API (`/api`, proxy do Vite em desenvolvimento). O front **exibe e coleta**; regra de negócio e toda soma de dinheiro ficam no backend (§7).
+SPA React 19 + TypeScript (estrito) em `frontend/`, mobile first (360 px é o piso, RNF-01) com tablet e desktop acrescentados por breakpoint sem alterar o celular (§11), em português do Brasil (RNF-10), servida na mesma origem da API (`/api`, proxy do Vite em desenvolvimento). O front **exibe e coleta**; regra de negócio e toda soma de dinheiro ficam no backend (§7).
 
 ## 2. Estrutura de `frontend/src/`
 
@@ -18,8 +18,9 @@ src/
   components/ui/           # primitivos shadcn/ui (Radix + Tailwind), gerados e depois nossos (§10.1)
   lib/utils.ts             # cn() = clsx + tailwind-merge
   componentes/             # compostos do app (sem regra de domínio), sobre components/ui (§10.2)
-    Shell.tsx              # layout: <Outlet/>, barra inferior, menu "+"
+    Shell.tsx              # layout: <Outlet/>, barra inferior (celular e tablet) ou lateral (desktop), menu "+" (§11)
     BarraInferior.tsx      MenuMais.tsx   SeletorMes.tsx   CardsResumo.tsx
+    BarraLateral.tsx       abas.ts   # novos (§11.2): barra lateral do desktop e a lista de abas das duas barras
     EstadoVazio.tsx        BottomSheet.tsx  Campo.tsx (rótulo + erro)  Dinheiro.tsx (valor colorido)
     SituacaoIcone.tsx      # ícone + texto da situação (RNF-08)
     RotaProtegida.tsx      # guarda de rota (§4)
@@ -35,23 +36,23 @@ Regra: `paginas/` usa `componentes/`, `components/ui/`, `formularios/`, `api/`, 
 
 ## 3. Navegação mobile first
 
-**Shell** (todas as telas autenticadas): contêiner de altura total (`100dvh`) com a área rolável (`<main>`, `overflow-y: auto`, conteúdo centrado com `max-w-160`) e a barra inferior **sobreposta** (a pílula flutua e o conteúdo passa por trás). A área rolável leva respiro inferior de `calc(var(--altura-barra) + env(safe-area-inset-bottom))` (144 px mais a área segura), para o último item nunca ficar atrás da barra. Rolagem só vertical; `overflow-x` nunca escondido para "consertar" estouro (CA-0.04). Descartado: barra como item da coluna (os 144 px roubariam altura útil e a pílula deixaria de flutuar).
+**Shell** (todas as telas autenticadas): contêiner de altura total (`100dvh`) com a área rolável (`<main>`, `overflow-y: auto`, conteúdo centrado em coluna que cresce por breakpoint, §11.4; no celular, `max-w-160`) e a barra inferior **sobreposta** (a pílula flutua e o conteúdo passa por trás). A área rolável leva respiro inferior de `calc(var(--altura-barra) + env(safe-area-inset-bottom))` (144 px mais a área segura), para o último item nunca ficar atrás da barra; no desktop não há barra inferior e o respiro é zero (§11.2). Rolagem só vertical; `overflow-x` nunca escondido para "consertar" estouro (CA-0.04). Descartado: barra como item da coluna (os 144 px roubariam altura útil e a pílula deixaria de flutuar).
 
 **Barra inferior** (RF-0.01, RF-0.02, CA-0.01; composto `BarraInferior`, §10.2):
-- Estrutura (360 px): "+" de 56 x 56 centralizado **acima** da pílula; pílula de largura `100% - 32 px` (328 a 360), 60 de altura, `rounded-full`, `bg-card`, `border`, `shadow-barra`, com as 5 abas. Alturas: margem inferior 16 px (mais `env(safe-area-inset-bottom)`) + pílula 60 + respiro 12 + "+" 56 = 144 = `--altura-barra`. O contêiner da barra é `fixed inset-x-0 bottom-0` com `pointer-events-none`; só o "+" e a pílula têm `pointer-events-auto` (os cantos transparentes não bloqueiam rolagem nem toque no conteúdo). Em tela larga a barra acompanha a coluna de `max-w-160`.
-- Abas, da esquerda para a direita: **Início**, **Controle**, **Cartões**, **Metas**, **Planejamento**, todas `NavLink`s. A aba ativa vira pílula `bg-primary text-primary-foreground` expandida com ícone **e** rótulo (`text-13 font-semibold`, 48 de altura); as inativas mostram só o ícone (44 x 48) e o nome fica em texto `sr-only` dentro do link (nome acessível = o rótulo). A ativa se distingue por cor, forma, peso e texto (nunca só cor, RNF-08) e leva `aria-current="page"` (o `NavLink` já faz). Pior caso (Planejamento ativo, 138 px) cabe nos 316 px úteis da pílula com folga de 2 px: não aumentar o `padding` das abas. Descartado: grade de 6 colunas com o "+" na linha (as 5 abas com a ativa expandida e o "+" de 44 não cabem em 328 px); isso substitui a regra antiga "texto sempre visível" nas abas inativas, que agora têm ícone mais nome acessível (RF-0.01 e CA-0.01 pedem 5 abas visíveis e tocáveis, não rótulo em todas).
+- Estrutura (360 px): "+" de 56 x 56 centralizado **acima** da pílula; pílula de largura `100% - 32 px` (328 a 360), 60 de altura, `rounded-full`, `bg-card`, `border`, `shadow-barra`, com as 5 abas. Alturas: margem inferior 16 px (mais `env(safe-area-inset-bottom)`) + pílula 60 + respiro 12 + "+" 56 = 144 = `--altura-barra`. O contêiner da barra é `fixed inset-x-0 bottom-0` com `pointer-events-none`; só o "+" e a pílula têm `pointer-events-auto` (os cantos transparentes não bloqueiam rolagem nem toque no conteúdo). A barra mantém `max-w-160` centralizada no celular e no tablet; no desktop (`lg:`, 1024) ela não é renderizada e a barra lateral a substitui (§11.2 e §11.3).
+- Abas (lista única em `componentes/abas.ts`, compartilhada com a barra lateral, §11.2), da esquerda para a direita: **Início**, **Controle**, **Cartões**, **Metas**, **Planejamento**, todas `NavLink`s. A aba ativa vira pílula `bg-primary text-primary-foreground` expandida com ícone **e** rótulo (`text-13 font-semibold`, 48 de altura); as inativas mostram só o ícone (44 x 48) e o nome fica em texto `sr-only` dentro do link (nome acessível = o rótulo). A ativa se distingue por cor, forma, peso e texto (nunca só cor, RNF-08) e leva `aria-current="page"` (o `NavLink` já faz). Pior caso (Planejamento ativo, 138 px) cabe nos 316 px úteis da pílula com folga de 2 px: não aumentar o `padding` das abas. Descartado: grade de 6 colunas com o "+" na linha (as 5 abas com a ativa expandida e o "+" de 44 não cabem em 328 px); isso substitui a regra antiga "texto sempre visível" nas abas inativas, que agora têm ícone mais nome acessível (RF-0.01 e CA-0.01 pedem 5 abas visíveis e tocáveis, não rótulo em todas).
 - O "+" é `Button size="icon"` (variante `default`, degradê, 56 x 56 com anel de 4 px na cor do fundo: `ring-4 ring-background`), mantém `aria-label="Novo lançamento"` e `aria-haspopup="dialog"` (nomes já usados nos testes; o protótipo diz "Adicionar lançamento", prevalece o existente). Abre `MenuMais` (folha inferior sobre `Sheet`, §10.2) com exatamente **Despesa**, **Receita**, **Despesa no cartão**, **Aporte/Transferência**; cada opção abre o formulário correspondente (§8). Fica visível em qualquer tela autenticada, inclusive com o formulário fechado.
 
 **Cabeçalho de tela**: toda tela autenticada abre com `CabecalhoTela` (§10.2): título à esquerda (`text-22 font-bold`) e ação opcional à direita; em telas de detalhe, botão circular "Voltar" à esquerda e título de 18 centralizado. O Início tem a engrenagem (`aria-label="Configurações"`) como ação; o Planejamento não tem ação, mas o cabeçalho mantém 44 px de altura para alinhar o título.
 
-**Seletor de mês** (RF-0.03, CA-0.03): componente `SeletorMes` fixo no topo (`position: sticky; top: 0`) com botões "mês anterior" / "mês seguinte" (`Button variant="secondary" size="icon"`, 44 x 44, nomes acessíveis atuais) e o rótulo ("outubro de 2026", `text-16 font-semibold`); aparece nas telas do **Controle** e, com estado próprio, na tela de orçamento (RF-7.02). Início e Cartões (lista) não o têm; o detalhe de fatia/fatura tem navegação própria por mês da fatura. O mês fica na URL (`?mes=2026-10`); sem parâmetro, vale o mês corrente do servidor (a resposta de `GET /api/sessao` traz `hoje`). Trocar de tela dentro do Controle mantém o `mes`.
+**Seletor de mês** (RF-0.03, CA-0.03): componente `SeletorMes` fixo no topo (`position: sticky; top: 0`) com botões "mês anterior" / "mês seguinte" (`Button variant="secondary" size="icon"`, 44 x 44, nomes acessíveis atuais) e o rótulo ("outubro de 2026", `text-16 font-semibold`); aparece nas telas do **Controle** e, com estado próprio, na tela de orçamento (RF-7.02). Início e Cartões (lista) não o têm; o detalhe de fatia/fatura tem navegação própria por mês da fatura. O mês fica na URL (`?mes=2026-10`); sem parâmetro, vale o mês corrente do servidor (a resposta de `GET /api/sessao` traz `hoje`). Trocar de tela dentro do Controle mantém o `mes`. No desktop o bloco fixo do Controle muda de arranjo (§11.4).
 
 **Controle** (hoje os atalhos são uma fileira de chips em `Controle.tsx`): a tela passa a ter, de cima para baixo e fixos na rolagem, `SeletorMes`, `CabecalhoTela` (título "Controle", ação de texto **Cadastros**) e `VisoesControle` (§10.2), com as visões **Lista**, **Balanço**, **Proporção** e **Relatórios** em abas de pílula (`/controle`, `/controle/balanco`, `/controle/proporcao`, `/controle/relatorios`), todas com `?mes=` copiado da URL atual. As rotas não mudam e **nenhuma rota é criada**. Para onde vão os atalhos que saem da fileira:
 - **Contas, Categorias e Tags**: a ação **Cadastros** abre `MenuCadastros` (folha inferior sobre `Sheet` com 3 linhas-link: Contas `/controle/contas`, Categorias `/controle/categorias`, Tags `/controle/tags`; tocar numa fecha a folha e navega). Descartados: virar abas (as 4 visões já ocupam os 328 px) e menu suspenso (alvo de toque e leitor de tela piores que a folha).
 - **Projeção** (`/projecao`): sai do Controle; o acesso passa a ser o `Ver projeção` do bloco 7 do Início (RF-5.14), que já está no desenho.
 - `VisoesControle` aparece só nas 4 rotas-raiz acima. As telas de cadastro e de detalhe (`/controle/contas...`, `/controle/categorias`, `/controle/tags`, `/controle/relatorios/:tipo`) usam `CabecalhoTela` com "Voltar" e mantêm o `SeletorMes` que cada uma já tem hoje (Contas e `ControleConta` usam; Categorias e Tags não).
 
-**Cards de resumo** (RF-0.04, CA-0.04): `CardsResumo` = contêiner `flex gap-3 overflow-x-auto snap-x snap-proximity` com `min-w-0` no pai, para a rolagem horizontal ficar só no contêiner e nunca na página (o 3º card aparece cortado na borda, sinal de que rola). Cada `CardResumo` tem 144 px de largura fixa (`w-36 shrink-0`); detalhes em §10.2.
+**Cards de resumo** (RF-0.04, CA-0.04): `CardsResumo` = contêiner `flex gap-3 overflow-x-auto snap-x snap-proximity` com `min-w-0` no pai, para a rolagem horizontal ficar só no contêiner e nunca na página (o 3º card aparece cortado na borda, sinal de que rola). Cada `CardResumo` tem 144 px de largura fixa (`w-36 shrink-0`); detalhes em §10.2. A partir de `md:` a faixa vira grade (§11.7).
 
 **Estado vazio** (RF-0.07): `EstadoVazio({ frase, acaoRotulo, onAcao })`, obrigatório em toda lista; a lista filtrada sem resultado usa a variante com "Limpar filtros" (RF-5.13).
 
@@ -119,10 +120,10 @@ Decisão (D-074, D-076, D-078): o visual novo de todas as telas vem de **Tailwin
 
 ### 6.3 Só tokens e utilitários
 
-- **Fonte única de estilo**: os tokens de §6.2 (mais `--altura-barra: 144px`, usada só pelo `Shell` e pela barra, §3) e as classes utilitárias do Tailwind. Não existe `.module.css`, nem variável de compatibilidade (`--cor-*`, `--raio`, `--espaco-*`, `--alvo-min`), nem a classe `.alvo-toque`: o alvo de 44 px é `min-h-11 min-w-11` (§6.7).
+- **Fonte única de estilo**: os tokens de §6.2 (mais `--altura-barra: 144px`, usada só pelo `Shell` e pela barra, §3, e zerada a partir de 1024 px, §11.2) e as classes utilitárias do Tailwind. Não existe `.module.css`, nem variável de compatibilidade (`--cor-*`, `--raio`, `--espaco-*`, `--alvo-min`), nem a classe `.alvo-toque`: o alvo de 44 px é `min-h-11 min-w-11` (§6.7).
 - **Preflight do Tailwind**: ativo, sem isolamento. Os arquivos do shadcn dependem dele (`border-color` padrão, `box-sizing`, reset de botão), e como todo estilo é utilitário não há regra fora de camada para brigar com ele. Descartado: importar só `theme` e `utilities` sem o preflight.
 - As regras `*`, `body` e `html` ficam em `@layer base` do `tokens.css`: `body` usa `bg-background text-foreground font-sans antialiased`.
-- **Respiro da tela**: cada tela dá o próprio respiro com `p-4` (16 px); a tela que abre com bloco sticky (ex.: `SeletorMes`) usa `px-4 pb-4`, sem respiro superior, para o bloco encostar no topo da área rolável. O `Shell` **não** dá padding ao `<main>` (só o respiro inferior da barra, §3). Motivo: um padding no `<main>` afastaria o bloco sticky do topo e obrigaria a compensar com margem negativa.
+- **Respiro da tela**: cada tela dá o próprio respiro com `p-4 md:p-6` (16 px no celular, 24 px do tablet para cima, §11.4); a tela que abre com bloco sticky (ex.: `SeletorMes`) usa `px-4 pb-4 md:px-6 md:pb-6`, sem respiro superior, para o bloco encostar no topo da área rolável. O `Shell` **não** dá padding ao `<main>` (só o respiro inferior da barra, §3). Motivo: um padding no `<main>` afastaria o bloco sticky do topo e obrigaria a compensar com margem negativa.
 
 ### 6.4 shadcn/ui: estrutura e escolhas
 
@@ -159,7 +160,7 @@ Decisão (D-074, D-076, D-078): o visual novo de todas as telas vem de **Tailwin
 - **Tema claro/escuro** (RF-0.09, RF-1.12): atributo `data-tema="claro|escuro"` no `<html>`; os tokens trocam por seletor `:root[data-tema="escuro"]` (§6.2). Origem do valor: `usuario.tema` vindo de `GET /api/sessao`; antes do login, `prefers-color-scheme`. `TemaProvider` aplica o atributo e troca via `PATCH` do perfil (sem alteração).
 - **Cores de significado** (RF-0.08): entrada menta (verde), saída coral (vermelho), alerta/atrasada âmbar (laranja), conforme §6.2. Nunca só cor (RNF-08): valor leva sinal ou rótulo ("Receita"/"Despesa") e a situação leva ícone **e** texto (`SituacaoIcone`: confirmada, prevista, atrasada).
 - **Alvos de toque**: todo elemento interativo tem pelo menos 44 x 44 px (`min-h-11 min-w-11`, §6.7).
-- **Largura**: layout fluido de 360 px para cima; `max-w-full` em imagens e gráficos; em telas largas o conteúdo e a barra inferior centram com `max-w-160` (640 px; não é requisito ter layout desktop). `box-sizing: border-box` já vem do preflight.
+- **Largura**: layout fluido de 360 px para cima; `max-w-full` em imagens e gráficos; a coluna do conteúdo cresce por breakpoint (640, 720 e 1120 px, §11.4) e a barra inferior centra com `max-w-160` no celular e no tablet (§3). `box-sizing: border-box` já vem do preflight.
 - **Gráficos**: `recharts` (descartados: Chart.js, que desenha em `canvas` e deixa o texto fora do DOM, pior para leitor de tela e para o rótulo com `formatarBRL`; SVG escrito à mão, mais código para rosca, área e barras) dentro de `ChartContainer` (§6.6); cores das categorias vêm do cadastro (`cor`); rosca sempre acompanhada de lista com valor e porcentagem (não depende só da cor).
 - **Ícones de categoria/meta**: o banco guarda o **nome** do ícone (`icone VARCHAR(40)`); `componentes/icones.ts` mapeia o nome ao componente do `lucide-react` (lista fechada; nome desconhecido cai em um ícone padrão).
 
@@ -194,6 +195,8 @@ Dinheiro chega do servidor como string (`"1234.50"`, `comum.md` §6.2). Para nã
 - **Foco visível em todo interativo**: `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background` (o `ring` tem razão >= 5,4:1 sobre o fundo nos dois temas); o `outline` padrão só é removido junto com esse anel. Campos usam também a sombra de foco (§6.4).
 - **Camadas** (`Dialog`, `AlertDialog`, `Sheet`): foco preso, `Esc`, `aria-modal`, trava de rolagem e devolução do foco vêm do Radix; toda camada tem `Title` (visível ou `sr-only`) e `Description` ou `aria-describedby={undefined}` explícito (sem aviso do Radix); `AlertDialog` não fecha por toque no véu.
 - Contraste conferido nos tokens dos dois temas (§6.2); verde/vermelho/laranja escolhidos separadamente para cada tema. Texto sobre o degradê roxo usa só `primary-foreground` (branco cheio, sem transparência); perto do canto `primary-claro` (4,10:1) só texto de 18 px bold ou maior, e por isso o cartão de destaque gira o degradê (§6.2).
+- **Casca por tamanho** (§11): só uma barra de navegação existe no DOM por vez (um `nav` de nome "Principal" e um botão "Novo lançamento"); a barra lateral mostra os rótulos sempre, a aba ativa leva `aria-current="page"` e, além da cor, forma preenchida e peso; a ordem de Tab no desktop é lateral, depois conteúdo. Foco, `Esc` e `aria` das camadas continuam sendo do Radix nos três tamanhos (§11.8).
+- **Reflow**: em 1280 px de largura nada fica espremido nem rola na horizontal; em 360 px o resultado é idêntico ao de antes do §11 (CA-0.04).
 - **Movimento**: as animações do `tw-animate-css` nas camadas e na barra respeitam `prefers-reduced-motion` (`motion-reduce:animate-none motion-reduce:transition-none` nos `Content` de `dialog`, `alert-dialog` e `sheet`).
 - **Estado nunca só por cor** nos componentes novos: chip ligado e aba ativa mudam também de peso, forma ou ícone (visto no `ToggleGroupItem` ligado).
 - Sem rolagem horizontal da página: cards, filtros (chips) e tabelas largas rolam dentro do próprio contêiner (`table.tsx` já traz o contêiner com `overflow-x-auto`); tabela de projeção usa esse contêiner.
@@ -218,9 +221,9 @@ Duas pastas, duas camadas (regra de importação em §2): `src/components/ui/` =
 | `input.tsx`, `textarea.tsx`, `select.tsx` | nativos | §6.4. `Select` = `<select>` nativo; data = `Input type="date"`. |
 | `switch.tsx`, `checkbox.tsx`, `radio-group.tsx` | Radix | cores `primary`; alvo de 44 px pelo `label` que envolve (no `Switch`, a área de toque de 44 px é do próprio controle); visto e ponto visíveis (não só cor). |
 | `table.tsx` | HTML | `Table` dentro de contêiner `overflow-x-auto`; `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell`; células numéricas `text-right tabular-nums`. |
-| `dialog.tsx` | Radix | `DialogOverlay` `bg-veu`; `DialogContent` `rounded-2xl bg-popover shadow-overlay`, largura `w-[calc(100%-48px)] max-w-78` (312 px, §10.3), centralizado; botão fechar opcional (`aria-label="Fechar"`, 44 px). |
-| `alert-dialog.tsx` | Radix | mesmo véu e contêiner (`max-w-78`); ícone em quadrado no alto (`circle-alert` em `primary-suave`, ou lixeira em `saida-suave` na variante destrutiva), título, descrição, ações em largura total (ação sobre `Cancelar`); sem botão fechar; não fecha por toque no véu. |
-| `sheet.tsx` | Radix (`Dialog`) | só `side="bottom"` (as outras posições do shadcn são removidas: nenhuma tela as usa). `rounded-t-3xl bg-popover shadow-overlay`, alça no alto, `max-h-[92dvh] flex flex-col`; a partir de `sm:` (640 px) vira diálogo centralizado de `sm:max-w-lg` (512 px; §10.3). `SheetHeader` (título e fechar), `SheetFooter` fixo. |
+| `dialog.tsx` | Radix | `DialogOverlay` `bg-veu`; `DialogContent` `rounded-2xl bg-popover shadow-overlay`, largura `w-[calc(100%-48px)] max-w-78 md:max-w-sm` (312 px no celular, 384 px do tablet para cima, §10.3 e §11.8), centralizado; botão fechar opcional (`aria-label="Fechar"`, 44 px). |
+| `alert-dialog.tsx` | Radix | mesmo véu e contêiner (`max-w-78 md:max-w-sm`); ícone em quadrado no alto (`circle-alert` em `primary-suave`, ou lixeira em `saida-suave` na variante destrutiva), título, descrição, ações em largura total (ação sobre `Cancelar`); sem botão fechar; não fecha por toque no véu. |
+| `sheet.tsx` | Radix (`Dialog`) | só `side="bottom"` (as outras posições do shadcn são removidas: nenhuma tela as usa). `rounded-t-3xl bg-popover shadow-overlay`, alça no alto, `max-h-[92dvh] flex flex-col`; abaixo de `md:` é folha inferior de largura total até `max-w-160`; a partir de `md:` (768 px) vira diálogo centralizado de `md:max-w-lg` (512 px), sem alça e com animação de zoom em vez de deslizar de baixo (§10.3 e §11.8). `SheetHeader` (título e fechar), `SheetFooter` fixo. |
 | `chart.tsx` | Recharts 3 | §6.6: `ChartContainer`, `ChartConfig`, `ChartTooltip`, `ChartTooltipContent` ajustado. |
 
 Tudo gerado pelo CLI fica sujeito a: remover `dark:*`, trocar hex e `opacity-*` por tokens, trocar `focus-visible:ring-[3px]` pelo anel de §9, garantir 44 px de alvo, `data-slot` mantido.
@@ -233,20 +236,22 @@ Tudo gerado pelo CLI fica sujeito a: remover `dark:*`, trocar hex e `opacity-*` 
 | Chip de resumo | dentro de `CartaoDestaque.tsx` | **novo** (sem arquivo próprio) | `div` `rounded-lg bg-branco-18 text-primary-foreground`, 2 linhas (rótulo 11, valor 13 `tabular-nums`); os chips ficam em **coluna** (um por linha, largura total) e o valor nunca é cortado (sem `truncate` no valor); no máximo 3 no Início |
 | Título de bloco | `TituloBloco.tsx` | **novo** | `h2` `text-16 font-semibold` + ação opcional |
 | Botão "+" e Aba | dentro de `BarraInferior.tsx` | existente | §3 |
-| Barra inferior | `BarraInferior.tsx` | existente (props: nenhuma) | §3 |
-| Cabeçalho de tela | `CabecalhoTela.tsx` | **novo** | `h1` por tela (hoje cada página tem o próprio título) |
+| Barra inferior | `BarraInferior.tsx` | existente (props: nenhuma) | §3; passa a ler as abas de `abas.ts` (§11.2); só é renderizada abaixo de `lg:` (§11.3) |
+| Barra lateral | `BarraLateral.tsx` | **novo** (props: nenhuma) | só no desktop; mesmo `MenuMais`; §11.2 |
+| Abas da navegação | `abas.ts` | **novo** (módulo, sem JSX) | exporta `ABAS` (`{ para, rotulo, icone, fim? }[]`), hoje dentro de `BarraInferior.tsx`; §11.2 |
+| Cabeçalho de tela | `CabecalhoTela.tsx` | **novo** | `h1` por tela (hoje cada página tem o próprio título); título de detalhe alinhado à esquerda a partir de `md:` (§11.7) |
 | Seletor de mês | `SeletorMes.tsx` | existente (`{ mes, onMudar }`) | `Button secondary icon` nas setas |
 | Cartão de destaque | `CartaoDestaque.tsx` | **novo** | manchete do Início; hoje é `CardsResumo.tsx` em tamanho grande |
 | Anel de progresso | função interna de `CartaoDestaque.tsx` | **novo** (sem arquivo próprio) | SVG próprio (§6.6); só desenhado quando a tela passa `anel` |
 | Card de resumo | `CardsResumo.tsx` (export **novo** `CardResumo`) | existente + export | `CardsResumo({ children })` continua sendo o contêiner |
-| Faixa de resumo | `CardsResumo.tsx` | existente | contêiner com rolagem (§3) |
+| Faixa de resumo | `CardsResumo.tsx` | existente | contêiner com rolagem (§3); grade a partir de `md:` (§11.7) |
 | Item de lançamento | `ItemLancamento.tsx` | existente (props atuais) + 1 prop | `IconeQuadrado`, valor com `Dinheiro`, situação com `SituacaoIcone`, `Badge` para Recorrente e Tag |
 | Item a confirmar | `ItemLancamento.tsx` | existente | prop nova `variante?: "lista" \| "confirmar"` (padrão `"lista"`): `"confirmar"` = cartão `bg-primary-suave` com `Button secondary sm` "Confirmar" (chama `aoConfirmar`) |
 | Linha de pessoa | `CardsProporcao.tsx` | existente (`{ proporcao, acaoPessoa }`) | `Avatar` + nome, apoio, valor; `Progress` |
 | Estado vazio | `EstadoVazio.tsx` | existente (`{ frase, acaoRotulo?, onAcao? }`) + 2 props | `icone?: LucideIcon` e `compacto?: boolean` (compacto: sem halos e sem botão, só ícone em quadrado e frase) |
 | Opção do menu "+" e Menu "+" | `MenuMais.tsx` | existente (`{ aoFechar }`) | `BottomSheet` com 4 linhas de 64 px (`IconeQuadrado`, rótulo 16 semibold, seta `ChevronRight`) |
 | Menu de cadastros | `MenuCadastros.tsx` | **novo** | `BottomSheet` com 3 linhas-link (§3 Controle) |
-| Visões do Controle | `VisoesControle.tsx` | **novo** | `nav` de `NavLink`s com as classes de `tabs.tsx` (§3 Controle) |
+| Visões do Controle | `VisoesControle.tsx` | **novo** | `nav` de `NavLink`s com as classes de `tabs.tsx` (§3 Controle); largura do conteúdo e aba de tamanho padrão a partir de `md:` (§11.7) |
 | Bottom sheet | `BottomSheet.tsx` | existente (`{ titulo, aoFechar, rodape?, children }`) | `Sheet` (§10.3) |
 | Diálogo de confirmação | `DialogoConfirmacao.tsx` | existente + 1 prop | `AlertDialog` (§10.3) |
 | Diálogo de alcance | `DialogoAlcance.tsx` | existente (props atuais) | continua sobre `BottomSheet` (lista de 3 opções e Cancelar); só o visual muda |
@@ -267,11 +272,12 @@ Também ficam, com o interior em Tailwind e as mesmas props: `Campo`, `Dinheiro`
 
 ### 10.3 Camadas: como as existentes viram Radix
 
+- **Camadas em tela larga**: `BottomSheet`, `MenuMais`, `MenuCadastros`, `FiltrosLista` (folha), `DialogoAlcance` e as confirmações viram diálogo central a partir de `md:` **só por CSS** nos primitivos (§11.8); o componente é o mesmo nos três tamanhos, e `useFecharComVoltar`, foco, `Esc` e `aria` seguem como abaixo.
 - **`BottomSheet`**: o JSX vira `<Sheet open onOpenChange={(a) => !a && aoFechar()}><SheetContent side="bottom" aria-describedby={undefined}>` com `SheetHeader` (título e fechar `aria-label="Fechar"`), corpo rolável e `SheetFooter` com o `rodape`. O componente continua **montado só quando aberto** (as telas fazem `{aberto && <BottomSheet .../>}`; `open` fixo em `true`). **Sai do código** o que o Radix faz: armadilha de foco, `Esc`, trava de rolagem, devolução do foco, `aria-modal`. **Fica** o comportamento do botão voltar, extraído para `hooks/useFecharComVoltar.ts` (`useFecharComVoltar(aoFechar)`: `history.pushState({ bottomSheet: true })` ao montar, `popstate` fecha, ao desmontar por outro caminho faz `history.back()`), idêntico ao de hoje. Camadas aninhadas (formulário que abre `DialogoAlcance`) continuam funcionando: o Radix empilha, e cada uma tem a própria entrada no histórico, como hoje.
 - **`DialogoConfirmacao`** sobre `AlertDialog` (`open` fixo, `onOpenChange` fechando com `onCancelar`); `Cancelar` e a ação chamam `onCancelar` e `onConfirmar`. Também usa `useFecharComVoltar(onCancelar)`: o botão voltar do aparelho fecha a confirmação em vez de sair da tela. Motivo da troca de `BottomSheet` para `AlertDialog`: o desenho distingue confirmação (centralizada, sem fechar por toque no véu, ação destrutiva em coral) de folha de formulário.
 - **`MenuMais`** e **`MenuCadastros`** usam `BottomSheet` (que já é o `Sheet` com o comportamento de voltar), sem `Sheet` direto: evita repetir o hook e o contorno.
 - **Decisão (z-order)**: barra inferior `z-30`, véu e conteúdo das camadas `z-50` (as camadas cobrem a barra). Diverge do `z-40` previsto antes: nada fica entre a barra e as camadas, então o degrau de 20 já separa os dois; o que importa é a barra ficar abaixo das camadas. Descartado: `z-40` (sem ganho).
-- **Decisão (largura das camadas)**: `Dialog` e `AlertDialog` usam `max-w-78` (312 px), no lugar do `max-w-sm` (384 px). Motivo: a 360 px o diálogo já ocupa `100% - 48 px` (312 px), e o teto de 312 px mantém a mesma largura em tela larga; descartado: `max-w-sm`, que só alargava o diálogo em tela maior. O `Sheet` não segue esse teto: a partir de `sm:` fica em `sm:max-w-lg` (512 px), porque abriga formulários, que precisam de mais largura que um diálogo de confirmação; descartado: `max-w-78` no `Sheet`.
+- **Decisão (largura das camadas)**: `Dialog` e `AlertDialog` usam `max-w-78` (312 px) no celular e `md:max-w-sm` (384 px) do tablet para cima. Motivo: a 360 px o diálogo já ocupa `100% - 48 px` (312 px), então o celular não muda; num tablet ou desktop 312 px fica pequeno ao lado de um formulário de 512 px, e 384 mantém a confirmação curta e legível (D-085). Descartado: `max-w-78` em todos os tamanhos (era a regra anterior, quando não havia desktop) e `max-w-md` (448, já parece um formulário). O `Sheet` não segue esse teto: a partir de `md:` fica em `md:max-w-lg` (512 px), porque abriga formulários, que precisam de mais largura que um diálogo de confirmação; descartado: `max-w-78` no `Sheet`. O breakpoint do `Sheet` passou de `sm:` (640) para `md:` (768): entre 640 e 767 (celular deitado) a folha inferior é melhor que um diálogo de 512 sobre uma altura de 360 (§11.8).
 - Testes que dependem do jsdom: o Radix usa `ResizeObserver` (Checkbox, Switch, RadioGroup) e o `PointerEvent`; o ambiente de teste precisa de um stub de `ResizeObserver`. O ajuste dos testes é da etapa de testes do front, não destas unidades.
 
 ### 10.4 Unidades de implementação (cada uma fecha com `tsc --noEmit` e `eslint .` limpos)
@@ -285,10 +291,175 @@ Também ficam, com o interior em Tailwind e as mesmas props: `Campo`, `Dinheiro`
 | U5 Camadas do app | `BottomSheet`, `DialogoConfirmacao`, `DialogoAlcance`, `MenuMais`, `MenuCadastros` | `src/componentes/{BottomSheet,DialogoConfirmacao,DialogoAlcance,MenuMais,MenuCadastros}.tsx`, `bottomSheet.module.css` removido | voltar do aparelho, `Esc` e foco como §10.3; depende de U3 e U4 |
 | U6 Navegação | `BarraInferior`, `Shell`, `VisoesControle`, e o `Controle.tsx` com cabeçalho, visões e Cadastros | `src/componentes/{BarraInferior,Shell,VisoesControle}.tsx`, `src/paginas/controle/Controle.tsx`, `navegacao.module.css` e `shell.module.css` removidos | 5 abas e "+" a 360 px sem rolagem horizontal; respiro de 144 px; visões com `?mes`; sem atalho de Projeção no Controle; depende de U4 e U5 |
 
-As telas por área (Início, Controle, Cartões, Metas, Planejamento, Configurações, Entrada) e a remoção final dos CSS Modules (§6.7) foram as unidades seguintes, por área depois de U6, e já estão concluídas.
+As telas por área (Início, Controle, Cartões, Metas, Planejamento, Configurações, Entrada) e a remoção final dos CSS Modules (§6.7) foram as unidades seguintes, por área depois de U6, e já estão concluídas. As unidades do tablet e do desktop (D1 a D13) estão em §11.9.
 
 ### 10.5 Riscos
 
 - **CLI do shadcn** pode sobrescrever variáveis do `tokens.css` ou trazer classes `dark:` e estilo neutro: conferir o diff a cada `add`.
 - **Barra fixa e teclado virtual**: em alguns Android a barra sobe junto com o teclado e cobre o campo focado das telas fora de camada (ex.: senha em Configurações); mitigação a avaliar no teste em aparelho: esconder a barra enquanto um campo tem foco.
 - **Testes**: trocar o `BottomSheet` e os controles por Radix e as abas por pílulas quebra consultas por papel e texto (ex.: `aria-modal`, nome do botão "+"); o conserto fica para a etapa de testes do front. Nomes acessíveis atuais ("Novo lançamento", "mês anterior", "Fechar") foram mantidos de propósito para reduzir esse conserto.
+
+## 11. Responsivo (celular, tablet, desktop)
+
+Decisão (D-085): o app ganha três tamanhos de tela sem funcionalidade, rota ou requisito novo. O **celular (base, 360 px) não muda**: tudo o que é de tablet e desktop entra como classe com prefixo de breakpoint, uma barra lateral e dois ajustes de camada. A identidade de D-078 fica como está (mesmos tokens, raios, degradê e pílula; nenhuma cor, sombra ou fonte nova). No desktop a navegação usa a mesma linguagem da barra inferior: aba ativa em pílula roxa preenchida, "Novo lançamento" no degradê de sempre. Nada deste capítulo é código: cada tarefa aplica as classes e arquivos que ele fixa.
+
+### 11.1 Breakpoints e tablet
+
+| Tamanho | Largura | Prefixo | Navegação | Conteúdo |
+|---|---|---|---|---|
+| Celular | até 767 px | sem prefixo (base) | barra inferior (§3) | 1 coluna, `max-w-160` (640 px), respiro `p-4` |
+| Tablet | 768 a 1023 px | `md:` | barra inferior (§3) | 1 coluna de até 720 px; cards de resumo e listas de cartão em 2 colunas; respiro `p-6`; camadas como diálogo central |
+| Desktop | 1024 px ou mais | `lg:` | barra lateral (§11.2) | coluna de até 1120 px; arranjos de 2 e 3 colunas (§11.5 e §11.6) |
+
+- Só os breakpoints padrão do Tailwind v4 (`md` = 48rem, `lg` = 64rem). Nada de `--breakpoint-*` no `@theme`, e `sm:`, `xl:` e `2xl:` **não são usados** (o `sm:` que o `Sheet` usava passa a `md:`, §11.8).
+- **Tablet mantém a barra inferior e 1 coluna.** Motivo: a barra inferior é alcançada pelo polegar nos dois sentidos do tablet e dispensa a lateral, que tiraria 240 de 768 px (sobrariam 528, menos que o celular deitado traz hoje); uma coluna de 720 px com cards em 2 colunas aproveita a largura sem refazer nenhuma tela. Descartados: barra lateral no tablet (consome a largura que o tablet tem de menos); 2 colunas no tablet em todas as telas (cada coluna ficaria perto de 340 px, quase o celular, e dobraria o trabalho de cada tela por pouco ganho).
+- Descartado: breakpoint do desktop em 1280 (`xl:`). Em 1024 o conteúdo ainda tem 784 px depois da lateral de 240, suficiente para os arranjos de §11.5; subir o corte deixaria notebooks pequenos com o tablet esticado.
+- O valor de 64rem aparece fora das classes em **dois** lugares, que precisam coincidir com `lg:`: a consulta de mídia do `Shell` (§11.3) e o `@media` do `tokens.css` (§11.2). Cada um leva um comentário apontando para o outro.
+
+### 11.2 Casca no desktop
+
+- **`Shell`**: o contêiner `flex h-dvh` passa a ser em linha: `BarraLateral` (só no desktop), `<main>` (`min-w-0 flex-1 overflow-y-auto` e o respiro inferior de §3) e `FormularioAberto`. Dentro do `<main>` fica um `div` de coluna (`mx-auto w-full max-w-160 md:max-w-180 lg:max-w-280`, §11.4) que envolve o `<Outlet/>`. Assim a barra de rolagem fica na borda da janela e não na borda da coluna. A barra inferior continua `fixed`, fora do fluxo.
+- **`BarraLateral`** (sem props): coluna fixa à esquerda, `w-60` (240 px) `shrink-0`, altura total, `border-r bg-card p-4`, `flex flex-col gap-6`, `overflow-y-auto` (janelas baixas). De cima para baixo: (1) o botão **Novo lançamento**: `Button` `size="lg"` (56 px) largura total, ícone `Plus` e **texto visível** "Novo lançamento" (o nome acessível é o texto, igual ao `aria-label` do "+" do celular; leva `aria-haspopup="dialog"`), que abre o **mesmo** `MenuMais` (estado `menuAberto` e `{menuAberto && <MenuMais aoFechar=.../>}` como na barra inferior); (2) `<nav aria-label="Principal">` com as 5 abas de `ABAS` em coluna (`flex flex-col gap-1`), na ordem Início, Controle, Cartões, Metas, Planejamento. Cada aba é um `NavLink` de 48 px de altura, `rounded-full px-4 gap-3`, ícone `size-5` e **rótulo sempre visível** (`text-14 font-medium`); inativa `text-muted-foreground hover:bg-accent hover:text-accent-foreground`; ativa `bg-primary text-primary-foreground font-semibold` (preenchimento, peso e `aria-current="page"` do `NavLink`: nunca só cor, RNF-08); foco com o anel de §9. Sem logotipo, sem título e sem item de Configurações (continua só na engrenagem do Início, §3). Descartados: lateral recolhível só com ícones (rótulos escondidos são o que a barra inferior já abandonou para caber; no desktop há espaço); botão "Novo lançamento" como `Popover` ancorado (o `popover` do shadcn está fora da v1, §6.4, e o `MenuMais` já existe e já tem foco e voltar resolvidos).
+- **`componentes/abas.ts`** (novo, sem JSX): exporta `ABAS: { para: string; rotulo: string; icone: LucideIcon; fim?: boolean }[]`, a lista que hoje é uma constante em `BarraInferior.tsx`. `BarraInferior.tsx` e `BarraLateral.tsx` importam dali (um lugar só para renomear ou acrescentar aba).
+- **Respiro inferior só onde há barra inferior**: o `Shell` mantém a classe `pb-[calc(var(--altura-barra)+env(safe-area-inset-bottom))]`, e o `tokens.css` zera a variável do desktop com `@media (min-width: 64rem) { :root { --altura-barra: 0px } }` (dentro do arquivo, depois dos blocos de variáveis, com comentário apontando para §11.3). No celular e no tablet segue 144 px. Motivo: o `Shell` não precisa saber em que tamanho está para escolher uma classe de respiro, e `env(safe-area-inset-bottom)` vale 0 no desktop. Descartado: classe `lg:pb-0` no `Shell` (duas classes de respiro brigando) e respiro condicionado ao hook (acopla o espaço à lógica de mídia).
+- `z-order` (§10.3): a lateral é item do fluxo (sem `fixed`, sem `z-*`); as camadas `z-50` a cobrem normalmente.
+
+### 11.3 Uma barra por vez: hook de mídia, não CSS
+
+**Decisão**: o `Shell` escolhe qual barra renderiza com uma função interna `useTelaLarga()` (não exportada, sem arquivo novo): `useSyncExternalStore` sobre `window.matchMedia('(min-width: 64rem)')` (inscrição no evento `change`, `getSnapshot` = `matches`, `getServerSnapshot` = `false`). Se `window.matchMedia` não existir, devolve `false` (barra inferior). `Conteudo` faz `{larga ? <BarraLateral /> : <BarraInferior />}`. O que é só de estilo (larguras, grades, camadas, respiro) continua em CSS.
+
+Motivos:
+- **Nomes acessíveis únicos.** Com as duas no DOM e uma escondida por `hidden`/`lg:hidden`, o jsdom (que não carrega o CSS do Tailwind) vê as duas: `getByRole("button", { name: "Novo lançamento" })` e `getByRole("navigation", { name: "Principal" })` passam a achar dois elementos, e os testes atuais de todas as telas quebram. Com o hook só uma existe.
+- **Sem custo para o que já existe.** O stub de `matchMedia` de `renderizarApp` (`matches: false`) mantém a barra inferior em todos os testes atuais; testar a lateral exige só um stub com `matches: true` (etapa de testes).
+- **Sem flash.** `useSyncExternalStore` lê o valor já na primeira renderização.
+- **Um par de `nav` e de botão na árvore de acessibilidade**, sem depender de `display: none` para a segunda cópia.
+
+**Menu aberto ao redimensionar**: cada barra tem o próprio `menuAberto`. Cruzar 1024 px com o menu aberto troca a barra, o `MenuMais` desmonta e o menu **fecha**. O `useFecharComVoltar` desfaz a própria entrada do histórico (o `history.back()` adiado com checagem do id, §10.3), então não sobra entrada solta nem navegação indevida. Redimensionar com o menu aberto é raro e o resultado (menu fechado) é inofensivo. Descartado: subir `menuAberto` e o `MenuMais` para o `Shell` e passar `aoNovo` às barras (muda as props da `BarraInferior` e deixa a D1 sem `tsc` limpo até a D2, para tratar um caso raro). Formulários abertos (`FormularioAberto`) não pertencem às barras e sobrevivem à troca; as camadas se adaptam só por CSS (§11.8).
+
+Descartado: só CSS (`hidden lg:flex` e `lg:hidden`). Funciona no navegador, mas duplica nome acessível e `nav` na árvore dos testes e obriga a consultar com `hidden: true` ou a mudar todo teste existente.
+
+### 11.4 Larguras, respiro e blocos fixos
+
+Larguras (todas classes de largura do Tailwind v4; 1 unidade = 4 px):
+
+| Onde | Classe | Valor |
+|---|---|---|
+| Coluna do `Shell`, celular | `max-w-160` | 640 px (hoje) |
+| Coluna do `Shell`, tablet | `md:max-w-180` | 720 px |
+| Coluna do `Shell`, desktop | `lg:max-w-280` | 1120 px |
+| Padrão `coluna` (§11.5) | `mx-auto w-full max-w-160` | 640 px |
+| Padrão `larga` | `mx-auto w-full max-w-240` | 960 px |
+| Padrão `formulario` | `mx-auto w-full max-w-120` | 480 px |
+| Lateral do padrão `lateral` | `20rem` | 320 px |
+
+- **Legibilidade**: linha de texto e linha de lista passam de 640 px só onde há duas colunas lado a lado; uma tela de coluna única nunca passa de 640 (lista, cadastro) ou 960 (gráfico e tabela). Motivo do teto de 1120: numa janela de 1360 px (240 de lateral mais 1120) o conteúdo já ocupa a área toda, e acima disso só cresce a margem. Descartado: conteúdo na largura total da janela (linhas de 1500 px, valor e rótulo separados demais).
+- **Respiro**: `p-4 md:p-6` em toda tela (e `px-4 pb-4 md:px-6 md:pb-6` na que abre com bloco sticky, §6.3). O `Shell` continua sem padding no `<main>`.
+- **`SeletorMes` sozinho** (Contas, Orçamento, relatórios, detalhe de fatura e de conta): continua `sticky top-0` no topo da área rolável; como a tela está nos padrões `coluna` ou `larga`, ele ocupa a largura da coluna e o rótulo fica entre as setas como hoje. O componente **não muda**.
+- **Bloco fixo do Controle no desktop** (`/controle`, `/controle/balanco`, `/controle/proporcao`, `/controle/relatorios`, que repetem `SeletorMes`, `CabecalhoTela` e `VisoesControle`): abaixo de `lg:` fica como em §3 (3 linhas empilhadas). A partir de `lg:` o contêiner sticky vira grade de 2 linhas: `lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-4 lg:gap-y-2`; linha 1 o `CabecalhoTela` (`lg:col-span-2 lg:row-start-1`, título à esquerda e "Cadastros" à direita); linha 2 `VisoesControle` à esquerda (`lg:col-start-1 lg:row-start-2`) e o `SeletorMes` à direita em largura fixa (`lg:col-start-2 lg:row-start-2 lg:w-72`). `SeletorMes` e `VisoesControle` ficam cada um dentro de um `div` de posicionamento (os componentes não ganham prop `className`). O bloco ocupa ~100 px em vez de ~170 e o mês fica sempre no canto, onde o olho o procura. O contêiner mantém `bg-background` e `z-10`. Descartado: `SeletorMes` e visões na mesma linha do título (o botão "Cadastros" ficaria entre o título e o mês); manter as 3 linhas (170 px fixos comem um sexto de uma janela de 1000 px de altura).
+
+### 11.5 Padrões de arranjo
+
+Seis padrões com as classes exatas, para as tarefas D5 a D13 não inventarem outros. Todos funcionam dentro da coluna de §11.4; sem o prefixo (`md:` ou `lg:`) a tela é a coluna única de hoje. Cada tela escolhe **um** padrão de largura (`coluna`, `formulario` ou `larga`; `grade` e `lateral` usam os 1120 da coluna) e, dentro dele, no máximo uma grade (`duas`, `grade` ou `lateral`).
+
+| Padrão | Classes no contêiner | Uso |
+|---|---|---|
+| `coluna` | `mx-auto w-full max-w-160` | listas simples, cadastros, menus |
+| `formulario` | `mx-auto w-full max-w-120` | formulário de tela (campos empilhados) |
+| `larga` | `mx-auto w-full max-w-240` | tabela, gráfico e telas que combinam blocos |
+| `grade` | `grid gap-4 md:grid-cols-2 lg:grid-cols-3` (sem `max-w`: usa os 1120 da coluna) | cards de conta, cartão, meta, cenário e destino de menu |
+| `duas` | `lg:grid lg:grid-cols-2 lg:items-start lg:gap-6` | dois blocos independentes lado a lado (gráfico e lista, resumo e detalhe) |
+| `lateral` | `lg:grid lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start lg:gap-6` | lista principal com resumo ao lado |
+
+Regras comuns:
+- Os filhos da grade ficam na **ordem do DOM do celular**; a posição no desktop vem de `lg:col-start-*` e `lg:row-start-*`, nunca de reordenar o JSX. Bloco que deve ocupar a linha toda leva `lg:col-span-2`.
+- `items-start` evita esticar blocos de alturas diferentes; a coluna curta termina antes, sem preencher.
+- Sem sticky na lateral: o bloco fixo do topo já usa o sticky e a altura dele muda por tela. Descartado: lateral sticky com `top-*` calculado.
+- Todo item de grade leva `min-w-0` quando contém texto longo (nome de conta, categoria, descrição).
+
+### 11.6 Grade por tela
+
+Cobre todas as rotas do Shell de §4. "Celular e tablet" = coluna única de hoje (cards em 2 colunas no tablet só onde a linha disser `grade`). Unidade = grupo de §11.9.
+
+| Rota | Tela (arquivo em `paginas/`) | Desktop (`lg:`) | Unidade |
+|---|---|---|---|
+| `/` | `inicio/Inicio.tsx` | `duas`: o `CartaoDestaque` ocupa as 2 colunas (`lg:col-span-2`); os demais blocos (Saldos, Aporte do mês, A confirmar, Despesas por categoria, Balanço por conta, Próximas faturas, Projeção) entram nas 2 colunas na ordem do DOM | D5 |
+| `/projecao` | `inicio/Projecao.tsx` | `larga`: gráfico em cima (altura maior, §11.6.1) e a tabela de projeção abaixo | D5 |
+| `/controle` | `controle/Controle.tsx` | bloco fixo de §11.4 e `lateral`: na lateral `CardsResumo` (grade de 2 colunas, §11.7) e `CardsProporcao`; na coluna principal `FiltrosLista` e a lista. O resumo vem antes da lista no DOM e a lateral usa `lg:col-start-2 lg:row-start-1` | D6 |
+| `/controle/contas/:contaId` | `controle/ControleConta.tsx` | `coluna` (cabeçalho com Voltar, `SeletorMes`, lista) | D6 |
+| `/controle/balanco` | `controle/Balanco.tsx` | bloco fixo de §11.4; "Total do mês" em largura total; os cards por conta e por dono em `grade` com `lg:grid-cols-2` no lugar de `lg:grid-cols-3` | D6 |
+| `/controle/proporcao` | `controle/Proporcao.tsx` | bloco fixo de §11.4; `duas` (card "Base de despesas do casal" e `CardsProporcao`) | D6 |
+| `/controle/contas` | `controle/Contas.tsx` | `CardsResumo` em grade e `CardConta` em `grade` | D7 |
+| `/controle/contas/arquivadas` | `controle/ContasArquivadas.tsx` | `grade` | D7 |
+| `/controle/categorias` | `controle/Categorias.tsx` | `coluna` | D7 |
+| `/controle/tags` | `controle/Tags.tsx` | `coluna` | D7 |
+| `/controle/relatorios` | `controle/Relatorios.tsx` (índice) | bloco fixo de §11.4; `coluna` (card de links) | D8 |
+| `/controle/relatorios/:tipo` | `controle/Relatorios.tsx` (rota por tipo), `RelatorioBalanco`, `RelatorioDespesas`, `RelatorioProporcao` | `larga`. Balanço: gráfico de barras em largura total e os cards por mês em `grade` (`lg:grid-cols-2`); Despesas: `duas` (rosca com legenda e subcategorias); Proporção: `duas` com um bloco por mês | D8 |
+| `/cartoes` | `cartoes/Cartoes.tsx` | `CardsResumo` em grade e `CardCartao` (ativos e arquivados) em `grade` | D9 |
+| `/cartoes/novo` | `cartoes/CadastroCartao.tsx` | `formulario` | D9 |
+| `/cartoes/:cartaoId` | `cartoes/DetalheCartao.tsx` | `formulario` (edição de dados do cartão) | D9 |
+| `/cartoes/:cartaoId/faturas/:mes` | `cartoes/Fatura.tsx` | `larga` + `duas`: `CartaoDestaque` e ações na 1ª coluna, "Itens" na 2ª | D9 |
+| `/metas` | `metas/Metas.tsx` | `CartaoDestaque` do patrimônio em largura total e `CardMeta` em `grade` | D10 |
+| `/metas/:metaId` | `metas/DetalheMeta.tsx`, `HistoricoMeta.tsx` | `larga` + `duas`: destaque, dados e ações na 1ª coluna; Histórico na 2ª | D10 |
+| `/planejamento` | `planejamento/Planejamento.tsx` | `grade` (os 3 destinos: Orçamento, Cenários, Plano de metas) | D11 |
+| `/planejamento/orcamento` | `planejamento/Orcamento.tsx`, `ComparacaoOrcamento.tsx`, `LimitesCategorias.tsx` | `larga`: `CardsResumo` em grade; `duas` com "Planejado e gasto" e "Limites por categoria" | D11 |
+| `/planejamento/cenarios` | `planejamento/Cenarios.tsx` | `grade` | D12 |
+| `/planejamento/cenarios/:cenarioId` | `planejamento/Cenario.tsx`, `ResultadoCenario.tsx` | `larga` + `duas`: itens do cenário na 1ª coluna, resultado na 2ª | D12 |
+| `/planejamento/plano-de-metas` | `planejamento/PlanoMetas.tsx` | `larga` + `duas`: campos na 1ª coluna, "Resultado" na 2ª | D12 |
+| `/configuracoes` | `configuracoes/Configuracoes.tsx` | `coluna` | D13 |
+| `/configuracoes/perfil`, `/senha`, `/vinculo` | `Perfil.tsx`, `Senha.tsx`, `Vinculo.tsx` | `formulario` (os cards empilhados de cada tela ficam em coluna única) | D13 |
+| `/entrar`, `/cadastrar`, `*` | fora do Shell | fora do escopo (ver PENDÊNCIAS do pacote) | - |
+
+Mesmo cabeçalho de §3 em todas: `CabecalhoTela` fica no topo da coluna da tela, fora da grade (a grade começa abaixo dele), exceto no Controle e nas visões (bloco de §11.4).
+
+#### 11.6.1 Gráficos
+
+Os `Grafico*.tsx` **não mudam**: hoje fixam `h-56` (área e barras) e `h-40` (rosca) no `ChartContainer`. A tela que quer mais altura no desktop envolve o gráfico num contêiner com uma variante de seletor do Tailwind: `lg:[&_[data-slot=chart]]:h-72` (área e barras, 288 px) ou `lg:[&_[data-slot=chart]]:h-48` (rosca, 192 px). Funciona porque o `ChartContainer` marca `data-slot="chart"` e o seletor composto (`.x [data-slot=chart]`) tem especificidade maior que a de `.h-56`. Descartado: prop `altura` nos três gráficos (mexe em contrato de componente existente por causa de uma classe de tela) e `aspect-ratio` (a proporção muda a altura com a largura, que o desktop quer fixa). Tela que não pede mais altura não faz nada.
+
+### 11.7 Compostos em tela larga
+
+- **`CardsResumo`** (D4): abaixo de `md:` continua faixa com rolagem horizontal (§3). A partir de `md:` vira grade que quebra linha em vez de rolar: o contêiner ganha `md:grid md:grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] md:gap-3 md:overflow-x-visible md:pb-0` e os filhos `md:[&>*]:w-auto md:[&>*]:min-w-0` (a largura de 144 px passa a ser o **mínimo** da trilha, não a largura fixa). Resultado: 3 ou 4 cards cabem lado a lado numa coluna de 720 ou 960 px e viram 2 por linha na lateral de 320 do Controle. `snap-*` e `overflow-x-auto` ficam inertes. Descartado: manter a rolagem lateral no desktop (esconde cards com 700 px livres ao lado) e `grid-cols-3` fixo (o Controle tem 4 cards e a lateral só comporta 2).
+- **`VisoesControle`** (D4): `md:` em diante a barra de abas **não ocupa mais a largura toda** (`md:w-fit`) e as abas voltam ao tamanho padrão de `tabs.tsx` (`md:px-4 md:text-14`; a variante `px-1 text-13` é só de 328 px). No `lg:` ela vai à esquerda da 2ª linha do bloco (§11.4).
+- **`CabecalhoTela`** (D4): em tela de detalhe (com `voltarPara`) o título de 18 centralizado vira, a partir de `md:`, `md:text-left md:text-22 md:font-bold` ao lado do botão Voltar (centralizar um título em 960 ou 1120 px o afasta do botão); sem `voltarPara` já é `text-22 font-bold` à esquerda. A altura de 44 px e a ação à direita não mudam.
+- **`CartaoDestaque`, `ItemLancamento`, `CardCartao`, `CardConta`, `CardMeta`**: **sem mudança**. São blocos de largura natural que preenchem a trilha da grade (`w-full`/fluidos hoje).
+
+### 11.8 Camadas em tela larga: só CSS nos primitivos (D3)
+
+`BottomSheet`, `MenuMais`, `MenuCadastros`, `FiltrosLista`, `DialogoAlcance` (todos sobre `Sheet`) e `DialogoConfirmacao` (sobre `AlertDialog`) viram diálogo central **a partir de `md:`** por classes de `sheet.tsx`, `dialog.tsx` e `alert-dialog.tsx`. Nenhum componente do app muda e nenhum componente é trocado em tempo de execução. Motivo: o mesmo elemento do Radix permanece montado; `useFecharComVoltar` (uma entrada de histórico por camada, §10.3), armadilha de foco, `Esc`, `aria-modal` e devolução do foco seguem iguais nos três tamanhos, inclusive se a janela mudar de tamanho com a camada aberta. Descartado: dois componentes (`Sheet` no celular e `Dialog` no desktop) escolhidos por hook de mídia: o redimensionar com a camada aberta desmontaria uma e montaria a outra, repetindo a entrada de histórico e perdendo o foco.
+
+`sheet.tsx` (`SheetContent`):
+- **Breakpoint** de `sm:` para `md:` (768): `md:inset-auto md:top-1/2 md:left-1/2 md:max-w-lg md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-3xl`. Abaixo disso é a folha inferior de hoje, com `max-w-160` e `mx-auto` para não ficar de ponta a ponta num celular deitado de 700 px.
+- **Animação**: a de entrada e saída de baixo vale só abaixo de `md:`; a partir dele zera o deslize e usa zoom: `md:data-[state=open]:slide-in-from-bottom-0 md:data-[state=open]:zoom-in-95 md:data-[state=closed]:slide-out-to-bottom-0 md:data-[state=closed]:zoom-out-95` (mantém `fade`, `motion-reduce:animate-none motion-reduce:transition-none`). Conferir no navegador que o `translate` de centralização e o do `tw-animate-css` se compõem sem salto.
+- **Alça** (a barrinha do alto): `md:hidden` (`sm:hidden` hoje).
+- **Largura de formulário**: `md:max-w-lg` (512 px) para todos os usos do `Sheet` (formulários de lançamento, menus, filtros, alcance). `max-h-[92dvh]` fica.
+
+`dialog.tsx` e `alert-dialog.tsx`: já são centralizados nos três tamanhos; só a largura muda, de `max-w-78` para `max-w-78 md:max-w-sm` (§10.3). O resto (ícone, ações em largura total, sem fechar por toque no véu) não muda.
+
+### 11.9 Unidades do desktop (cada uma fecha com `tsc --noEmit` e `eslint .` limpos)
+
+Cada tarefa lê só as seções citadas. O celular não pode mudar: toda classe nova leva prefixo `md:` ou `lg:` (ou é o padrão de §11.5 já limitado por `lg:`); conferir a 360 px que o resultado é o de antes.
+
+| Unidade | Faz | Arquivos | Pronto quando |
+|---|---|---|---|
+| D1 Barras | cria `abas.ts` com `ABAS`; cria `BarraLateral` (§11.2); `BarraInferior` passa a importar `ABAS` (sem mudar visual nem props) | `frontend/src/componentes/abas.ts` (novo), `frontend/src/componentes/BarraLateral.tsx` (novo), `frontend/src/componentes/BarraInferior.tsx` | `BarraLateral` com o botão "Novo lançamento" abrindo `MenuMais`, `nav` "Principal" e 5 `NavLink`s com `aria-current` na ativa; `BarraInferior` idêntica a hoje; as duas importam de `abas.ts`; sem `dark:`, hex nem `opacity-*` |
+| D2 Casca | `Shell` com `useTelaLarga` (§11.3), contêiner em linha, `<main>` de largura total e `div` de coluna por breakpoint (§11.4); `tokens.css` zera `--altura-barra` em `lg` (§11.2); depende de D1 | `frontend/src/componentes/Shell.tsx`, `frontend/src/tema/tokens.css` | a 1280 px: lateral à esquerda, sem barra inferior, sem respiro de 144, rolagem na borda da janela; a 1023 e 360 px: barra inferior e respiro de antes; `matchMedia` ausente cai na barra inferior |
+| D3 Camadas | `Sheet` a partir de `md:`, sem alça, com zoom; largura de `Dialog` e `AlertDialog` (§11.8) | `frontend/src/components/ui/sheet.tsx`, `frontend/src/components/ui/dialog.tsx`, `frontend/src/components/ui/alert-dialog.tsx` | abaixo de 768 px as 3 camadas são idênticas a hoje (a folha ganha só `max-w-160`); a partir de 768 o `Sheet` é diálogo de 512 px centralizado, sem alça; confirmações de 384 px; `Esc`, foco e voltar intactos |
+| D4 Compostos | `CardsResumo` em grade, `VisoesControle` e `CabecalhoTela` conforme §11.7 | `frontend/src/componentes/CardsResumo.tsx`, `frontend/src/componentes/VisoesControle.tsx`, `frontend/src/componentes/CabecalhoTela.tsx` | a 360 px nada muda e a faixa ainda rola dentro do contêiner; a 768 a faixa é grade sem rolagem; abas e título de detalhe como §11.7 |
+| D5 Início e Projeção | grade das rotas `/` e `/projecao` (§11.6, §11.6.1); depende de D2 | `frontend/src/paginas/inicio/Inicio.tsx`, `frontend/src/paginas/inicio/Projecao.tsx` | linha de §11.6 cumprida em 360, 768 e 1280 px |
+| D6 Controle | `/controle`, `/controle/contas/:contaId`, `/controle/balanco`, `/controle/proporcao`; depende de D2 e D4 | `frontend/src/paginas/controle/Controle.tsx`, `ControleConta.tsx`, `Balanco.tsx`, `Proporcao.tsx` | bloco fixo de §11.4 e linhas de §11.6 cumpridos |
+| D7 Cadastros do Controle | `/controle/contas`, `/controle/contas/arquivadas`, `/controle/categorias`, `/controle/tags`; depende de D2 e D4 | `frontend/src/paginas/controle/Contas.tsx`, `ContasArquivadas.tsx`, `Categorias.tsx`, `Tags.tsx` | linhas de §11.6 |
+| D8 Relatórios | índice e os 3 relatórios; depende de D2 e D4 | `frontend/src/paginas/controle/Relatorios.tsx`, `RelatorioBalanco.tsx`, `RelatorioDespesas.tsx`, `RelatorioProporcao.tsx` | linhas de §11.6 e §11.6.1 |
+| D9 Cartões | `/cartoes`, `/cartoes/novo`, `/cartoes/:cartaoId`, fatura; depende de D2 e D4 | `frontend/src/paginas/cartoes/Cartoes.tsx`, `CadastroCartao.tsx`, `DetalheCartao.tsx`, `Fatura.tsx` | linhas de §11.6 |
+| D10 Metas | `/metas`, `/metas/:metaId` e o histórico; depende de D2 | `frontend/src/paginas/metas/Metas.tsx`, `DetalheMeta.tsx`, `HistoricoMeta.tsx` | linhas de §11.6 |
+| D11 Planejamento e Orçamento | `/planejamento` e `/planejamento/orcamento` com comparação e limites; depende de D2 e D4 | `frontend/src/paginas/planejamento/Planejamento.tsx`, `Orcamento.tsx`, `ComparacaoOrcamento.tsx`, `LimitesCategorias.tsx` | linhas de §11.6 |
+| D12 Cenários e Plano de metas | `/planejamento/cenarios`, `/cenarios/:cenarioId`, `/plano-de-metas`; depende de D2 | `frontend/src/paginas/planejamento/PlanoMetas.tsx`, `Cenarios.tsx`, `Cenario.tsx`, `ResultadoCenario.tsx` | linhas de §11.6 |
+| D13 Configurações | `/configuracoes` e as 3 subtelas; depende de D2 | `frontend/src/paginas/configuracoes/Configuracoes.tsx`, `Perfil.tsx`, `Senha.tsx`, `Vinculo.tsx` | linhas de §11.6 |
+
+D3 e D4 não dependem de D1 e D2; D5 a D13 dependem de D2 (largura da coluna) e, onde dito, de D4. Arquivo que precise mudar fora destes grupos entra como pendência da tarefa, não na tabela.
+
+### 11.10 Riscos
+
+- **Os dois 64rem** (consulta de mídia do `Shell` e `@media` do `tokens.css`) podem divergir de `lg:` se alguém trocar o breakpoint: ficam com comentário cruzado; consequência de divergir é respiro de 144 px sem barra, ou barra sem respiro, só na faixa trocada.
+- **`lateral` em 1024 px**: a coluna da lista fica com ~390 px (784 menos 48 de respiro, 320 de lateral e 24 de vão), parecida com a do celular; se a lista de lançamentos ficar apertada nessa largura, a lateral desce abaixo da lista até `xl:`. A avaliar na tarefa D6, com o resultado registrado.
+- **Grade de alturas diferentes** (`duas` na Início): blocos curtos deixam vazio ao lado de blocos altos. Aceito: reordenar por altura mudaria a ordem de leitura do celular.
+- **Animação do `Sheet` em `md:`**: se o deslize e o zoom saltarem ao compor com o `translate` de centralização, a saída é animar só `fade` na faixa `md:`.
+- **Testes**: a barra lateral e as classes de camada não são exercitáveis no jsdom (sem CSS); a lateral precisa do stub de `matchMedia` com `matches: true`, e o resto se confere no navegador em 360, 768 e 1280 px.
