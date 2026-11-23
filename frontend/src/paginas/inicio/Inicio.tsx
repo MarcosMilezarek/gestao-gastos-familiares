@@ -19,24 +19,26 @@ export function Inicio() {
     consulta.error instanceof ApiError ? consulta.error.mensagem : 'Erro inesperado. Tente novamente.'
 
   return (
-    <div className="flex flex-col gap-6 p-4">
-      <CabecalhoTela
-        titulo="Início"
-        acao={
-          <Button asChild variant="secondary" size="icon">
-            <Link to="/configuracoes" aria-label="Configurações">
-              <Settings aria-hidden="true" />
-            </Link>
-          </Button>
-        }
-      />
+    <div className="flex flex-col gap-6 p-4 md:p-6 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6">
+      <div className="lg:col-span-2">
+        <CabecalhoTela
+          titulo="Início"
+          acao={
+            <Button asChild variant="secondary" size="icon">
+              <Link to="/configuracoes" aria-label="Configurações">
+                <Settings aria-hidden="true" />
+              </Link>
+            </Button>
+          }
+        />
+      </div>
 
       {consulta.isError && (
-        <p role="alert" className="text-14 text-saida-texto">
+        <p role="alert" className="text-14 text-saida-texto lg:col-span-2">
           {erroConsulta}
         </p>
       )}
-      {!consulta.data && !consulta.isError && <p className="text-14 text-muted-foreground">Carregando…</p>}
+      {!consulta.data && !consulta.isError && <p className="text-14 text-muted-foreground lg:col-span-2">Carregando…</p>}
       {consulta.data && <BlocosResumo inicio={consulta.data} />}
       {consulta.data && <BlocosAnalise inicio={consulta.data} />}
     </div>

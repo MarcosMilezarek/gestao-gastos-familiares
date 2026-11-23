@@ -69,13 +69,15 @@ export function BlocosResumo({ inicio }: BlocosResumoProps) {
   return (
     <>
       {conjunta && (
-        <CartaoDestaque rotulo="Saldo da conta conjunta" valor={conjunta.saldo_atual} chips={chips} />
+        <div className="lg:col-span-2">
+          <CartaoDestaque rotulo="Saldo da conta conjunta" valor={conjunta.saldo_atual} chips={chips} />
+        </div>
       )}
 
       {saldos.length === 0 && <EstadoVazio compacto frase="Nenhuma conta ativa ainda." />}
 
       {(contasNaLista.length > 0 || (saldos.length > 0 && !conjunta)) && (
-        <section className="flex flex-col gap-2">
+        <section className="flex flex-col gap-2 lg:min-w-0">
           <TituloBloco titulo="Saldos" />
           <ul className="flex flex-col gap-2">
             {contasNaLista.map((conta) => (
@@ -94,7 +96,7 @@ export function BlocosResumo({ inicio }: BlocosResumoProps) {
         </section>
       )}
 
-      <section className="flex flex-col gap-2">
+      <section className="flex flex-col gap-2 lg:min-w-0">
         <TituloBloco titulo="Aporte do mês" />
         {inicio.proporcao ? (
           <CardsProporcao proporcao={inicio.proporcao} acaoPessoa={botaoAporte} />
@@ -103,7 +105,7 @@ export function BlocosResumo({ inicio }: BlocosResumoProps) {
         )}
       </section>
 
-      <section className="flex flex-col gap-2">
+      <section className="flex flex-col gap-2 lg:min-w-0">
         <TituloBloco titulo="A confirmar e atrasadas" />
         {inicio.pendentes.length === 0 ? (
           <EstadoVazio compacto frase="Nenhum lançamento a confirmar." />

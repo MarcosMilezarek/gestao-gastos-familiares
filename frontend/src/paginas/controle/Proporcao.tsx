@@ -29,11 +29,17 @@ export function Proporcao() {
   const semVinculo = consulta.error instanceof ApiError && consulta.error.codigo === 'SEM_VINCULO'
 
   return (
-    <div className="flex flex-col gap-4 px-4 pb-4">
-      <div className="sticky top-0 z-10 flex flex-col gap-2 bg-background pb-2">
-        <SeletorMes mes={mes} onMudar={setMes} />
-        <CabecalhoTela titulo="Proporção e aporte do mês" />
-        <VisoesControle mes={mes} />
+    <div className="flex flex-col gap-4 px-4 pb-4 md:px-6 md:pb-6">
+      <div className="sticky top-0 z-10 flex flex-col gap-2 bg-background pb-2 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-4 lg:gap-y-2">
+        <div className="lg:col-start-2 lg:row-start-2 lg:w-72">
+          <SeletorMes mes={mes} onMudar={setMes} />
+        </div>
+        <div className="lg:col-span-2 lg:row-start-1">
+          <CabecalhoTela titulo="Proporção e aporte do mês" />
+        </div>
+        <div className="lg:col-start-1 lg:row-start-2">
+          <VisoesControle mes={mes} />
+        </div>
       </div>
 
       {semVinculo && (
@@ -53,8 +59,8 @@ export function Proporcao() {
       {!dados && !consulta.isError && <p className="m-0 text-muted-foreground">Carregando…</p>}
 
       {dados && (
-        <>
-          <section>
+        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6">
+          <section className="lg:min-w-0">
             <Card>
               <TituloBloco titulo="Base de despesas do casal" />
               <Dinheiro valor={dados.base_despesas_casal} />
@@ -63,8 +69,10 @@ export function Proporcao() {
               )}
             </Card>
           </section>
-          <CardsProporcao proporcao={dados} />
-        </>
+          <div className="lg:min-w-0">
+            <CardsProporcao proporcao={dados} />
+          </div>
+        </div>
       )}
     </div>
   )

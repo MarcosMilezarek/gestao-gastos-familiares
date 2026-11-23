@@ -24,11 +24,20 @@ export function Relatorios() {
   const { mes, setMes } = useMes()
 
   return (
-    <div className="flex flex-col gap-4 p-4">
-      <SeletorMes mes={mes} onMudar={setMes} />
-      <CabecalhoTela titulo="Relatórios" />
-      <VisoesControle mes={mes} />
-      <Card className="gap-0 p-2">
+    <div className="flex flex-col gap-4 px-4 pb-4 md:px-6 md:pb-6">
+      <div className="sticky top-0 z-10 flex flex-col gap-2 bg-background pb-2 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-4 lg:gap-y-2">
+        <div className="lg:col-start-2 lg:row-start-2 lg:w-72">
+          <SeletorMes mes={mes} onMudar={setMes} />
+        </div>
+        <div className="lg:col-span-2 lg:row-start-1">
+          <CabecalhoTela titulo="Relatórios" />
+        </div>
+        <div className="lg:col-start-1 lg:row-start-2">
+          <VisoesControle mes={mes} />
+        </div>
+      </div>
+
+      <Card className="gap-0 p-2 lg:max-w-160">
         <nav aria-label="Relatórios" className="flex flex-col">
           {RELATORIOS.map(({ tipo, rotulo, icone }) => (
             <Link
@@ -64,7 +73,7 @@ export function RelatorioPorTipo() {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4 md:p-6 lg:mx-auto lg:w-full lg:max-w-160">
       <CabecalhoTela titulo="Relatórios" voltarPara={`/controle/relatorios?mes=${mes}`} />
       <Card>
         <EstadoVazio frase="Relatório não encontrado." compacto />
