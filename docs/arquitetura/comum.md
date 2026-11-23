@@ -49,12 +49,12 @@ Runtimes: **Python 3.14**, **Node 26**, **MySQL 8.4**. Os números abaixo são *
 | @tanstack/react-query | ^5.90 | dep | estado do servidor (cache e invalidação) |
 | recharts | ^3.3 | dep | rosca, área e barras (fatia 5 em diante) |
 | lucide-react | >=0.540.0 <1 | dep | ícones (inclui os ícones escolhidos para categorias e metas) |
-| radix-ui | ^1.4 | dep | primitivos acessíveis (dialog, alert-dialog, tabs, switch, checkbox, radio-group, toggle-group, avatar, progress, label, separator, slot) que os arquivos do shadcn/ui importam; pacote único em vez de `@radix-ui/*` |
+| radix-ui | ^1.8 | dep | primitivos acessíveis (dialog, alert-dialog, tabs, switch, checkbox, radio-group, toggle-group, avatar, progress, label, separator, slot) que os arquivos do shadcn/ui importam; pacote único em vez de `@radix-ui/*` |
 | class-variance-authority | ^0.7 | dep | variantes de `Button`, `Badge` e afins |
-| clsx, tailwind-merge | ^2.1, ^3.3 | dep | `cn()` em `src/lib/utils.ts` (`tailwind-merge` 3 é o da v4 do Tailwind) |
-| @fontsource-variable/geist | ^5.2 | dep | fonte Geist empacotada (sem CDN), importada em `main.tsx` |
-| tailwindcss, @tailwindcss/vite | ^4.1 | dev | estilo por classes utilitárias; plugin do Vite, sem `tailwind.config` nem PostCSS |
-| tw-animate-css | ^1.3 | dev | animações de entrada e saída das camadas (CSS importado em `tokens.css`) |
+| clsx, tailwind-merge | ^2.1, ^3.7 | dep | `cn()` em `src/lib/utils.ts` (`tailwind-merge` 3 é o da v4 do Tailwind) |
+| @fontsource-variable/geist | ^5.3 | dep | fonte Geist empacotada (sem CDN), importada em `main.tsx` |
+| tailwindcss, @tailwindcss/vite | ^4.3 | dev | estilo por classes utilitárias; plugin do Vite, sem `tailwind.config` nem PostCSS |
+| tw-animate-css | ^1.4 | dev | animações de entrada e saída das camadas (CSS importado em `tokens.css`) |
 | vite | ^7.1 | dev | bundler e servidor de desenvolvimento |
 | @vitejs/plugin-react | ^5.0 | dev | |
 | typescript | ^5.9 | dev | |
