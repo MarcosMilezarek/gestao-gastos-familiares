@@ -6,7 +6,6 @@ import { FormDespesaReceita } from '../formularios/FormDespesaReceita'
 import { FormTransferencia } from '../formularios/FormTransferencia'
 import { FormulariosProvider, useFormularios } from '../formularios/FormulariosProvider'
 import { BarraInferior } from './BarraInferior'
-import styles from './shell.module.css'
 
 export function Shell() {
   return (
@@ -18,8 +17,8 @@ export function Shell() {
 
 function Conteudo() {
   return (
-    <div className={styles.coluna}>
-      <main className={styles.conteudo}>
+    <div className="flex h-dvh flex-col">
+      <main className="mx-auto min-h-0 w-full max-w-160 flex-1 overflow-y-auto pb-[calc(var(--altura-barra)+env(safe-area-inset-bottom))]">
         <Outlet />
       </main>
       <BarraInferior />
