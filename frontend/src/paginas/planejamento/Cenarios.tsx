@@ -42,7 +42,7 @@ export function Cenarios() {
   })
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4 md:p-6">
       <CabecalhoTela
         titulo="Cenários"
         voltarPara="/planejamento"
@@ -74,9 +74,9 @@ export function Cenarios() {
       )}
 
       {dados && dados.length > 0 && (
-        <ul className="m-0 flex list-none flex-col gap-3 p-0">
+        <ul className="m-0 grid list-none gap-3 p-0 md:grid-cols-2 md:gap-4 lg:grid-cols-3">
           {dados.map((cenario) => (
-            <li key={cenario.id}>
+            <li key={cenario.id} className="min-w-0">
               <Card className="flex flex-col gap-2 p-4">
                 <Link
                   to={`/planejamento/cenarios/${cenario.id}`}

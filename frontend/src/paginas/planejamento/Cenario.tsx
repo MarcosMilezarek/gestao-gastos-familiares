@@ -120,7 +120,7 @@ export function Cenario() {
   })
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="mx-auto flex w-full max-w-240 flex-col gap-4 p-4 md:p-6">
       <CabecalhoTela titulo={cenario?.nome ?? 'Cenário'} voltarPara="/planejamento/cenarios" />
 
       {naoEncontrado && (
@@ -141,8 +141,8 @@ export function Cenario() {
       {!cenario && !consulta.isError && idValido && <p className="text-muted-foreground">Carregando…</p>}
 
       {cenario && (
-        <>
-          <Card className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6">
+          <Card className="flex min-w-0 flex-col gap-3">
             <TituloBloco
               titulo="Itens"
               acaoRotulo="Adicionar item"
@@ -163,7 +163,7 @@ export function Cenario() {
           </Card>
 
           <ResultadoCenario resultado={cenario.resultado} />
-        </>
+        </div>
       )}
 
       {cenario && formulario && (
