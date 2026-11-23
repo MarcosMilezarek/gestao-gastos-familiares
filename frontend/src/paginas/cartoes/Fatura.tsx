@@ -125,7 +125,7 @@ export function Fatura() {
     excluir.error instanceof ApiError ? excluir.error.mensagem : 'Erro inesperado. Tente novamente.'
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4 md:mx-auto md:w-full md:max-w-240 md:p-6">
       <CabecalhoTela titulo={fatura?.cartao_nome ?? 'Fatura'} voltarPara={`/cartoes/${cartaoId}`} />
 
       {PADRAO_MES.test(mes) && (
@@ -144,68 +144,73 @@ export function Fatura() {
 
       {fatura && (
         <>
-          <CartaoDestaque rotulo="Valor da fatura" valor={fatura.valor} chips={[]} />
+          <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6">
+            <div className="flex min-w-0 flex-col gap-4">
+              <CartaoDestaque rotulo="Valor da fatura" valor={fatura.valor} chips={[]} />
 
-          <Card>
-            <StatusFatura status={fatura.status} />
-            <dl className="flex flex-col gap-2 text-16">
-              <div className="flex items-center justify-between gap-3">
-                <dt className="text-muted-foreground">Fechamento</dt>
-                <dd className="tabular-nums">{formatarData(fatura.fechamento)}</dd>
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <dt className="text-muted-foreground">Vencimento</dt>
-                <dd className="tabular-nums">{formatarData(fatura.vencimento)}</dd>
-              </div>
-              {!eZero(fatura.credito_recebido) && (
-                <div className="flex items-center justify-between gap-3">
-                  <dt className="text-muted-foreground">Crédito de estorno</dt>
-                  <dd className="tabular-nums">
-                    <Dinheiro valor={fatura.credito_recebido} tipo="entrada" />
-                  </dd>
+              <Card>
+                <StatusFatura status={fatura.status} />
+                <dl className="flex flex-col gap-2 text-16">
+                  <div className="flex items-center justify-between gap-3">
+                    <dt className="text-muted-foreground">Fechamento</dt>
+                    <dd className="tabular-nums">{formatarData(fatura.fechamento)}</dd>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <dt className="text-muted-foreground">Vencimento</dt>
+                    <dd className="tabular-nums">{formatarData(fatura.vencimento)}</dd>
+                  </div>
+                  {!eZero(fatura.credito_recebido) && (
+                    <div className="flex items-center justify-between gap-3">
+                      <dt className="text-muted-foreground">Crédito de estorno</dt>
+                      <dd className="tabular-nums">
+                        <Dinheiro valor={fatura.credito_recebido} tipo="entrada" />
+                      </dd>
+                    </div>
+                  )}
+                </dl>
+              </Card>
+
+              <AcoesPagamento fatura={fatura} aoPagar={() => setPagarAberto(true)} />
+
+              {fatura.editavel && (
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => abrir('cartao', { cartao_id: id, fatura_mes: mes })}
+                  >
+                    Nova compra
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" onClick={() => setEstornoAberto(true)}>
+                    Lançar estorno
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" onClick={() => setAjustarAberto(true)}>
+                    Ajustar fatura
+                  </Button>
                 </div>
               )}
-            </dl>
-          </Card>
 
-          <AcoesPagamento fatura={fatura} aoPagar={() => setPagarAberto(true)} />
-
-          {fatura.editavel && (
-            <div className="flex flex-wrap gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => abrir('cartao', { cartao_id: id, fatura_mes: mes })}
-              >
-                Nova compra
-              </Button>
-              <Button type="button" variant="outline" size="sm" onClick={() => setEstornoAberto(true)}>
-                Lançar estorno
-              </Button>
-              <Button type="button" variant="outline" size="sm" onClick={() => setAjustarAberto(true)}>
-                Ajustar fatura
-              </Button>
             </div>
-          )}
 
-          <Card>
-            <TituloBloco titulo="Itens" />
-            {fatura.itens.length === 0 ? (
-              <EstadoVazio compacto frase="Nenhum item nesta fatura." />
-            ) : (
-              <ul className="flex flex-col gap-3">
-                {fatura.itens.map((item) => (
-                  <ItemFaturaLinha
-                    key={item.id}
-                    item={item}
-                    aoEditar={fatura.editavel ? () => editar(item) : undefined}
-                    aoExcluir={fatura.editavel ? () => pedirExclusao(item) : undefined}
-                  />
-                ))}
-              </ul>
-            )}
-          </Card>
+            <Card className="min-w-0">
+              <TituloBloco titulo="Itens" />
+              {fatura.itens.length === 0 ? (
+                <EstadoVazio compacto frase="Nenhum item nesta fatura." />
+              ) : (
+                <ul className="flex flex-col gap-3">
+                  {fatura.itens.map((item) => (
+                    <ItemFaturaLinha
+                      key={item.id}
+                      item={item}
+                      aoEditar={fatura.editavel ? () => editar(item) : undefined}
+                      aoExcluir={fatura.editavel ? () => pedirExclusao(item) : undefined}
+                    />
+                  ))}
+                </ul>
+              )}
+            </Card>
+          </div>
 
           {pagarAberto && (
             <PagarFatura fatura={fatura} aoFechar={() => setPagarAberto(false)} />
