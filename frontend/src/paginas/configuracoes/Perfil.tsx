@@ -62,7 +62,7 @@ function PerfilFormulario({ nomeInicial }: { nomeInicial: string }) {
   }, [salvarNome.error])
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4">
       <CabecalhoTela titulo="Perfil e tema" voltarPara="/configuracoes" />
 
       <Card>

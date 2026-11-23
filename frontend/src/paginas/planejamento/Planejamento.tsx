@@ -14,7 +14,7 @@ const ENTRADAS = [
 // Menu da aba Planejamento (RF-7.02): só links para as telas da fatia.
 export function Planejamento() {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4">
       <CabecalhoTela titulo="Planejamento" />
 
       <nav aria-label="Planejamento">

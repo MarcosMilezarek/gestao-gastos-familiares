@@ -141,7 +141,7 @@ export function RelatorioDespesas({ tipo }: { tipo: TipoDespesa }) {
   const consulta = tipo === 'categorias' ? categorias : tipo === 'donos' ? donos : contas
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4">
       <SeletorMes mes={mes} onMudar={setMes} />
       <CabecalhoTela titulo={TITULOS[tipo]} voltarPara={`/controle/relatorios?mes=${mes}`} />
 

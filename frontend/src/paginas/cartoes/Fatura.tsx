@@ -125,7 +125,7 @@ export function Fatura() {
     excluir.error instanceof ApiError ? excluir.error.mensagem : 'Erro inesperado. Tente novamente.'
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4">
       <CabecalhoTela titulo={fatura?.cartao_nome ?? 'Fatura'} voltarPara={`/cartoes/${cartaoId}`} />
 
       {PADRAO_MES.test(mes) && (
