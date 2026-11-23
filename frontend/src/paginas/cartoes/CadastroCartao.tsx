@@ -4,11 +4,12 @@ import { Link, useNavigate } from 'react-router'
 import { ApiError, repetirSem4xx } from '../../api/cliente'
 import { criarCartao } from '../../api/cartoes'
 import { listarContas } from '../../api/contas'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
 import { Campo } from '../../componentes/Campo'
-import estado from '../../componentes/estado.module.css'
 import { mascararEntrada, paraApi } from '../../formatacao/dinheiro'
-import configuracoes from '../configuracoes/configuracoes.module.css'
-import styles from './formCartao.module.css'
 
 export type ValoresCartao = {
   nome: string
@@ -47,40 +48,35 @@ export function CamposCartao({ valores, erros, aoMudar, ajusteDias }: CamposCart
   return (
     <>
       <Campo rotulo="Nome" erro={erros.nome}>
-        <input
-          className={configuracoes.entrada}
+        <Input
           value={valores.nome}
           onChange={(evento) => aoMudar({ nome: evento.target.value })}
           autoComplete="off"
         />
       </Campo>
       <Campo rotulo="Limite" erro={erros.limite}>
-        <input
-          className={configuracoes.entrada}
+        <Input
           inputMode="numeric"
           value={valores.limite}
           onChange={(evento) => aoMudar({ limite: mascararEntrada(evento.target.value) })}
         />
       </Campo>
       <Campo rotulo="Dia de fechamento" erro={erros.dia_fechamento} ajuda={ajusteDias}>
-        <input
-          className={configuracoes.entrada}
+        <Input
           inputMode="numeric"
           value={valores.diaFechamento}
           onChange={(evento) => aoMudar({ diaFechamento: apenasDia(evento.target.value) })}
         />
       </Campo>
       <Campo rotulo="Dia de vencimento" erro={erros.dia_vencimento} ajuda={ajusteDias}>
-        <input
-          className={configuracoes.entrada}
+        <Input
           inputMode="numeric"
           value={valores.diaVencimento}
           onChange={(evento) => aoMudar({ diaVencimento: apenasDia(evento.target.value) })}
         />
       </Campo>
       <Campo rotulo="Bandeira (opcional)" erro={erros.bandeira}>
-        <input
-          className={configuracoes.entrada}
+        <Input
           value={valores.bandeira}
           onChange={(evento) => aoMudar({ bandeira: evento.target.value })}
           autoComplete="off"
@@ -150,35 +146,33 @@ export function CadastroCartao() {
   const semContas = contas.data !== undefined && contas.data.contas.length === 0
 
   return (
-    <div className={styles.pagina}>
-      <Link to="/cartoes" className={estado.voltar}>
-        Cartões
-      </Link>
-      <h1 className={styles.titulo}>Novo cartão</h1>
+    <div className="flex flex-col gap-4">
+      <CabecalhoTela titulo="Novo cartão" voltarPara="/cartoes" />
 
       {contas.isError && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="text-14 text-saida-texto">
           {contas.error instanceof ApiError
             ? contas.error.mensagem
             : 'Erro inesperado. Tente novamente.'}
         </p>
       )}
       {aviso && (
-        <p role="alert" className={configuracoes.aviso}>
+        <p role="alert" className="text-14 text-saida-texto">
           {aviso}
         </p>
       )}
       {semContas && (
-        <p className={styles.aviso}>
+        <p className="text-14 text-muted-foreground">
           Cadastre uma conta antes de criar o cartão.{' '}
-          <Link to="/controle/contas">Ir para Contas</Link>
+          <Link to="/controle/contas" className="font-semibold text-primary-texto underline">
+            Ir para Contas
+          </Link>
         </p>
       )}
 
-      <form ref={formRef} className={styles.formulario} onSubmit={enviar}>
+      <form ref={formRef} className="flex flex-col gap-4" onSubmit={enviar}>
         <Campo rotulo="Conta dona" erro={erros.conta_id}>
-          <select
-            className={configuracoes.entrada}
+          <Select
             value={contaId}
             onChange={(evento) => setContaId(evento.target.value)}
             disabled={contas.isPending || semContas}
@@ -189,14 +183,14 @@ export function CadastroCartao() {
                 {conta.nome}
               </option>
             ))}
-          </select>
+          </Select>
         </Campo>
 
         <CamposCartao valores={valores} erros={erros} aoMudar={(parcial) => setValores({ ...valores, ...parcial })} />
 
-        <button type="submit" className={configuracoes.botao} disabled={criar.isPending}>
+        <Button type="submit" className="w-full" disabled={criar.isPending}>
           Salvar
-        </button>
+        </Button>
       </form>
     </div>
   )
