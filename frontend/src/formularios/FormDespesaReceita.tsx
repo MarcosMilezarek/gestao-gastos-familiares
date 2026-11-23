@@ -2,14 +2,13 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { ApiError } from '../api/cliente'
 import type { LancamentoSaida } from '../api/lancamentos'
 import type { Sessao } from '../api/sessao'
+import { Button } from '@/components/ui/button'
 import { BottomSheet } from '../componentes/BottomSheet'
 import type { Alcance } from '../componentes/DialogoAlcance'
-import estado from '../componentes/estado.module.css'
 import { paraApi } from '../formatacao/dinheiro'
 import { useSessao } from '../hooks/useSessao'
 import { CampoRecorrencia, type ValorRecorrencia } from './CampoRecorrencia'
 import { CamposLancamento, type ValoresCampos } from './CamposLancamento'
-import css from './formularios.module.css'
 import { useSalvarLancamento } from './useSalvarLancamento'
 import {
   corpoAlcanceMultiplo,
@@ -157,24 +156,19 @@ function FormularioAberto({
       aoFechar={aoFechar}
       rodape={
         <>
+          <Button type="button" disabled={salvar.isPending} onClick={() => enviar(true)}>
+            Salvar
+          </Button>
           {!editando && (
-            <button
+            <Button
               type="button"
-              className={estado.acao}
+              variant="outline"
               disabled={salvar.isPending}
               onClick={() => enviar(false)}
             >
               Salvar e criar nova
-            </button>
+            </Button>
           )}
-          <button
-            type="button"
-            className={estado.acao}
-            disabled={salvar.isPending}
-            onClick={() => enviar(true)}
-          >
-            Salvar
-          </button>
         </>
       }
     >
@@ -197,7 +191,7 @@ function FormularioAberto({
           }
         />
         {erroGeral && (
-          <p role="alert" className={css.erro}>
+          <p role="alert" className="mt-4 text-14 text-saida-texto">
             {erroGeral}
           </p>
         )}
