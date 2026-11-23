@@ -112,6 +112,13 @@
   --sombra-foco-erro: rgb(255 107 107 / 24%);
 }
 
+/* No desktop a barra lateral substitui a inferior; 64rem coincide com `lg:` e com a consulta de mídia do Shell. */
+@media (min-width: 64rem) {
+  :root {
+    --altura-barra: 0px;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
