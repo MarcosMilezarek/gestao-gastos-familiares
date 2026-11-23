@@ -5,14 +5,13 @@ import { listarContas } from '../api/contas'
 import type { LancamentoSaida } from '../api/lancamentos'
 import { sugestaoAporte } from '../api/proporcao'
 import type { Sessao } from '../api/sessao'
+import { Button } from '@/components/ui/button'
 import { BottomSheet } from '../componentes/BottomSheet'
 import type { Alcance } from '../componentes/DialogoAlcance'
-import estado from '../componentes/estado.module.css'
 import { mascararEntrada, paraApi } from '../formatacao/dinheiro'
 import { useSessao } from '../hooks/useSessao'
 import { CampoRecorrencia, type ValorRecorrencia } from './CampoRecorrencia'
 import { CamposLancamento, type ValoresCampos } from './CamposLancamento'
-import css from './formularios.module.css'
 import { useSalvarLancamento } from './useSalvarLancamento'
 import {
   corpoAlcanceMultiplo,
@@ -211,23 +210,18 @@ function FormularioAberto({
       rodape={
         <>
           {!editando && (
-            <button
+            <Button
               type="button"
-              className={estado.acao}
+              variant="secondary"
               disabled={salvar.isPending}
               onClick={() => enviar(false)}
             >
               Salvar e criar nova
-            </button>
+            </Button>
           )}
-          <button
-            type="button"
-            className={estado.acao}
-            disabled={salvar.isPending}
-            onClick={() => enviar(true)}
-          >
+          <Button type="button" disabled={salvar.isPending} onClick={() => enviar(true)}>
             Salvar
-          </button>
+          </Button>
         </>
       }
     >
@@ -250,7 +244,7 @@ function FormularioAberto({
           }
         />
         {erroGeral && (
-          <p role="alert" className={css.erro}>
+          <p role="alert" className="text-14 text-saida-texto">
             {erroGeral}
           </p>
         )}

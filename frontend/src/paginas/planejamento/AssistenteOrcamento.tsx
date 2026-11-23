@@ -11,11 +11,18 @@ import {
 } from '../../api/orcamentos'
 import { BottomSheet } from '../../componentes/BottomSheet'
 import { Campo } from '../../componentes/Campo'
-import estado from '../../componentes/estado.module.css'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import { formatarBRL, mascararEntrada, paraApi } from '../../formatacao/dinheiro'
-import css from '../../formularios/formularios.module.css'
 import { LimitesCategorias, montarCategoriasCorpo, type LimitesValor } from './LimitesCategorias'
-import styles from './assistente.module.css'
+
+const CLASSE_ERRO = 'rounded-lg bg-saida-suave p-3 text-14 text-saida-texto'
+
+const PASSOS = [
+  { numero: 1, nome: 'Renda' },
+  { numero: 2, nome: 'Limites' },
+] as const
 
 // Pausa na digitação antes de consultar a prévia.
 const PAUSA_PREVIA_MS = 400
@@ -135,7 +142,8 @@ export function AssistenteOrcamento({
     placeholderData: keepPreviousData,
   })
   const previa = previaPedida === null ? null : (consulta.data ?? null)
-  const erroPrevia = previaPedida !== null && consulta.error instanceof ApiError ? consulta.error : null
+  const erroPrevia =
+    previaPedida !== null && consulta.error instanceof ApiError ? consulta.error : null
 
   const salvar = useMutation({
     mutationFn: (corpo: OrcamentoEntrada) =>
@@ -169,7 +177,9 @@ export function AssistenteOrcamento({
     evento.preventDefault()
     setAviso(null)
     setAvisosCategorias([])
-    const percentualInvalido = { percentual_economia: 'Informe um percentual de 0 a 100.' }
+    const percentualInvalido = {
+      percentual_economia: 'Informe um percentual de 0 a 100.',
+    }
     if (entrada === null) {
       setPasso(1)
       setErros(percentualInvalido)
@@ -189,45 +199,61 @@ export function AssistenteOrcamento({
       aoFechar={aoFechar}
       rodape={
         passo === 1 ? (
-          <button type="submit" form="form-assistente" className={estado.acao}>
+          <Button type="submit" form="form-assistente" className="w-full">
             Avançar
-          </button>
+          </Button>
         ) : (
           <>
-            <button
+            <Button
               type="button"
-              className={styles.secundario}
+              variant="secondary"
               onClick={() => setPasso(1)}
               disabled={salvar.isPending}
             >
               Voltar
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               form="form-assistente"
-              className={estado.acao}
+              className="flex-1"
               disabled={salvar.isPending}
             >
               Salvar
-            </button>
+            </Button>
           </>
         )
       }
     >
+      <ol className="mb-4 flex gap-2" aria-label="Passos">
+        {PASSOS.map(({ numero, nome }) => (
+          <li
+            key={numero}
+            aria-current={numero === passo ? 'step' : undefined}
+            className={`flex min-h-11 flex-1 items-center justify-center rounded-full border text-14 tabular-nums ${
+              numero === passo
+                ? 'border-primary bg-primary-suave font-semibold text-primary-texto'
+                : 'text-muted-foreground'
+            }`}
+          >
+            {numero}. {nome}
+          </li>
+        ))}
+      </ol>
+
       {aviso && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className={CLASSE_ERRO}>
           {aviso}
         </p>
       )}
       {avisosCategorias.length > 0 && (
-        <div role="alert" className={styles.erro}>
+        <div role="alert" className={CLASSE_ERRO}>
           {avisosCategorias.map((texto) => (
             <p key={texto}>{texto}</p>
           ))}
         </div>
       )}
       {erroPrevia && (
-        <div role="alert" className={styles.erro}>
+        <div role="alert" className={CLASSE_ERRO}>
           <p>{erroPrevia.mensagem}</p>
           {textosCategorias(erroPrevia.campos ?? {}, previaPedida?.categorias ?? [], previa).map(
             (texto) => (
@@ -237,7 +263,7 @@ export function AssistenteOrcamento({
         </div>
       )}
 
-      <form ref={formRef} id="form-assistente" className={css.campos} onSubmit={enviar}>
+      <form ref={formRef} id="form-assistente" className="flex flex-col gap-4" onSubmit={enviar}>
         {passo === 1 ? (
           <>
             <Campo
@@ -245,8 +271,7 @@ export function AssistenteOrcamento({
               erro={erros.renda}
               ajuda={`Sugerida pelos salários do mês: ${formatarBRL(rendaSugerida)}`}
             >
-              <input
-                className={css.controle}
+              <Input
                 type="text"
                 inputMode="numeric"
                 placeholder="0,00"
@@ -255,9 +280,12 @@ export function AssistenteOrcamento({
               />
             </Campo>
 
-            <Campo rotulo="Percentual para economizar" erro={erros.percentual_economia} ajuda="De 0 a 100.">
-              <input
-                className={css.controle}
+            <Campo
+              rotulo="Percentual para economizar"
+              erro={erros.percentual_economia}
+              ajuda="De 0 a 100."
+            >
+              <Input
                 type="text"
                 inputMode="decimal"
                 value={percentual}
@@ -265,16 +293,16 @@ export function AssistenteOrcamento({
               />
             </Campo>
 
-            <div className={styles.resumo} aria-live="polite">
+            <Card aria-live="polite" className="gap-2 tabular-nums">
               {previa ? (
                 <>
-                  <p className={styles.linhaResumo}>
+                  <p className="font-semibold">
                     Orçamento de gastos: {formatarBRL(previa.orcamento_gastos)}
                   </p>
-                  <p className={styles.linhaResumo}>Economia: {formatarBRL(previa.economia)}</p>
+                  <p className="font-semibold">Economia: {formatarBRL(previa.economia)}</p>
                 </>
               ) : (
-                <p className={styles.aviso}>
+                <p className="text-14 text-muted-foreground">
                   {entrada === null
                     ? 'Informe um percentual de 0 a 100 para ver os valores.'
                     : consulta.isError
@@ -282,7 +310,7 @@ export function AssistenteOrcamento({
                       : 'Calculando…'}
                 </p>
               )}
-            </div>
+            </Card>
           </>
         ) : (
           <LimitesCategorias valor={limites} previa={previa} onMudar={setLimites} />

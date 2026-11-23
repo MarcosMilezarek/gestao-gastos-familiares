@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router'
 import App from './App'
 import { TemaProvider } from './tema/TemaProvider'
+import '@fontsource-variable/geist'
 import './tema/tokens.css'
 
 const queryClient = new QueryClient({

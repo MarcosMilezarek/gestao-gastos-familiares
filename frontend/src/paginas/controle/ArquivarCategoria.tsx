@@ -7,9 +7,9 @@ import {
   type CategoriaSaida,
 } from '../../api/categorias'
 import { BottomSheet } from '../../componentes/BottomSheet'
+import { Button } from '@/components/ui/button'
+import { campoClasses } from '@/components/ui/input'
 import { Campo } from '../../componentes/Campo'
-import configuracoes from '../configuracoes/configuracoes.module.css'
-import styles from './controle.module.css'
 
 type CategoriaItem = CategoriaSaida['subcategorias'][number]
 
@@ -122,33 +122,32 @@ export function ArquivarCategoria({ categoria, modo, arvore, aoFechar }: Arquiva
       titulo={titulo}
       aoFechar={aoFechar}
       rodape={
-        <button
+        <Button
           type="button"
-          className={configuracoes.botao}
           onClick={confirmar}
           disabled={pendente || (precisaDestino && destinos.length === 0)}
         >
           {rotuloAcao}
-        </button>
+        </Button>
       }
     >
-      <div ref={corpoRef}>
-        <p>{texto}</p>
+      <div ref={corpoRef} className="flex flex-col gap-4">
+        <p className="text-16">{texto}</p>
         {raiz && (
-          <p className={styles.aviso}>As subcategorias também entram nesta ação.</p>
+          <p className="text-14 text-alerta-texto">As subcategorias também entram nesta ação.</p>
         )}
 
         {precisaDestino &&
           (destinos.length === 0 ? (
-            <p className={styles.aviso}>
+            <p className="text-14 text-alerta-texto">
               Não há outra categoria ativa do mesmo tipo para receber os lançamentos.
             </p>
           ) : (
-            <div className={configuracoes.secao}>
+            <div className="flex flex-col gap-4">
               <Campo rotulo="Categoria de destino" erro={erros.destino}>
                 <select
                   id="categoria-destino"
-                  className={configuracoes.entrada}
+                  className={campoClasses}
                   value={destinoId}
                   onChange={(evento) => setDestinoId(evento.target.value)}
                 >
@@ -164,12 +163,12 @@ export function ArquivarCategoria({ categoria, modo, arvore, aoFechar }: Arquiva
           ))}
 
         {aviso && (
-          <p role="alert" className={configuracoes.aviso}>
+          <p role="alert" className="text-14 text-saida-texto">
             {aviso}
           </p>
         )}
         {status && (
-          <p role="status" className={configuracoes.status}>
+          <p role="status" className="text-14 text-entrada-texto">
             {status}
           </p>
         )}

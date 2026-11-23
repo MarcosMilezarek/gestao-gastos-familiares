@@ -5,16 +5,16 @@ import { listarCartoes, type ItemFaturaSaida } from '../api/cartoes'
 import { ApiError, repetirSem4xx } from '../api/cliente'
 import { editarItem, lancarCompra, type CompraEntrada, type ItemEdicao } from '../api/itensFatura'
 import type { Sessao } from '../api/sessao'
+import { Button } from '@/components/ui/button'
+import { Select } from '@/components/ui/select'
 import { BottomSheet } from '../componentes/BottomSheet'
 import { Campo } from '../componentes/Campo'
 import type { Alcance } from '../componentes/DialogoAlcance'
-import estado from '../componentes/estado.module.css'
 import { mascararEntrada, paraApi } from '../formatacao/dinheiro'
 import { useSessao } from '../hooks/useSessao'
 import { CampoParcelas } from './CampoParcelas'
 import { CampoRecorrencia, type ValorRecorrencia } from './CampoRecorrencia'
 import { CamposLancamento, type ValoresCampos } from './CamposLancamento'
-import css from './formularios.module.css'
 import { SeletorFatura } from './SeletorFatura'
 import { corpoRecorrencia, valoresAbertura } from './valoresLancamento'
 
@@ -252,23 +252,18 @@ function FormularioAberto({
       rodape={
         <>
           {!editando && (
-            <button
+            <Button
               type="button"
-              className={estado.acao}
+              variant="secondary"
               disabled={salvar.isPending || semCartao}
               onClick={() => enviar(false)}
             >
               Salvar e criar nova
-            </button>
+            </Button>
           )}
-          <button
-            type="button"
-            className={estado.acao}
-            disabled={salvar.isPending || semCartao}
-            onClick={() => enviar(true)}
-          >
+          <Button type="button" disabled={salvar.isPending || semCartao} onClick={() => enviar(true)}>
             Salvar
-          </button>
+          </Button>
         </>
       }
     >
@@ -284,24 +279,23 @@ function FormularioAberto({
           dataDesabilitada={parceladaMultipla}
           forcarDetalhes={!editando && (recorrencia !== null || parcelas !== null)}
           camposEssenciais={
-            <fieldset className={css.grupo}>
+            <fieldset className="m-0 flex min-w-0 flex-col gap-4 border-0 p-0">
               {cartoes.isError && (
-                <p role="alert" className={css.erro}>
+                <p role="alert" className="text-14 text-saida-texto">
                   Não foi possível carregar os cartões. Tente novamente.
                 </p>
               )}
               {semCartao ? (
                 <p>
                   Cadastre um cartão antes de lançar uma compra.{' '}
-                  <Link to="/cartoes/novo" className={estado.voltar}>
-                    Cadastrar cartão
-                  </Link>
+                  <Button asChild variant="secondary" size="sm">
+                    <Link to="/cartoes/novo">Cadastrar cartão</Link>
+                  </Button>
                 </p>
               ) : (
                 // Na edição o cartão não muda: o PATCH não aceita `cartao_id` (fatia-4 §3.3).
                 <Campo rotulo="Cartão" erro={erros.cartao_id}>
-                  <select
-                    className={css.controle}
+                  <Select
                     value={cartaoId ?? ''}
                     disabled={editando}
                     onChange={(e) => escolherCartao(e.target.value)}
@@ -312,10 +306,10 @@ function FormularioAberto({
                         {c.nome}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </Campo>
               )}
-              <fieldset disabled={faturaTravada} className={css.grupo}>
+              <fieldset disabled={faturaTravada} className="m-0 flex min-w-0 flex-col gap-4 border-0 p-0">
                 <SeletorFatura
                   key={`${cartaoId}-${rodada}`}
                   cartaoId={cartaoId}
@@ -341,7 +335,7 @@ function FormularioAberto({
           }
         />
         {erroGeral && (
-          <p role="alert" className={css.erro}>
+          <p role="alert" className="text-14 text-saida-texto">
             {erroGeral}
           </p>
         )}

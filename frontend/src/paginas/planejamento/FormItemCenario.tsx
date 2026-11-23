@@ -10,9 +10,10 @@ import {
 import { ApiError } from '../../api/cliente'
 import { BottomSheet } from '../../componentes/BottomSheet'
 import { Campo } from '../../componentes/Campo'
-import estado from '../../componentes/estado.module.css'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
 import { eZero, mascararEntrada, paraApi } from '../../formatacao/dinheiro'
-import css from '../../formularios/formularios.module.css'
 
 // Valor do seletor de dono para despesa do casal (dono_usuario_id null).
 const CASAL = 'casal'
@@ -103,27 +104,21 @@ export function FormItemCenario({
       titulo={item ? 'Editar item' : 'Novo item'}
       aoFechar={aoFechar}
       rodape={
-        <button
-          type="submit"
-          form="form-item-cenario"
-          className={estado.acao}
-          disabled={salvar.isPending}
-        >
+        <Button type="submit" form="form-item-cenario" disabled={salvar.isPending}>
           Salvar
-        </button>
+        </Button>
       }
     >
       {aviso && (
-        <p role="alert" className={css.erro}>
+        <p role="alert" className="mb-2 text-14 text-saida-texto">
           {aviso}
         </p>
       )}
 
-      <form ref={formRef} id="form-item-cenario" className={css.campos} onSubmit={enviar}>
+      <form ref={formRef} id="form-item-cenario" className="flex flex-col gap-4" onSubmit={enviar}>
         {!item && (
           <Campo rotulo="Tipo" erro={erros.tipo}>
-            <select
-              className={css.controle}
+            <Select
               value={tipo}
               onChange={(evento) =>
                 trocarTipo(evento.target.value === 'despesa' ? 'despesa' : 'renda')
@@ -131,13 +126,12 @@ export function FormItemCenario({
             >
               <option value="renda">Renda</option>
               <option value="despesa">Despesa</option>
-            </select>
+            </Select>
           </Campo>
         )}
 
         <Campo rotulo="Dono" erro={erros.dono_usuario_id}>
-          <select
-            className={css.controle}
+          <Select
             value={dono}
             onChange={(evento) => setDono(evento.target.value)}
           >
@@ -153,12 +147,11 @@ export function FormItemCenario({
                 {pessoa.nome}
               </option>
             ))}
-          </select>
+          </Select>
         </Campo>
 
         <Campo rotulo="Descrição" erro={erros.descricao}>
-          <input
-            className={css.controle}
+          <Input
             value={descricao}
             onChange={(evento) => setDescricao(evento.target.value)}
             autoComplete="off"
@@ -166,8 +159,7 @@ export function FormItemCenario({
         </Campo>
 
         <Campo rotulo="Valor" erro={erros.valor}>
-          <input
-            className={css.controle}
+          <Input
             type="text"
             inputMode="numeric"
             placeholder="0,00"

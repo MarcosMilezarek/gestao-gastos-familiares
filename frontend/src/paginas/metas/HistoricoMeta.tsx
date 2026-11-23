@@ -3,15 +3,15 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ApiError } from '../../api/cliente'
 import { excluirLancamento } from '../../api/lancamentos'
 import { excluirRendimento, type MetaDetalhe, type MovimentoMeta } from '../../api/metas'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import { Dinheiro } from '../../componentes/Dinheiro'
 import { DialogoConfirmacao } from '../../componentes/DialogoConfirmacao'
-import estado from '../../componentes/estado.module.css'
-import formato from '../../componentes/formato.module.css'
 import { SituacaoIcone } from '../../componentes/SituacaoIcone'
+import { TituloBloco } from '../../componentes/TituloBloco'
 import { ConfirmarLancamento } from '../../formularios/ConfirmarLancamento'
 import { formatarData } from '../../formatacao/data'
 import { eNegativo } from '../../formatacao/dinheiro'
-import css from './detalheMeta.module.css'
 import { FormAtualizarValor } from './FormAtualizarValor'
 import { FormMovimentoMeta } from './FormMovimentoMeta'
 
@@ -22,7 +22,10 @@ const ROTULOS: Record<MovimentoMeta['tipo'], string> = {
   rendimento: 'Rendimento',
 }
 
-type Acao = { tipo: 'editar' | 'confirmar' | 'excluir'; movimento: MovimentoMeta }
+type Acao = {
+  tipo: 'editar' | 'confirmar' | 'excluir'
+  movimento: MovimentoMeta
+}
 
 type Props = { meta: MetaDetalhe }
 
@@ -53,57 +56,68 @@ export function HistoricoMeta({ meta }: Props) {
     excluir.error instanceof ApiError ? excluir.error.mensagem : 'Erro inesperado. Tente novamente.'
 
   return (
-    <section className={css.historico}>
-      <h2 className={css.titulo}>Histórico</h2>
+    <Card>
+      <TituloBloco titulo="Histórico" />
 
       {excluir.isError && (
-        <p role="alert" className={formato.erro}>
+        <p role="alert" className="text-14 font-medium text-saida-texto">
           {erroExcluir}
         </p>
       )}
 
-      <ul className={css.lista}>
+      <ul className="flex flex-col divide-y">
         {meta.movimentos.map((movimento) => {
           const podeAgir =
             !meta.casal_encerrado && movimento.tipo !== 'inicial' && movimento.id !== null
           return (
-            <li key={`${movimento.tipo}-${movimento.id}`} className={css.item}>
-              <div className={css.detalhes}>
-                <span className={css.rotulo}>{ROTULOS[movimento.tipo]}</span>
-                <time className={css.secundario} dateTime={movimento.data}>
-                  {formatarData(movimento.data)}
-                </time>
-                {movimento.descricao && (
-                  <span className={css.secundario}>{movimento.descricao}</span>
-                )}
-                {movimento.situacao && <SituacaoIcone situacao={movimento.situacao} />}
+            <li
+              key={`${movimento.tipo}-${movimento.id}`}
+              className="flex flex-col gap-2 py-3 first:pt-0 last:pb-0"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex min-w-0 flex-col gap-0.5">
+                  <span className="text-14 font-semibold">{ROTULOS[movimento.tipo]}</span>
+                  <time
+                    className="text-13 text-muted-foreground tabular-nums"
+                    dateTime={movimento.data}
+                  >
+                    {formatarData(movimento.data)}
+                  </time>
+                  {movimento.descricao && (
+                    <span className="text-13 text-muted-foreground">{movimento.descricao}</span>
+                  )}
+                  {movimento.situacao && <SituacaoIcone situacao={movimento.situacao} />}
+                </div>
+                {/* O valor já traz o sinal do efeito na meta: resgate negativo, rendimento ± */}
+                <Dinheiro
+                  valor={movimento.valor}
+                  tipo={eNegativo(movimento.valor) ? 'saida' : 'entrada'}
+                />
               </div>
-              {/* O valor já traz o sinal do efeito na meta: resgate negativo, rendimento ± */}
-              <Dinheiro valor={movimento.valor} tipo={eNegativo(movimento.valor) ? 'saida' : 'entrada'} />
               {podeAgir && (
-                <div className={css.acoes}>
-                  <button
-                    type="button"
-                    className={estado.acao}
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     onClick={() => setAcao({ tipo: 'editar', movimento })}
                   >
                     Editar
-                  </button>
-                  <button
-                    type="button"
-                    className={estado.acao}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     onClick={() => setAcao({ tipo: 'excluir', movimento })}
                   >
                     Excluir
-                  </button>
+                  </Button>
                   {movimento.tipo !== 'rendimento' && movimento.situacao !== 'confirmada' && (
-                    <button
-                      type="button"
-                      className={estado.acao}
+                    <Button
+                      variant="secondary"
+                      size="sm"
                       onClick={() => setAcao({ tipo: 'confirmar', movimento })}
                     >
                       Confirmar
-                    </button>
+                    </Button>
                   )}
                 </div>
               )}
@@ -144,6 +158,6 @@ export function HistoricoMeta({ meta }: Props) {
           onCancelar={fechar}
         />
       )}
-    </section>
+    </Card>
   )
 }

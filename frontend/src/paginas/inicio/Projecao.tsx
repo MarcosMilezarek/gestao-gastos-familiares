@@ -1,15 +1,17 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { Link } from 'react-router'
 import { ApiError, repetirSem4xx } from '../../api/cliente'
 import { listarContas } from '../../api/contas'
 import { obterProjecao, type HorizonteProjecao } from '../../api/projecao'
+import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
+import { Select } from '@/components/ui/select'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
 import { Campo } from '../../componentes/Campo'
 import { Dinheiro } from '../../componentes/Dinheiro'
 import { GraficoArea } from '../../componentes/GraficoArea'
-import estado from '../../componentes/estado.module.css'
 import { rotuloMes } from '../../formatacao/data'
-import styles from './projecao.module.css'
 
 const HORIZONTES: HorizonteProjecao[] = [3, 6, 12]
 
@@ -44,16 +46,12 @@ export function Projecao() {
   }
 
   return (
-    <div className={styles.pagina}>
-      <Link to="/" className={estado.voltar}>
-        Início
-      </Link>
-      <h1 className={styles.titulo}>Projeção de saldo</h1>
+    <div className="flex flex-col gap-4 p-4">
+      <CabecalhoTela titulo="Projeção de saldo" voltarPara="/" />
 
-      <div className={styles.controles}>
+      <div className="flex flex-col gap-3">
         <Campo rotulo="Conta">
-          <select
-            className={styles.seletor}
+          <Select
             value={contaId === undefined ? '' : String(contaId)}
             onChange={(evento) => escolherConta(evento.target.value)}
           >
@@ -63,85 +61,85 @@ export function Projecao() {
                 {conta.nome}
               </option>
             ))}
-          </select>
+          </Select>
         </Campo>
         <Campo rotulo="Horizonte">
-          <select
-            className={styles.seletor}
-            value={String(horizonte)}
-            onChange={(evento) => escolherHorizonte(evento.target.value)}
-          >
+          <Select value={String(horizonte)} onChange={(evento) => escolherHorizonte(evento.target.value)}>
             {HORIZONTES.map((h) => (
               <option key={h} value={h}>
                 {h} meses
               </option>
             ))}
-          </select>
+          </Select>
         </Campo>
       </div>
 
       {consulta.isError && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="text-14 text-saida-texto">
           {consulta.error instanceof ApiError
             ? consulta.error.mensagem
             : 'Erro inesperado. Tente novamente.'}
         </p>
       )}
-      {!dados && !consulta.isError && <p className={styles.aviso}>Carregando…</p>}
+      {!dados && !consulta.isError && <p className="text-14 text-muted-foreground">Carregando…</p>}
 
       {dados && (
         <>
-          <GraficoArea
-            meses={dados.meses.map((mes) => ({ rotulo: rotuloMes(mes.mes), valor: mes.saldo_previsto }))}
-          />
+          <Card>
+            <GraficoArea
+              meses={dados.meses.map((mes) => ({ rotulo: rotuloMes(mes.mes), valor: mes.saldo_previsto }))}
+            />
+          </Card>
 
-          <div className={styles.contorno}>
-            <table className={styles.tabela}>
-              <thead>
-                <tr>
-                  <th scope="col">Mês</th>
-                  <th scope="col">Entradas</th>
-                  <th scope="col">Saídas</th>
-                  <th scope="col">Transferências de entrada</th>
-                  <th scope="col">Transferências de saída</th>
-                  <th scope="col">Pagamentos de fatura</th>
-                  <th scope="col">Aplicações menos resgates</th>
-                  <th scope="col">Saldo previsto</th>
-                </tr>
-              </thead>
-              <tbody>
+          <Card className="gap-0 p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead scope="col">Mês</TableHead>
+                  <TableHead scope="col">Entradas</TableHead>
+                  <TableHead scope="col">Saídas</TableHead>
+                  <TableHead scope="col">Transferências de entrada</TableHead>
+                  <TableHead scope="col">Transferências de saída</TableHead>
+                  <TableHead scope="col">Pagamentos de fatura</TableHead>
+                  <TableHead scope="col">Aplicações menos resgates</TableHead>
+                  <TableHead scope="col">Saldo previsto</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {dados.meses.map((mes) => (
-                  <tr key={mes.mes}>
-                    <th scope="row">
-                      {rotuloMes(mes.mes)}
-                      {mes.previsto && <span className={styles.previsto}>Previsto</span>}
-                    </th>
-                    <td>
+                  <TableRow key={mes.mes}>
+                    <TableHead scope="row" className="text-foreground">
+                      <span className="flex items-center gap-2">
+                        {rotuloMes(mes.mes)}
+                        {mes.previsto && <Badge variant="secondary">Previsto</Badge>}
+                      </span>
+                    </TableHead>
+                    <TableCell>
                       <Dinheiro valor={mes.entradas} tipo="entrada" />
-                    </td>
-                    <td>
+                    </TableCell>
+                    <TableCell>
                       <Dinheiro valor={mes.saidas} tipo="saida" />
-                    </td>
-                    <td>
+                    </TableCell>
+                    <TableCell>
                       <Dinheiro valor={mes.transferencias_entrada} tipo="entrada" />
-                    </td>
-                    <td>
+                    </TableCell>
+                    <TableCell>
                       <Dinheiro valor={mes.transferencias_saida} tipo="saida" />
-                    </td>
-                    <td>
+                    </TableCell>
+                    <TableCell>
                       <Dinheiro valor={mes.pagamentos_fatura} tipo="saida" />
-                    </td>
-                    <td>
+                    </TableCell>
+                    <TableCell>
                       <Dinheiro valor={mes.aplicacoes_menos_resgates} />
-                    </td>
-                    <td>
+                    </TableCell>
+                    <TableCell>
                       <Dinheiro valor={mes.saldo_previsto} />
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </TableBody>
+            </Table>
+          </Card>
         </>
       )}
     </div>
