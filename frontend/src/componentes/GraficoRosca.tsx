@@ -1,8 +1,14 @@
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
+import { Cell, Pie, PieChart } from 'recharts'
+import {
+  ChartContainer,
+  ChartLegend,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+  type PontoGrafico,
+} from '@/components/ui/chart'
 import { formatarBRL } from '../formatacao/dinheiro'
 import { formatarPercentual } from '../formatacao/percentual'
-import { Dinheiro } from './Dinheiro'
-import css from './graficos.module.css'
 
 type ItemRosca = {
   chave: string
@@ -14,9 +20,9 @@ type ItemRosca = {
 
 type GraficoRoscaProps = { itens: ItemRosca[]; rotulo?: string }
 
-const COR_SEM_CATEGORIA = 'var(--cor-texto-suave)'
+const COR_SEM_CATEGORIA = 'var(--muted-foreground)'
 
-// Rosca e lista lado a lado em texto: a informação não depende só da cor (RNF-08).
+// Rosca e lista em texto: a informação não depende só da cor (RNF-08).
 export function GraficoRosca({ itens, rotulo = 'Distribuição por categoria' }: GraficoRoscaProps) {
   // Valor zero ou negativo (ajuste de fatura) não tem fatia; continua na lista.
   const fatias = itens.filter((item) => Number(item.valor) > 0)
@@ -25,38 +31,35 @@ export function GraficoRosca({ itens, rotulo = 'Distribuição por categoria' }:
     chave: item.chave,
     nome: item.nome,
     valor: Number(item.valor),
-    valorTexto: item.valor,
-  }))
+    texto: `${item.nome}: ${formatarBRL(item.valor)}`,
+  })) satisfies (PontoGrafico & { chave: string; nome: string })[]
+  const config: ChartConfig = Object.fromEntries(
+    fatias.map((item) => [item.chave, { label: item.nome, color: item.cor ?? COR_SEM_CATEGORIA }]),
+  )
 
   return (
-    <div className={css.rosca}>
-      <div className={css.area} role="img" aria-label={rotulo}>
-        <ResponsiveContainer width="100%" height="100%">
+    <div className="flex flex-col gap-4">
+      <div>
+        <ChartContainer config={config} className="aspect-auto h-40 w-full" role="img" aria-label={rotulo}>
           <PieChart>
-            <Pie data={dados} dataKey="valor" nameKey="nome" innerRadius="55%" outerRadius="90%">
+            <ChartTooltip content={<ChartTooltipContent />} />
+            <Pie data={dados} dataKey="valor" nameKey="nome" innerRadius="70%" outerRadius="100%" stroke="none">
               {fatias.map((item) => (
-                <Cell key={item.chave} fill={item.cor ?? COR_SEM_CATEGORIA} />
+                <Cell key={item.chave} fill={`var(--color-${item.chave})`} />
               ))}
             </Pie>
-            <Tooltip formatter={(_valor, _nome, dica) => formatarBRL(dica.payload.valorTexto)} />
           </PieChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
 
-      <ul className={css.lista}>
-        {itens.map((item) => (
-          <li key={item.chave} className={css.item}>
-            <span
-              className={css.amostra}
-              style={{ background: item.cor ?? COR_SEM_CATEGORIA }}
-              aria-hidden="true"
-            />
-            <span className={css.nomeItem}>{item.nome}</span>
-            <Dinheiro valor={item.valor} />
-            <span className={css.porcentagem}>{formatarPercentual(item.porcentagem)}</span>
-          </li>
-        ))}
-      </ul>
+      <ChartLegend
+        itens={itens.map((item) => ({
+          nome: item.nome,
+          cor: item.cor ?? COR_SEM_CATEGORIA,
+          valor: formatarBRL(item.valor),
+          porcentagem: formatarPercentual(item.porcentagem),
+        }))}
+      />
     </div>
   )
 }

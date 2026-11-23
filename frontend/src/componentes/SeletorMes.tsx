@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { mesAnterior, mesSeguinte, rotuloMes } from '../formatacao/data'
-import estilos from './seletorMes.module.css'
 
 type Props = { mes: string; onMudar(m: string): void }
 
@@ -9,24 +9,28 @@ export function SeletorMes({ mes, onMudar }: Props) {
   if (mes === '') return null
 
   return (
-    <div className={estilos.seletor}>
-      <button
+    <div className="sticky top-0 z-10 flex items-center justify-between gap-2 bg-background py-2">
+      <Button
         type="button"
-        className={estilos.botao}
+        variant="secondary"
+        size="icon"
         aria-label="mês anterior"
         onClick={() => onMudar(mesAnterior(mes))}
       >
         <ChevronLeft aria-hidden="true" />
-      </button>
-      <span className={estilos.rotulo}>{rotuloMes(mes)}</span>
-      <button
+      </Button>
+      <span className="min-w-0 flex-1 text-center text-16 font-semibold">
+        {rotuloMes(mes)}
+      </span>
+      <Button
         type="button"
-        className={estilos.botao}
+        variant="secondary"
+        size="icon"
         aria-label="mês seguinte"
         onClick={() => onMudar(mesSeguinte(mes))}
       >
         <ChevronRight aria-hidden="true" />
-      </button>
+      </Button>
     </div>
   )
 }

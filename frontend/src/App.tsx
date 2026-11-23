@@ -1,5 +1,5 @@
 import { Link, Route, Routes } from 'react-router'
-import estado from './componentes/estado.module.css'
+import { Button } from '@/components/ui/button'
 import { RotaProtegida } from './componentes/RotaProtegida'
 import { Shell } from './componentes/Shell'
 import { Cadastrar } from './paginas/entrada/Cadastrar'
@@ -33,11 +33,11 @@ import { PlanoMetas } from './paginas/planejamento/PlanoMetas'
 
 function NaoEncontrada() {
   return (
-    <div className={estado.vazio}>
-      <p className={estado.frase}>Página não encontrada.</p>
-      <Link to="/" className={estado.voltar}>
-        Voltar ao início
-      </Link>
+    <div className="flex flex-col items-center gap-3 px-4 py-6 text-center text-muted-foreground">
+      <p className="m-0">Página não encontrada.</p>
+      <Button asChild variant="outline" size="sm">
+        <Link to="/">Voltar ao início</Link>
+      </Button>
     </div>
   )
 }

@@ -3,7 +3,7 @@ import { Navigate, Outlet } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { ApiError, definirAoNaoAutenticado } from '../api/cliente'
 import { removerDadosDoUsuario, useSessao } from '../hooks/useSessao'
-import estado from './estado.module.css'
+import { Button } from '@/components/ui/button'
 
 export function RotaProtegida() {
   const queryClient = useQueryClient()
@@ -28,13 +28,13 @@ export function RotaProtegida() {
   if (data) return <Outlet />
   if (!error) return <Navigate to="/entrar" replace />
   return (
-    <div className={estado.vazio}>
-      <p role="alert" className={estado.frase}>
+    <div className="flex flex-col items-center gap-3 px-4 py-6 text-center text-muted-foreground">
+      <p role="alert" className="m-0">
         {error.message}
       </p>
-      <button type="button" className={estado.acao} onClick={() => refetch()}>
+      <Button type="button" variant="outline" size="sm" onClick={() => refetch()}>
         Tentar de novo
-      </button>
+      </Button>
     </div>
   )
 }

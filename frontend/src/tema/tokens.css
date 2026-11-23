@@ -1,15 +1,84 @@
-:root {
-  --cor-fundo: #f7f7f5;
-  --cor-superficie: #ffffff;
-  --cor-texto: #1c1c1e;
-  --cor-texto-suave: #5a5a62;
-  --cor-borda: #d0d0d6;
-  --cor-primaria: #2f5fb3;
-  --cor-entrada: #1e7a3a;
-  --cor-saida: #b3261e;
-  --cor-alerta: #a94d00;
+@import "tailwindcss";
+@import "tw-animate-css";
 
-  --raio: 10px;
+@custom-variant dark (&:is([data-tema="escuro"], [data-tema="escuro"] *));
+
+:root {
+  --background: #f8f5fe;
+  --foreground: #1b1030;
+  --card: #ffffff;
+  --card-foreground: #1b1030;
+  --popover: #ffffff;
+  --popover-foreground: #1b1030;
+  --primary: #7c29fa;
+  --primary-foreground: #ffffff;
+  --secondary: #f1e8ff;
+  --secondary-foreground: #5a14c9;
+  --muted: #f1e8ff;
+  --muted-foreground: #6a6280;
+  --accent: #f1e8ff;
+  --accent-foreground: #5a14c9;
+  --destructive: #ff6b6b;
+  --destructive-foreground: #1b1030;
+  --border: #ece7f4;
+  --input: #bdb3d3;
+  --ring: #7c29fa;
+  --chart-1: #7c29fa;
+  --chart-2: #38bdf8;
+  --chart-3: #22c58b;
+  --chart-4: #ffb547;
+  --chart-5: #f472b6;
+
+  --entrada: #22c58b;
+  --entrada-foreground: #1b1030;
+  --entrada-suave: #e3f8ef;
+  --entrada-texto: #0a7650;
+  --saida: #ff6b6b;
+  --saida-foreground: #1b1030;
+  --saida-suave: #ffe9e9;
+  --saida-texto: #c0212c;
+  --alerta: #ffb547;
+  --alerta-foreground: #1b1030;
+  --alerta-suave: #fff3de;
+  --alerta-texto: #9a5b00;
+  --info: #38bdf8;
+  --info-foreground: #1b1030;
+  --info-suave: #e3f5fd;
+  --info-texto: #0369a1;
+
+  --primary-escuro: #5a14c9;
+  --primary-claro: #9a55ff;
+  --primary-suave: #f1e8ff;
+  --primary-texto: #5a14c9;
+  --escuro-inicio: #2d1560;
+  --escuro-fim: #1b1030;
+  --disabled: #ece7f4;
+  --disabled-foreground: #a69fbb;
+
+  --branco-12: rgb(255 255 255 / 12%);
+  --branco-18: rgb(255 255 255 / 18%);
+  --veu: rgb(27 16 48 / 50%);
+  --sombra-card: rgb(27 16 48 / 6%);
+  --sombra-barra: rgb(27 16 48 / 10%);
+  --sombra-overlay: rgb(27 16 48 / 16%);
+  --sombra-roxa: rgb(124 41 250 / 30%);
+  --sombra-foco: rgb(124 41 250 / 12%);
+  --sombra-foco-erro: rgb(255 107 107 / 12%);
+
+  --radius: 18px;
+
+  /* Apelidos dos tokens antigos (telas ainda em CSS Modules) */
+  --cor-fundo: var(--background);
+  --cor-superficie: var(--card);
+  --cor-texto: var(--foreground);
+  --cor-texto-suave: var(--muted-foreground);
+  --cor-borda: var(--border);
+  --cor-primaria: var(--primary-texto);
+  --cor-entrada: var(--entrada-texto);
+  --cor-saida: var(--saida-texto);
+  --cor-alerta: var(--alerta-texto);
+
+  --raio: 14px;
   --espaco-1: 4px;
   --espaco-2: 8px;
   --espaco-3: 12px;
@@ -17,40 +86,184 @@
   --espaco-5: 24px;
   --espaco-6: 32px;
   --alvo-min: 44px;
-  --altura-barra: 64px;
+  --altura-barra: 144px;
 }
 
 :root[data-tema="escuro"] {
-  --cor-fundo: #121214;
-  --cor-superficie: #1e1e22;
-  --cor-texto: #f2f2f4;
-  --cor-texto-suave: #a8a8b3;
-  --cor-borda: #3a3a42;
-  --cor-primaria: #8ab4ff;
-  --cor-entrada: #5fd38a;
-  --cor-saida: #ff8a80;
-  --cor-alerta: #ffb366;
+  --background: #130a22;
+  --foreground: #f4eeff;
+  --card: #1e1233;
+  --card-foreground: #f4eeff;
+  --popover: #261745;
+  --popover-foreground: #f4eeff;
+  --primary: #8b43fa;
+  --secondary: #2d1a52;
+  --secondary-foreground: #e3d4ff;
+  --muted: #2a1a4a;
+  --muted-foreground: #b3a8cf;
+  --accent: #34205e;
+  --accent-foreground: #f4eeff;
+  --border: #2f2050;
+  --input: #4a3775;
+  --ring: #a56dff;
+  --chart-1: #a66bff;
+
+  --entrada-suave: #0f2f26;
+  --entrada-texto: #3ddc97;
+  --saida-suave: #3a1520;
+  --saida-texto: #ff9494;
+  --alerta-suave: #3a2a0e;
+  --alerta-texto: #ffc15e;
+  --info-suave: #0e2a3a;
+  --info-texto: #6ccdf9;
+
+  --primary-suave: #2d1a52;
+  --primary-texto: #c9a8ff;
+  --disabled: #2a1e45;
+  --disabled-foreground: #8479a6;
+
+  --veu: rgb(0 0 0 / 60%);
+  --sombra-card: rgb(0 0 0 / 30%);
+  --sombra-barra: rgb(0 0 0 / 40%);
+  --sombra-overlay: rgb(0 0 0 / 50%);
+  --sombra-roxa: rgb(139 67 250 / 30%);
+  --sombra-foco: rgb(139 67 250 / 24%);
+  --sombra-foco-erro: rgb(255 107 107 / 24%);
+
+  /* Apelidos repetidos: o teste de tokens procura cada --cor-* nos dois blocos */
+  --cor-fundo: var(--background);
+  --cor-superficie: var(--card);
+  --cor-texto: var(--foreground);
+  --cor-texto-suave: var(--muted-foreground);
+  --cor-borda: var(--border);
+  --cor-primaria: var(--primary-texto);
+  --cor-entrada: var(--entrada-texto);
+  --cor-saida: var(--saida-texto);
+  --cor-alerta: var(--alerta-texto);
 }
 
-html {
-  color-scheme: light;
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-entrada: var(--entrada);
+  --color-entrada-foreground: var(--entrada-foreground);
+  --color-entrada-suave: var(--entrada-suave);
+  --color-entrada-texto: var(--entrada-texto);
+  --color-saida: var(--saida);
+  --color-saida-foreground: var(--saida-foreground);
+  --color-saida-suave: var(--saida-suave);
+  --color-saida-texto: var(--saida-texto);
+  --color-alerta: var(--alerta);
+  --color-alerta-foreground: var(--alerta-foreground);
+  --color-alerta-suave: var(--alerta-suave);
+  --color-alerta-texto: var(--alerta-texto);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-suave: var(--info-suave);
+  --color-info-texto: var(--info-texto);
+
+  --color-primary-escuro: var(--primary-escuro);
+  --color-primary-claro: var(--primary-claro);
+  --color-primary-suave: var(--primary-suave);
+  --color-primary-texto: var(--primary-texto);
+  --color-escuro-inicio: var(--escuro-inicio);
+  --color-escuro-fim: var(--escuro-fim);
+  --color-disabled: var(--disabled);
+  --color-disabled-foreground: var(--disabled-foreground);
+  --color-branco-12: var(--branco-12);
+  --color-branco-18: var(--branco-18);
+  --color-veu: var(--veu);
+
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-2xl: 28px;
+  --radius-3xl: 32px;
+
+  --shadow-card: 0 8px 20px var(--sombra-card);
+  --shadow-barra: 0 10px 30px var(--sombra-barra);
+  --shadow-roxa: 0 10px 24px var(--sombra-roxa);
+  --shadow-destaque: 0 12px 30px var(--sombra-roxa);
+  --shadow-foco: 0 6px 16px var(--sombra-foco);
+  --shadow-foco-erro: 0 6px 16px var(--sombra-foco-erro);
+  --shadow-overlay: 0 16px 40px var(--sombra-overlay);
+
+  --font-sans: "Geist Variable", system-ui, sans-serif;
+
+  --text-11: 0.6875rem;
+  --text-11--line-height: 14px;
+  --text-13: 0.8125rem;
+  --text-13--line-height: 18px;
+  --text-14: 0.875rem;
+  --text-14--line-height: 20px;
+  --text-16: 1rem;
+  --text-16--line-height: 22px;
+  --text-18: 1.125rem;
+  --text-18--line-height: 24px;
+  --text-22: 1.375rem;
+  --text-22--line-height: 28px;
+  --text-28: 1.75rem;
+  --text-28--line-height: 34px;
+  --text-40: 2.5rem;
+  --text-40--line-height: 44px;
+
+  --tracking-caps: 0.5px;
 }
 
-:root[data-tema="escuro"] {
-  color-scheme: dark;
+@utility bg-gradiente-botao {
+  background-image: linear-gradient(135deg, var(--primary-claro), var(--primary));
 }
 
-body {
-  margin: 0;
-  background: var(--cor-fundo);
-  color: var(--cor-texto);
-  font-family: system-ui, sans-serif;
+@utility bg-gradiente-escuro {
+  background-image: linear-gradient(135deg, var(--escuro-inicio), var(--escuro-fim));
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    border-color: var(--border);
+    outline-color: var(--ring);
+  }
+
+  html {
+    color-scheme: light;
+  }
+
+  :root[data-tema="escuro"] {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    margin: 0;
+  }
 }
 
 .alvo-toque {

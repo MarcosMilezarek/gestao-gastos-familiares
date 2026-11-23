@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { CircleCheck, CircleDashed, CircleMinus, CreditCard, Lock, TriangleAlert, type LucideIcon } from 'lucide-react'
+import { Card } from '@/components/ui/card'
 import type { FaturaResumo, FaturaStatus } from '../api/cartoes'
 import type { DiaLista, ItemLancamentoLista } from '../api/controle'
 import { formatarData } from '../formatacao/data'
 import { type Alcance, DialogoAlcance } from './DialogoAlcance'
 import { Dinheiro } from './Dinheiro'
 import { EstadoVazio } from './EstadoVazio'
+import { IconeQuadrado } from './IconeQuadrado'
 import { ItemLancamento, type LancamentoItem } from './ItemLancamento'
-import styles from './lancamentos.module.css'
 
 type ListaLancamentosProps = {
   dias: DiaLista[]
@@ -77,55 +78,65 @@ export function ListaLancamentos({
   }
 
   return (
-    <div className={styles.lista}>
+    <div className="flex flex-col gap-4">
       {dias.map((dia) => (
-        <section key={dia.data}>
-          <h2 className={styles.data}>{formatarData(dia.data)}</h2>
-          <ul className={styles.itens}>
-            {dia.itens.map((linha) => {
-              if (linha.kind === 'fatura') {
-                const { fatura } = linha
-                const { rotulo, Icone } = STATUS_FATURA[fatura.status]
-                const conteudo = (
-                  <>
-                    <span className={styles.principal}>
-                      <CreditCard aria-hidden="true" size={16} /> {fatura.cartao_nome}
-                    </span>
-                    <span className={styles.secundario}>Fatura do cartão</span>
-                    <span className={styles.meta}>
-                      <Icone aria-hidden="true" size={16} />
-                      {rotulo}
-                    </span>
-                  </>
-                )
-                return (
-                  <li key={`fatura-${fatura.cartao_id}-${fatura.mes}`} className={styles.item}>
-                    {aoAbrirFatura ? (
-                      <button type="button" className={styles.abrir} onClick={() => aoAbrirFatura(fatura)}>
-                        {conteudo}
-                      </button>
-                    ) : (
-                      <div className={styles.abrir}>{conteudo}</div>
-                    )}
-                    <Dinheiro valor={fatura.valor} tipo="saida" />
-                  </li>
-                )
-              }
+        <section key={dia.data} className="flex flex-col gap-2">
+          <h2 className="text-14 font-semibold text-muted-foreground tabular-nums">{formatarData(dia.data)}</h2>
+          <Card className="gap-0 p-3">
+            <ul className="divide-y">
+              {dia.itens.map((linha) => {
+                if (linha.kind === 'fatura') {
+                  const { fatura } = linha
+                  const { rotulo, Icone } = STATUS_FATURA[fatura.status]
+                  const classesCorpo = 'flex min-h-11 w-full items-center gap-3 text-left'
+                  const conteudo = (
+                    <>
+                      <IconeQuadrado icone={CreditCard} tom="info" />
+                      <span className="flex min-w-0 flex-1 flex-col">
+                        <span className="truncate text-16 font-semibold text-foreground">{fatura.cartao_nome}</span>
+                        <span className="truncate text-13 text-muted-foreground">Fatura do cartão</span>
+                      </span>
+                      <span className="flex shrink-0 flex-col items-end gap-1 text-16">
+                        <Dinheiro valor={fatura.valor} tipo="saida" />
+                        <span className="inline-flex items-center gap-1 text-13 font-medium text-muted-foreground">
+                          <Icone aria-hidden="true" className="size-4" />
+                          {rotulo}
+                        </span>
+                      </span>
+                    </>
+                  )
+                  return (
+                    <li key={`fatura-${fatura.cartao_id}-${fatura.mes}`} className="py-3">
+                      {aoAbrirFatura ? (
+                        <button
+                          type="button"
+                          className={`${classesCorpo} cursor-pointer`}
+                          onClick={() => aoAbrirFatura(fatura)}
+                        >
+                          {conteudo}
+                        </button>
+                      ) : (
+                        <div className={classesCorpo}>{conteudo}</div>
+                      )}
+                    </li>
+                  )
+                }
 
-              const item = paraLancamentoItem(linha)
-              return (
-                <ItemLancamento
-                  key={item.id}
-                  item={item}
-                  aoConfirmar={aoConfirmar && (() => aoConfirmar(item))}
-                  aoEditar={aoEditar && (() => acionar(item, 'editar'))}
-                  aoExcluir={aoExcluir && (() => acionar(item, 'excluir'))}
-                  aoAbrir={aoAbrir && (() => aoAbrir(item))}
-                />
-              )
-            })}
-          </ul>
-          <p className={styles.saldoDia}>
+                const item = paraLancamentoItem(linha)
+                return (
+                  <ItemLancamento
+                    key={item.id}
+                    item={item}
+                    aoConfirmar={aoConfirmar && (() => aoConfirmar(item))}
+                    aoEditar={aoEditar && (() => acionar(item, 'editar'))}
+                    aoExcluir={aoExcluir && (() => acionar(item, 'excluir'))}
+                    aoAbrir={aoAbrir && (() => aoAbrir(item))}
+                  />
+                )
+              })}
+            </ul>
+          </Card>
+          <p className="text-right text-14 text-muted-foreground tabular-nums">
             Saldo do fim do dia: <Dinheiro valor={dia.saldo_fim_do_dia} />
           </p>
         </section>
