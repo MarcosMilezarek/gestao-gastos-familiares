@@ -59,7 +59,7 @@ export function DetalheMeta() {
     !idValido || (consulta.error instanceof ApiError && consulta.error.status === 404)
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4 md:p-6 mx-auto w-full max-w-240">
       <CabecalhoTela titulo={meta?.nome ?? 'Meta'} voltarPara="/metas" />
 
       {naoEncontrada && (
@@ -106,75 +106,79 @@ function DadosMeta({ meta }: DadosMetaProps) {
 
   return (
     <>
-      {meta.casal_encerrado && (
-        <p className={CLASSE_AVISO}>O casal foi desfeito: esta meta só pode ser consultada.</p>
-      )}
+      <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6">
+        <div className="flex min-w-0 flex-col gap-4">
+          {meta.casal_encerrado && (
+            <p className={CLASSE_AVISO}>O casal foi desfeito: esta meta só pode ser consultada.</p>
+          )}
 
-      <CartaoDestaque
-        rotulo="Valor atual"
-        valor={meta.valor_atual}
-        chips={[
-          { rotulo: 'Alvo', valor: meta.valor_alvo },
-          { rotulo: 'Falta', valor: meta.falta },
-        ]}
-      />
+          <CartaoDestaque
+            rotulo="Valor atual"
+            valor={meta.valor_atual}
+            chips={[
+              { rotulo: 'Alvo', valor: meta.valor_alvo },
+              { rotulo: 'Falta', valor: meta.falta },
+            ]}
+          />
 
-      <Card>
-        <div className="flex items-center gap-3">
-          <span style={meta.cor ? { color: meta.cor } : undefined} className="inline-flex">
-            <IconeQuadrado
-              icone={iconeDe(meta.icone)}
-              className={meta.cor ? 'bg-current/15 text-inherit' : undefined}
-            />
-          </span>
-          <div className="flex min-w-0 flex-col">
-            {meta.descricao && <p className="text-14 text-muted-foreground">{meta.descricao}</p>}
-            {meta.data_alvo !== null && (
-              <p className="text-14 text-muted-foreground tabular-nums">
-                Data-alvo: <time dateTime={meta.data_alvo}>{formatarData(meta.data_alvo)}</time>
+          <Card>
+            <div className="flex items-center gap-3">
+              <span style={meta.cor ? { color: meta.cor } : undefined} className="inline-flex">
+                <IconeQuadrado
+                  icone={iconeDe(meta.icone)}
+                  className={meta.cor ? 'bg-current/15 text-inherit' : undefined}
+                />
+              </span>
+              <div className="flex min-w-0 flex-col">
+                {meta.descricao && <p className="text-14 text-muted-foreground">{meta.descricao}</p>}
+                {meta.data_alvo !== null && (
+                  <p className="text-14 text-muted-foreground tabular-nums">
+                    Data-alvo: <time dateTime={meta.data_alvo}>{formatarData(meta.data_alvo)}</time>
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Progress aria-label={`Progresso da meta ${meta.nome}`} value={Math.min(100, Number(meta.porcentagem))} />
+              <p className="text-14 font-semibold tabular-nums">
+                {formatarPercentual(meta.porcentagem)}
               </p>
-            )}
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Progress aria-label={`Progresso da meta ${meta.nome}`} value={Math.min(100, Number(meta.porcentagem))} />
-          <p className="text-14 font-semibold tabular-nums">
-            {formatarPercentual(meta.porcentagem)}
-          </p>
-        </div>
-        <dl className="grid grid-cols-2 gap-3">
-          <Indicador rotulo="Aplicado líquido" valor={meta.aplicado_liquido} />
-          <Indicador rotulo="Rendeu" valor={meta.rendeu} />
-        </dl>
-      </Card>
+            </div>
+            <dl className="grid grid-cols-2 gap-3">
+              <Indicador rotulo="Aplicado líquido" valor={meta.aplicado_liquido} />
+              <Indicador rotulo="Rendeu" valor={meta.rendeu} />
+            </dl>
+          </Card>
 
-      {podeEscrever && (
-        <div className="grid grid-cols-2 gap-2">
-          <Button className="col-span-2" onClick={() => setFormulario('aplicar')}>
-            Aplicar
-          </Button>
-          <Button variant="secondary" size="sm" onClick={() => setFormulario('resgatar')}>
-            Resgatar
-          </Button>
-          <Button variant="secondary" size="sm" onClick={() => setFormulario('atualizar')}>
-            Atualizar valor atual
-          </Button>
-          <Button variant="secondary" size="sm" onClick={() => setFormulario('editar')}>
-            Editar meta
-          </Button>
-          <Button variant="secondary" size="sm" onClick={() => setConfirmandoExcluir(true)}>
-            Excluir meta
-          </Button>
+          {podeEscrever && (
+            <div className="grid grid-cols-2 gap-2">
+              <Button className="col-span-2" onClick={() => setFormulario('aplicar')}>
+                Aplicar
+              </Button>
+              <Button variant="secondary" size="sm" onClick={() => setFormulario('resgatar')}>
+                Resgatar
+              </Button>
+              <Button variant="secondary" size="sm" onClick={() => setFormulario('atualizar')}>
+                Atualizar valor atual
+              </Button>
+              <Button variant="secondary" size="sm" onClick={() => setFormulario('editar')}>
+                Editar meta
+              </Button>
+              <Button variant="secondary" size="sm" onClick={() => setConfirmandoExcluir(true)}>
+                Excluir meta
+              </Button>
+            </div>
+          )}
+
+          {excluir.isError && (
+            <p role="alert" className={CLASSE_ERRO}>
+              {mensagemErro(excluir.error)}
+            </p>
+          )}
         </div>
-      )}
 
-      {excluir.isError && (
-        <p role="alert" className={CLASSE_ERRO}>
-          {mensagemErro(excluir.error)}
-        </p>
-      )}
-
-      <HistoricoMeta meta={meta} />
+        <HistoricoMeta meta={meta} />
+      </div>
 
       {formulario === 'editar' && <FormMeta meta={meta} aoFechar={fechar} />}
       {formulario === 'aplicar' && (
