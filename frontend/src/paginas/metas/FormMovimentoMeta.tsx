@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Check } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { ApiError } from '../../api/cliente'
 import {
   aplicar,
@@ -11,9 +16,7 @@ import {
 } from '../../api/metas'
 import { BottomSheet } from '../../componentes/BottomSheet'
 import { Campo } from '../../componentes/Campo'
-import estado from '../../componentes/estado.module.css'
 import { diaAnterior } from '../../formularios/CamposLancamento'
-import css from '../../formularios/formularios.module.css'
 import { situacaoPara } from '../../formularios/valoresLancamento'
 import { mascararEntrada, paraApi } from '../../formatacao/dinheiro'
 import { useSessao } from '../../hooks/useSessao'
@@ -121,27 +124,22 @@ function FormularioMovimento({ metaId, tipo, movimento, aoFechar, hoje }: Props 
       titulo={editando ? textos.edicao : textos.novo}
       aoFechar={aoFechar}
       rodape={
-        <button
-          type="submit"
-          form="form-movimento-meta"
-          className={estado.acao}
-          disabled={salvar.isPending}
-        >
+        <Button type="submit" form="form-movimento-meta" className="w-full" disabled={salvar.isPending}>
           Salvar
-        </button>
+        </Button>
       }
     >
       <div ref={corpoRef}>
         {aviso && (
-          <p role="alert" className={css.erro}>
+          <p role="alert" className="mb-4 text-14 text-saida-texto">
             {aviso}
           </p>
         )}
 
-        <form id="form-movimento-meta" className={css.campos} onSubmit={enviar}>
+        <form id="form-movimento-meta" className="flex flex-col gap-4" onSubmit={enviar}>
           <Campo rotulo="Valor" erro={erros.valor}>
-            <input
-              className={css.controle}
+            <Input
+              className="text-28 font-semibold"
               type="text"
               inputMode="numeric"
               placeholder="0,00"
@@ -150,35 +148,39 @@ function FormularioMovimento({ metaId, tipo, movimento, aoFechar, hoje }: Props 
             />
           </Campo>
 
-          <div className={css.atalhos} role="group" aria-label="Atalhos de data">
-            <button
+          <div className="flex flex-wrap gap-2" role="group" aria-label="Atalhos de data">
+            <Button
               type="button"
-              className={css.atalho}
+              variant={data === hoje ? 'outline' : 'secondary'}
+              size="sm"
               aria-pressed={data === hoje}
               onClick={() => trocarData(hoje)}
             >
+              {data === hoje && <Check aria-hidden="true" />}
               Hoje
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
-              className={css.atalho}
+              variant={data === diaAnterior(hoje) ? 'outline' : 'secondary'}
+              size="sm"
               aria-pressed={data === diaAnterior(hoje)}
               onClick={() => trocarData(diaAnterior(hoje))}
             >
+              {data === diaAnterior(hoje) && <Check aria-hidden="true" />}
               Ontem
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
-              className={css.atalho}
+              variant="secondary"
+              size="sm"
               onClick={() => inputData.current?.focus()}
             >
               Outra data
-            </button>
+            </Button>
           </div>
           <Campo rotulo="Data" erro={erros.data}>
-            <input
+            <Input
               ref={inputData}
-              className={css.controle}
               type="date"
               value={data}
               onChange={(e) => trocarData(e.target.value)}
@@ -186,22 +188,21 @@ function FormularioMovimento({ metaId, tipo, movimento, aoFechar, hoje }: Props 
           </Campo>
 
           <Campo rotulo="Descrição" erro={erros.descricao}>
-            <input
-              className={css.controle}
+            <Input
               type="text"
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
             />
           </Campo>
 
-          <label className={css.opcao}>
-            <input
-              type="checkbox"
+          <div className="flex min-h-11 items-center gap-3">
+            <Checkbox
+              id="movimento-situacao"
               checked={situacao === 'confirmada'}
-              onChange={(e) => setSituacao(e.target.checked ? 'confirmada' : 'prevista')}
+              onCheckedChange={(marcado) => setSituacao(marcado === true ? 'confirmada' : 'prevista')}
             />
-            {textos.situacao}
-          </label>
+            <Label htmlFor="movimento-situacao">{textos.situacao}</Label>
+          </div>
         </form>
       </div>
     </BottomSheet>
