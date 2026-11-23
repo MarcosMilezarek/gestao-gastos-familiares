@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link, useParams } from 'react-router'
+import { useParams } from 'react-router'
 import {
   excluirItemCenario,
   obterCenario,
@@ -8,13 +8,14 @@ import {
   type ItemSaida,
 } from '../../api/cenarios'
 import { ApiError, repetirSem4xx } from '../../api/cliente'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
 import { Dinheiro } from '../../componentes/Dinheiro'
 import { DialogoConfirmacao } from '../../componentes/DialogoConfirmacao'
-import estado from '../../componentes/estado.module.css'
-import formato from '../../componentes/formato.module.css'
+import { TituloBloco } from '../../componentes/TituloBloco'
 import { FormItemCenario } from './FormItemCenario'
 import { ResultadoCenario } from './ResultadoCenario'
-import css from './cenario.module.css'
 
 // Formulário aberto pelos botões da tela: adicionar, ou editar um item da lista.
 type Formulario = { tipo: 'criar' } | { tipo: 'editar'; item: ItemSaida }
@@ -35,36 +36,40 @@ function GrupoItens({ tipo, itens, aoEditar, aoExcluir }: GrupoItensProps) {
   const sinal = tipo === 'renda' ? 'entrada' : 'saida'
 
   return (
-    <div className={css.grupo}>
-      <h3 className={css.subtitulo}>{rotulo}</h3>
+    <div className="flex flex-col gap-2">
+      <h3 className="text-14 font-semibold text-muted-foreground">{rotulo}</h3>
       {itens.length === 0 && (
-        <p className={css.aviso}>Nenhum item de {tipo === 'renda' ? 'renda' : 'despesa'}.</p>
+        <p className="text-14 text-muted-foreground">
+          Nenhum item de {tipo === 'renda' ? 'renda' : 'despesa'}.
+        </p>
       )}
-      <ul className={css.lista}>
+      <ul className="m-0 flex list-none flex-col divide-y divide-border p-0">
         {itens.map((item) => (
-          <li key={item.id} className={css.item}>
-            <div className={css.textoItem}>
-              <span className={css.descricao}>{item.descricao}</span>
-              <span className={css.secundario}>{item.dono_nome}</span>
+          <li key={item.id} className="flex flex-col gap-1 py-2">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex min-w-0 flex-col">
+                <span className="break-words text-16 font-semibold">{item.descricao}</span>
+                <span className="text-14 text-muted-foreground">{item.dono_nome}</span>
+              </div>
+              <Dinheiro valor={item.valor} tipo={sinal} />
             </div>
-            <Dinheiro valor={item.valor} tipo={sinal} />
-            <div className={css.acoes}>
-              <button
-                type="button"
-                className={estado.acao}
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
                 aria-label={`Editar ${item.descricao}`}
                 onClick={() => aoEditar(item)}
               >
                 Editar
-              </button>
-              <button
-                type="button"
-                className={estado.acao}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
                 aria-label={`Excluir ${item.descricao}`}
                 onClick={() => aoExcluir(item)}
               >
                 Excluir
-              </button>
+              </Button>
             </div>
           </li>
         ))}
@@ -115,43 +120,34 @@ export function Cenario() {
   })
 
   return (
-    <div className={css.pagina}>
-      <Link to="/planejamento/cenarios" className={estado.voltar}>
-        Cenários
-      </Link>
+    <div className="flex flex-col gap-4 p-4">
+      <CabecalhoTela titulo={cenario?.nome ?? 'Cenário'} voltarPara="/planejamento/cenarios" />
 
       {naoEncontrado && (
-        <p role="alert" className={formato.erro}>
+        <p role="alert" className="text-14 text-saida-texto">
           Cenário não encontrado.
         </p>
       )}
       {!naoEncontrado && consulta.isError && (
-        <p role="alert" className={formato.erro}>
+        <p role="alert" className="text-14 text-saida-texto">
           {mensagemErro(consulta.error)}
         </p>
       )}
       {excluirItem.isError && (
-        <p role="alert" className={formato.erro}>
+        <p role="alert" className="text-14 text-saida-texto">
           {mensagemErro(excluirItem.error)}
         </p>
       )}
-      {!cenario && !consulta.isError && idValido && <p className={css.aviso}>Carregando…</p>}
+      {!cenario && !consulta.isError && idValido && <p className="text-muted-foreground">Carregando…</p>}
 
       {cenario && (
         <>
-          <h1 className={css.titulo}>{cenario.nome}</h1>
-
-          <section className={css.secao}>
-            <div className={css.cabecalhoSecao}>
-              <h2 className={css.subtitulo}>Itens</h2>
-              <button
-                type="button"
-                className={estado.acao}
-                onClick={() => setFormulario({ tipo: 'criar' })}
-              >
-                Adicionar item
-              </button>
-            </div>
+          <Card className="flex flex-col gap-3">
+            <TituloBloco
+              titulo="Itens"
+              acaoRotulo="Adicionar item"
+              onAcao={() => setFormulario({ tipo: 'criar' })}
+            />
             <GrupoItens
               tipo="renda"
               itens={cenario.itens.filter((item) => item.tipo === 'renda')}
@@ -164,7 +160,7 @@ export function Cenario() {
               aoEditar={(item) => setFormulario({ tipo: 'editar', item })}
               aoExcluir={setParaExcluir}
             />
-          </section>
+          </Card>
 
           <ResultadoCenario resultado={cenario.resultado} />
         </>
@@ -185,6 +181,7 @@ export function Cenario() {
           titulo="Excluir item"
           texto={`O item "${paraExcluir.descricao}" será apagado.`}
           rotuloAcao="Excluir"
+          destrutivo
           onConfirmar={() => excluirItem.mutate(paraExcluir)}
           onCancelar={() => setParaExcluir(null)}
         />

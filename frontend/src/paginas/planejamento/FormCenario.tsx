@@ -4,8 +4,8 @@ import { criarCenario, editarCenario, type CenarioResumo } from '../../api/cenar
 import { ApiError } from '../../api/cliente'
 import { BottomSheet } from '../../componentes/BottomSheet'
 import { Campo } from '../../componentes/Campo'
-import estado from '../../componentes/estado.module.css'
-import css from '../../formularios/formularios.module.css'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 const TAMANHO_MAXIMO_NOME = 80
 
@@ -63,26 +63,20 @@ export function FormCenario({ cenario, aoFechar }: FormCenarioProps) {
       titulo={cenario ? 'Renomear cenário' : 'Novo cenário'}
       aoFechar={aoFechar}
       rodape={
-        <button
-          type="submit"
-          form="form-cenario"
-          className={estado.acao}
-          disabled={salvar.isPending}
-        >
+        <Button type="submit" form="form-cenario" disabled={salvar.isPending}>
           Salvar
-        </button>
+        </Button>
       }
     >
       {aviso && (
-        <p role="alert" className={css.erro}>
+        <p role="alert" className="mb-2 text-14 text-saida-texto">
           {aviso}
         </p>
       )}
 
-      <form ref={formRef} id="form-cenario" className={css.campos} onSubmit={enviar}>
+      <form ref={formRef} id="form-cenario" className="flex flex-col gap-4" onSubmit={enviar}>
         <Campo rotulo="Nome" erro={erros.nome}>
-          <input
-            className={css.controle}
+          <Input
             value={nome}
             onChange={(evento) => setNome(evento.target.value)}
             autoComplete="off"
