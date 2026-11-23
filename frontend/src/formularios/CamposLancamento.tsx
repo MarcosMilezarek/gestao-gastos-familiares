@@ -2,10 +2,19 @@ import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { skipToken, useQuery } from '@tanstack/react-query'
 import { listarCategorias, listarTags, type CategoriaSaida } from '../api/categorias'
 import { listarContas, type ContaSaida } from '../api/contas'
+import { Check } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
 import { Campo } from '../componentes/Campo'
 import { mascararEntrada } from '../formatacao/dinheiro'
 import { useSessao } from '../hooks/useSessao'
-import css from './formularios.module.css'
+
+const CLASSE_ATALHO_LIGADO = 'border-primary bg-primary text-primary-foreground font-semibold'
 
 // Valores controlados dos campos. `valor` fica mascarado ("1.234,56"); `paraApi` converte na hora de salvar.
 // `dono_usuario_id: null` significa "Casal", como na API.
@@ -90,6 +99,7 @@ export function CamposLancamento({
   dataDesabilitada = false,
 }: Props) {
   const idTags = useId()
+  const idSituacao = useId()
   const sessao = useSessao().data
   const hoje = sessao?.hoje
   const inputData = useRef<HTMLInputElement>(null)
@@ -136,6 +146,8 @@ export function CamposLancamento({
   )
   // Transferência: contas ativas, sem vínculo com o dono.
   const contasAtivas = (listaContas ?? []).filter((c) => !c.arquivado)
+  const hojeLigado = hoje !== undefined && valores.data === hoje
+  const ontemLigado = hoje !== undefined && valores.data === diaAnterior(hoje)
   const rotuloSituacao = {
     despesa: 'Foi paga',
     receita: 'Foi recebida',
@@ -143,10 +155,14 @@ export function CamposLancamento({
   }[tipo]
 
   return (
-    <div className={css.campos}>
+    <div className="flex flex-col gap-4">
       <Campo rotulo="Valor" erro={erros.valor}>
-        <input
-          className={css.controle}
+        <Input
+          className={cn(
+            'h-14 text-22 font-semibold',
+            valores.valor !== '' && tipo === 'despesa' && 'text-saida-texto',
+            valores.valor !== '' && tipo === 'receita' && 'text-entrada-texto',
+          )}
           type="text"
           inputMode="numeric"
           placeholder="0,00"
@@ -156,42 +172,48 @@ export function CamposLancamento({
         />
       </Campo>
 
-      <div className={css.atalhos} role="group" aria-label="Atalhos de data">
-        <button
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Atalhos de data">
+        <Button
           type="button"
-          className={css.atalho}
+          variant="secondary"
+          size="sm"
+          className={cn(hojeLigado && CLASSE_ATALHO_LIGADO)}
           disabled={dataDesabilitada || !hoje}
-          aria-pressed={hoje !== undefined && valores.data === hoje}
+          aria-pressed={hojeLigado}
           onClick={() => escolherData(hoje)}
         >
+          {hojeLigado && <Check aria-hidden="true" />}
           Hoje
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          className={css.atalho}
+          variant="secondary"
+          size="sm"
+          className={cn(ontemLigado && CLASSE_ATALHO_LIGADO)}
           disabled={dataDesabilitada || !hoje}
-          aria-pressed={hoje !== undefined && valores.data === diaAnterior(hoje)}
+          aria-pressed={ontemLigado}
           onClick={() => escolherData(hoje && diaAnterior(hoje))}
         >
+          {ontemLigado && <Check aria-hidden="true" />}
           Ontem
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          className={css.atalho}
+          variant="secondary"
+          size="sm"
           disabled={dataDesabilitada}
           onClick={() => inputData.current?.focus()}
         >
           Outra data
-        </button>
+        </Button>
       </div>
       <Campo
         rotulo="Data"
         erro={erros.data}
         ajuda={dataDesabilitada ? "A data só muda em 'Somente esta'" : undefined}
       >
-        <input
+        <Input
           ref={inputData}
-          className={css.controle}
           type="date"
           disabled={dataDesabilitada}
           value={valores.data}
@@ -201,8 +223,7 @@ export function CamposLancamento({
 
       {!ehTransferencia && (
         <Campo rotulo="Descrição" erro={erros.descricao}>
-          <input
-            className={css.controle}
+          <Input
             type="text"
             value={valores.descricao}
             onChange={(e) => aoMudar({ descricao: e.target.value })}
@@ -212,8 +233,7 @@ export function CamposLancamento({
 
       {!ehTransferencia && (
         <Campo rotulo="Categoria" erro={erros.categoria_id}>
-          <select
-            className={css.controle}
+          <Select
             value={valores.categoria_id ?? ''}
             onChange={(e) =>
               aoMudar({ categoria_id: e.target.value ? Number(e.target.value) : null })
@@ -225,14 +245,13 @@ export function CamposLancamento({
                 {o.rotulo}
               </option>
             ))}
-          </select>
+          </Select>
         </Campo>
       )}
 
       {!ehTransferencia && !ocultarDonoConta && (
         <Campo rotulo="Dono" erro={erros.dono_usuario_id}>
-          <select
-            className={css.controle}
+          <Select
             value={valores.dono_usuario_id === null ? 'casal' : String(valores.dono_usuario_id)}
             onChange={(e) => mudarDono(e.target.value)}
           >
@@ -243,15 +262,14 @@ export function CamposLancamento({
                 {sessao.casal.parceiro.nome}
               </option>
             )}
-          </select>
+          </Select>
         </Campo>
       )}
 
       {ehTransferencia ? (
         <>
           <Campo rotulo="Conta de origem" erro={erros.conta_id}>
-            <select
-              className={css.controle}
+            <Select
               value={valores.conta_id ?? ''}
               onChange={(e) =>
                 aoMudar({ conta_id: e.target.value ? Number(e.target.value) : null })
@@ -263,12 +281,11 @@ export function CamposLancamento({
                   {c.nome}
                 </option>
               ))}
-            </select>
+            </Select>
           </Campo>
 
           <Campo rotulo="Conta de destino" erro={erros.conta_destino_id}>
-            <select
-              className={css.controle}
+            <Select
               value={valores.conta_destino_id ?? ''}
               onChange={(e) =>
                 aoMudar({ conta_destino_id: e.target.value ? Number(e.target.value) : null })
@@ -280,58 +297,56 @@ export function CamposLancamento({
                   {c.nome}
                 </option>
               ))}
-            </select>
+            </Select>
           </Campo>
         </>
       ) : (
         !ocultarDonoConta && (
           <Campo rotulo="Conta" erro={erros.conta_id} ajuda="A conta segue o dono">
-            <select
-              className={css.controle}
-              value={valores.conta_id ?? ''}
-              disabled
-            >
+            <Select value={valores.conta_id ?? ''} disabled>
               {contasDoDono.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.nome}
                 </option>
               ))}
-            </select>
+            </Select>
           </Campo>
         )
       )}
 
       {camposEssenciais}
 
-      <button
+      <Button
         type="button"
-        className={css.atalho}
+        variant="ghost"
+        size="sm"
+        className="self-start"
         aria-expanded={mostrarDetalhes}
         // Com erro (tags, observação, recorrência) ou com recorrência ligada, o bloco fica aberto.
         disabled={erroDetalhes || forcarDetalhes}
         onClick={() => setDetalhesAbertos(!mostrarDetalhes)}
       >
         Mais detalhes
-      </button>
+      </Button>
 
       {mostrarDetalhes && (
-        <div className={css.campos}>
+        <div className="flex flex-col gap-4">
           <fieldset
-            className={css.grupo}
+            className="m-0 flex min-w-0 flex-col gap-2 border-0 p-0"
             aria-describedby={erros.tag_ids ? `${idTags}-erro` : undefined}
           >
-            <legend className={css.rotulo}>Tags</legend>
-            <div className={css.tags}>
+            <legend className="mb-2 text-14 font-medium">Tags</legend>
+            <div className="flex flex-wrap gap-x-4">
               {(tags.data ?? []).map((t, indice) => {
                 const marcada = valores.tag_ids.includes(t.id)
                 return (
-                  <label key={t.id} className={css.opcao}>
-                    <input
-                      type="checkbox"
+                  <div key={t.id} className="flex min-h-11 items-center gap-3">
+                    <Checkbox
+                      id={`${idTags}-${t.id}`}
                       checked={marcada}
                       // Erro de tags leva o foco ao primeiro checkbox.
                       aria-invalid={erros.tag_ids && indice === 0 ? true : undefined}
-                      onChange={() =>
+                      onCheckedChange={() =>
                         aoMudar({
                           tag_ids: marcada
                             ? valores.tag_ids.filter((id) => id !== t.id)
@@ -339,21 +354,20 @@ export function CamposLancamento({
                         })
                       }
                     />
-                    {t.nome}
-                  </label>
+                    <Label htmlFor={`${idTags}-${t.id}`}>{t.nome}</Label>
+                  </div>
                 )
               })}
             </div>
             {erros.tag_ids && (
-              <p id={`${idTags}-erro`} className={css.erro}>
+              <p id={`${idTags}-erro`} className="text-14 text-saida-texto">
                 {erros.tag_ids}
               </p>
             )}
           </fieldset>
 
           <Campo rotulo="Observação" erro={erros.observacao}>
-            <textarea
-              className={css.controle}
+            <Textarea
               value={valores.observacao}
               onChange={(e) => aoMudar({ observacao: e.target.value })}
             />
@@ -364,16 +378,16 @@ export function CamposLancamento({
       )}
 
       {!ocultarSituacao && (
-        <label className={css.opcao}>
-          <input
-            type="checkbox"
+        <div className="flex min-h-11 items-center gap-3">
+          <Checkbox
+            id={idSituacao}
             checked={valores.situacao === 'confirmada'}
-            onChange={(e) =>
-              aoMudar({ situacao: e.target.checked ? 'confirmada' : 'prevista' })
+            onCheckedChange={(marcado) =>
+              aoMudar({ situacao: marcado === true ? 'confirmada' : 'prevista' })
             }
           />
-          {rotuloSituacao}
-        </label>
+          <Label htmlFor={idSituacao}>{rotuloSituacao}</Label>
+        </div>
       )}
     </div>
   )

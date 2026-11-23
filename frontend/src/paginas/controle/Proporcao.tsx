@@ -1,16 +1,17 @@
 import { useQuery } from '@tanstack/react-query'
-import { Link, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
+import { Card } from '@/components/ui/card'
 import { ApiError, repetirSem4xx } from '../../api/cliente'
 import { obterProporcao } from '../../api/proporcao'
 import { CardsProporcao } from '../../componentes/CardsProporcao'
-import { CardsResumo } from '../../componentes/CardsResumo'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
 import { Dinheiro } from '../../componentes/Dinheiro'
 import { EstadoVazio } from '../../componentes/EstadoVazio'
-import estado from '../../componentes/estado.module.css'
 import { SeletorMes } from '../../componentes/SeletorMes'
+import { TituloBloco } from '../../componentes/TituloBloco'
+import { VisoesControle } from '../../componentes/VisoesControle'
 import { eZero } from '../../formatacao/dinheiro'
 import { useMes } from '../../hooks/useMes'
-import styles from './proporcao.module.css'
 
 export function Proporcao() {
   const navigate = useNavigate()
@@ -28,12 +29,12 @@ export function Proporcao() {
   const semVinculo = consulta.error instanceof ApiError && consulta.error.codigo === 'SEM_VINCULO'
 
   return (
-    <div className={styles.pagina}>
-      <SeletorMes mes={mes} onMudar={setMes} />
-      <Link to={`/controle?mes=${mes}`} className={estado.voltar}>
-        Controle
-      </Link>
-      <h1 className={styles.titulo}>Proporção e aporte do mês</h1>
+    <div className="flex flex-col gap-4 px-4 pb-4">
+      <div className="sticky top-0 z-10 flex flex-col gap-2 bg-background pb-2">
+        <SeletorMes mes={mes} onMudar={setMes} />
+        <CabecalhoTela titulo="Proporção e aporte do mês" />
+        <VisoesControle mes={mes} />
+      </div>
 
       {semVinculo && (
         <EstadoVazio
@@ -43,25 +44,25 @@ export function Proporcao() {
         />
       )}
       {consulta.isError && !semVinculo && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="m-0 text-saida-texto">
           {consulta.error instanceof ApiError
             ? consulta.error.mensagem
             : 'Erro inesperado. Tente novamente.'}
         </p>
       )}
-      {!dados && !consulta.isError && <p className={styles.aviso}>Carregando…</p>}
+      {!dados && !consulta.isError && <p className="m-0 text-muted-foreground">Carregando…</p>}
 
       {dados && (
         <>
-          <CardsResumo>
-            <section className={styles.card}>
-              <h2 className={styles.nome}>Base de despesas do casal</h2>
+          <section>
+            <Card>
+              <TituloBloco titulo="Base de despesas do casal" />
               <Dinheiro valor={dados.base_despesas_casal} />
               {eZero(dados.base_despesas_casal) && (
-                <p className={styles.aviso}>Sem despesas do casal neste mês</p>
+                <p className="m-0 text-muted-foreground">Sem despesas do casal neste mês</p>
               )}
-            </section>
-          </CardsResumo>
+            </Card>
+          </section>
           <CardsProporcao proporcao={dados} />
         </>
       )}

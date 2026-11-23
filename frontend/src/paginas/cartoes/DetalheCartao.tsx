@@ -4,12 +4,11 @@ import { Link, useNavigate, useParams } from 'react-router'
 import { editarCartao, excluirCartao, obterCartao, type CartaoSaida } from '../../api/cartoes'
 import { ApiError, repetirSem4xx } from '../../api/cliente'
 import { obterConta } from '../../api/contas'
+import { Button } from '@/components/ui/button'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
 import { DialogoConfirmacao } from '../../componentes/DialogoConfirmacao'
-import estado from '../../componentes/estado.module.css'
 import { formatarBRL, paraApi } from '../../formatacao/dinheiro'
-import configuracoes from '../configuracoes/configuracoes.module.css'
 import { CamposCartao, validarValores, type ErrosCartao, type ValoresCartao } from './CadastroCartao'
-import styles from './formCartao.module.css'
 
 const AJUSTE_DIAS =
   'Mudar os dias muda as datas das faturas; os itens já lançados não são movidos de fatura.'
@@ -29,8 +28,8 @@ export function DetalheCartao() {
 
   if (!Number.isInteger(id)) {
     return (
-      <div className={styles.pagina}>
-        <p role="alert" className={styles.erro}>
+      <div className="flex flex-col gap-4 p-4">
+        <p role="alert" className="text-14 text-saida-texto">
           Cartão não encontrado.
         </p>
       </div>
@@ -38,19 +37,17 @@ export function DetalheCartao() {
   }
 
   return (
-    <div className={styles.pagina}>
-      <Link to="/cartoes" className={estado.voltar}>
-        Cartões
-      </Link>
+    <div className="flex flex-col gap-4 p-4">
+      <CabecalhoTela titulo={cartao?.nome ?? 'Cartão'} voltarPara="/cartoes" />
 
       {consulta.isError && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="text-14 text-saida-texto">
           {consulta.error instanceof ApiError
             ? consulta.error.mensagem
             : 'Erro inesperado. Tente novamente.'}
         </p>
       )}
-      {!cartao && !consulta.isError && <p className={styles.aviso}>Carregando…</p>}
+      {!cartao && !consulta.isError && <p className="text-14 text-muted-foreground">Carregando…</p>}
 
       {cartao && <DadosCartao key={cartao.id} cartao={cartao} />}
     </div>
@@ -135,32 +132,30 @@ function DadosCartao({ cartao }: DadosCartaoProps) {
 
   return (
     <>
-      <h1 className={styles.titulo}>{cartao.nome}</h1>
-
       {arquivada && (
-        <p className={styles.aviso}>
+        <p className="text-14 text-alerta-texto">
           A conta dona está arquivada: o cartão está só para consulta.
         </p>
       )}
 
-      <div className={configuracoes.secao}>
-        <span className={styles.rotulo}>Conta dona</span>
-        <p className={styles.texto}>{conta.data?.nome ?? 'Carregando…'}</p>
+      <div className="flex flex-col gap-1">
+        <span className="text-14 font-semibold">Conta dona</span>
+        <p className="text-16">{conta.data?.nome ?? 'Carregando…'}</p>
       </div>
 
       {aviso && (
-        <p role="alert" className={configuracoes.aviso}>
+        <p role="alert" className="text-14 text-saida-texto">
           {aviso}
         </p>
       )}
       {status && (
-        <p role="status" className={configuracoes.status}>
+        <p role="status" className="text-14 text-entrada-texto">
           {status}
         </p>
       )}
 
       <form onSubmit={enviar}>
-        <fieldset className={styles.formulario} disabled={arquivada}>
+        <fieldset className="flex min-w-0 flex-col gap-4" disabled={arquivada}>
           <CamposCartao
             valores={valores}
             erros={erros}
@@ -168,21 +163,21 @@ function DadosCartao({ cartao }: DadosCartaoProps) {
             ajusteDias={AJUSTE_DIAS}
           />
           {!arquivada && (
-            <button type="submit" className={configuracoes.botao} disabled={salvar.isPending}>
+            <Button type="submit" className="w-full" disabled={salvar.isPending}>
               Salvar
-            </button>
+            </Button>
           )}
         </fieldset>
       </form>
 
-      <div className={styles.acoes}>
-        <Link to={`/cartoes/${cartao.id}/faturas/${cartao.fatura_corrente.mes}`} className={estado.voltar}>
-          Ver fatura atual
-        </Link>
+      <div className="flex flex-wrap gap-2">
+        <Button asChild variant="secondary" size="sm">
+          <Link to={`/cartoes/${cartao.id}/faturas/${cartao.fatura_corrente.mes}`}>Ver fatura atual</Link>
+        </Button>
         {!arquivada && (
-          <button type="button" className={estado.acao} onClick={() => setConfirmandoExcluir(true)}>
+          <Button type="button" variant="destructive" size="sm" onClick={() => setConfirmandoExcluir(true)}>
             Excluir cartão
-          </button>
+          </Button>
         )}
       </div>
 
@@ -191,6 +186,7 @@ function DadosCartao({ cartao }: DadosCartaoProps) {
           titulo="Excluir cartão"
           texto="O cartão só pode ser excluído sem compras, séries nem pagamento de fatura."
           rotuloAcao="Excluir"
+          destrutivo
           onConfirmar={() => excluir.mutate()}
           onCancelar={() => setConfirmandoExcluir(false)}
         />

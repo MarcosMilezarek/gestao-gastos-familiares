@@ -2,13 +2,12 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { ApiError, repetirSem4xx } from '../../api/cliente'
 import { listarMetas, type MetaSaida } from '../../api/metas'
+import { Button } from '@/components/ui/button'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
 import { CardMeta } from '../../componentes/CardMeta'
-import { CardsResumo } from '../../componentes/CardsResumo'
-import { Dinheiro } from '../../componentes/Dinheiro'
+import { CartaoDestaque } from '../../componentes/CartaoDestaque'
 import { EstadoVazio } from '../../componentes/EstadoVazio'
-import cardConta from '../../componentes/cardConta.module.css'
 import { FormMeta } from './FormMeta'
-import styles from './metas.module.css'
 
 type Situacao = MetaSaida['situacao']
 
@@ -40,29 +39,26 @@ export function Metas() {
   const dados = consulta.data
 
   return (
-    <div className={styles.pagina}>
-      <header className={styles.topo}>
-        <h1 className={styles.titulo}>Metas</h1>
-        <button type="button" className={styles.novaMeta} onClick={() => setFormAberto(true)}>
-          Nova meta
-        </button>
-      </header>
+    <div className="flex flex-col gap-4 p-4">
+      <CabecalhoTela
+        titulo="Metas"
+        acao={
+          <Button size="sm" onClick={() => setFormAberto(true)}>
+            Nova meta
+          </Button>
+        }
+      />
 
       {consulta.isError && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="text-14 font-medium text-saida-texto">
           {mensagemErro(consulta.error)}
         </p>
       )}
-      {!dados && !consulta.isError && <p className={styles.aviso}>Carregando…</p>}
+      {!dados && !consulta.isError && <p className="text-14 text-muted-foreground">Carregando…</p>}
 
       {dados && (
         <>
-          <CardsResumo>
-            <div className={styles.total}>
-              <span className={cardConta.rotulo}>Patrimônio total</span>
-              <Dinheiro valor={dados.patrimonio_total} />
-            </div>
-          </CardsResumo>
+          <CartaoDestaque rotulo="Patrimônio total" valor={dados.patrimonio_total} chips={[]} />
 
           {dados.metas.length === 0 ? (
             <EstadoVazio
@@ -72,24 +68,24 @@ export function Metas() {
             />
           ) : (
             <>
-              <div className={styles.abas}>
+              <div className="flex gap-2">
                 {SITUACOES.map((opcao) => (
-                  <button
+                  <Button
                     key={opcao}
-                    type="button"
+                    size="sm"
+                    variant={situacao === opcao ? 'outline' : 'secondary'}
                     aria-pressed={situacao === opcao}
-                    className={situacao === opcao ? `${styles.aba} ${styles.abaAtiva}` : styles.aba}
                     onClick={() => setSituacao(opcao)}
                   >
                     {ROTULO_ABA[opcao]}
-                  </button>
+                  </Button>
                 ))}
               </div>
 
               {dados.metas.filter((meta) => meta.situacao === situacao).length === 0 ? (
-                <p className={styles.aviso}>{FRASE_ABA_VAZIA[situacao]}</p>
+                <EstadoVazio compacto frase={FRASE_ABA_VAZIA[situacao]} />
               ) : (
-                <ul className={styles.lista}>
+                <ul className="flex flex-col gap-3">
                   {dados.metas
                     .filter((meta) => meta.situacao === situacao)
                     .map((meta) => (

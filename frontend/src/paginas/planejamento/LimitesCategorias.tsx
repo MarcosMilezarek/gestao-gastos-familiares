@@ -1,11 +1,15 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { TriangleAlert } from 'lucide-react'
 import { ApiError } from '../../api/cliente'
 import { listarCategorias, type CategoriaSaida } from '../../api/categorias'
 import { type CategoriaEntrada, type OrcamentoSaida } from '../../api/orcamentos'
 import { Campo } from '../../componentes/Campo'
+import { TituloBloco } from '../../componentes/TituloBloco'
 import { eZero, formatarBRL, mascararEntrada, paraApi } from '../../formatacao/dinheiro'
-import styles from './assistente.module.css'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 
 // Estado do passo 2, guardado pelo assistente. `texto` é o campo mascarado ("1.234,56"); "" = vazio.
 // Entrada só existe para categoria listada: marcada (entra no orçamento) ou não.
@@ -99,20 +103,19 @@ function BlocoCategoria({ mae, linha, previa, aoMudar }: BlocoProps) {
     linha.subcategorias.find((s) => s.categoria_id === sub.id)?.texto ?? ''
 
   return (
-    <section className={styles.cartao}>
-      <h3 className={styles.nome}>
+    <Card className="gap-3 p-4">
+      <h3 className="text-16 font-semibold">
         {mae.nome}
-        {mae.arquivado && <span className={styles.tag}> (arquivada)</span>}
+        {mae.arquivado && <span className="text-14 font-normal text-muted-foreground"> (arquivada)</span>}
       </h3>
 
       {comSubcategorias ? (
-        <p className={styles.total}>
+        <p className="text-14 tabular-nums">
           Total das subcategorias: {totalPrevia !== undefined ? formatarBRL(totalPrevia) : '—'}
         </p>
       ) : (
         <Campo rotulo={`Limite de ${mae.nome}`}>
-          <input
-            className={styles.campo}
+          <Input
             inputMode="numeric"
             placeholder="0,00"
             value={linha.texto}
@@ -128,8 +131,7 @@ function BlocoCategoria({ mae, linha, previa, aoMudar }: BlocoProps) {
           key={sub.id}
           rotulo={`Limite de ${sub.nome}${sub.arquivado ? ' (arquivada)' : ''}`}
         >
-          <input
-            className={styles.campo}
+          <Input
             inputMode="numeric"
             placeholder="0,00"
             value={textoDe(sub)}
@@ -146,7 +148,7 @@ function BlocoCategoria({ mae, linha, previa, aoMudar }: BlocoProps) {
           />
         </Campo>
       ))}
-    </section>
+    </Card>
   )
 }
 
@@ -166,27 +168,29 @@ export function LimitesCategorias({ valor, previa, onMudar }: LimitesCategoriasP
   const marcadas = maes.filter((mae) => linhaDe(valor, mae.id).marcada)
 
   return (
-    <section className={styles.bloco}>
-      <h2 className={styles.subtitulo}>Limites por categoria</h2>
+    <section className="flex flex-col gap-3">
+      <TituloBloco titulo="Limites por categoria" />
 
-      <button
+      <Button
         type="button"
-        className={styles.botao}
+        variant="secondary"
+        size="sm"
         aria-expanded={gerenciando}
         onClick={() => setGerenciando((aberto) => !aberto)}
       >
         Gerenciar categorias
-      </button>
+      </Button>
 
       {gerenciando && (
-        <fieldset className={styles.gerenciar}>
-          <legend className={styles.rotulo}>Categorias que entram no orçamento</legend>
+        <fieldset className="flex flex-col gap-1 rounded-xl border bg-card p-3">
+          <legend className="text-14 font-medium">Categorias que entram no orçamento</legend>
           {maes.map((mae) => {
             const linha = linhaDe(valor, mae.id)
             return (
-              <label key={mae.id} className={styles.opcao}>
+              <label key={mae.id} className="flex min-h-11 items-center gap-3 text-16">
                 <input
                   type="checkbox"
+                  className="size-6 shrink-0 accent-primary"
                   checked={linha.marcada}
                   onChange={() => onMudar(gravarLinha(valor, { ...linha, marcada: !linha.marcada }))}
                 />
@@ -200,16 +204,16 @@ export function LimitesCategorias({ valor, previa, onMudar }: LimitesCategoriasP
         </fieldset>
       )}
 
-      {consulta.isPending && <p className={styles.aviso}>Carregando categorias…</p>}
+      {consulta.isPending && <p className="text-14 text-muted-foreground">Carregando categorias…</p>}
       {consulta.isError && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="text-14 text-saida-texto">
           {consulta.error instanceof ApiError
             ? consulta.error.mensagem
             : 'Não foi possível carregar as categorias.'}
         </p>
       )}
       {consulta.isSuccess && marcadas.length === 0 && (
-        <p className={styles.aviso}>
+        <p className="text-14 text-muted-foreground">
           Nenhuma categoria marcada. Use “Gerenciar categorias” para escolher quais entram.
         </p>
       )}
@@ -225,17 +229,22 @@ export function LimitesCategorias({ valor, previa, onMudar }: LimitesCategoriasP
       ))}
 
       {previa && (
-        <div className={styles.resumo} aria-live="polite">
-          <p className={styles.linhaResumo}>
+        <Card className="gap-1 p-4 tabular-nums" aria-live="polite">
+          <p className="text-14">
             Total categorizado: {formatarBRL(previa.total_categorizado)}
           </p>
-          <p className={styles.linhaResumo}>
+          <p className="text-14">
             Falta distribuir: {formatarBRL(previa.falta_distribuir)}
           </p>
-          <p className={eZero(previa.excedente) ? styles.linhaResumo : styles.alerta}>
-            Excedente: {formatarBRL(previa.excedente)}
-          </p>
-        </div>
+          {eZero(previa.excedente) ? (
+            <p className="text-14">Excedente: {formatarBRL(previa.excedente)}</p>
+          ) : (
+            <p className="flex items-center gap-1 text-14 font-semibold text-alerta-texto">
+              <TriangleAlert aria-hidden="true" className="size-4" />
+              Excedente: {formatarBRL(previa.excedente)}
+            </p>
+          )}
+        </Card>
       )}
     </section>
   )

@@ -1,60 +1,65 @@
-import type { ReactNode } from 'react'
+import { CircleCheck } from 'lucide-react'
 import { Link } from 'react-router'
+import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
 import type { MetaSaida } from '../api/metas'
 import { formatarData } from '../formatacao/data'
 import { formatarPercentual } from '../formatacao/percentual'
 import { Dinheiro } from './Dinheiro'
 import { iconeDe } from './icones'
-import styles from '../paginas/metas/metas.module.css'
+import { IconeQuadrado } from './IconeQuadrado'
 
 type CardMetaProps = { meta: MetaSaida }
 
-// Ícone da meta na cor dela (nome desconhecido cai no padrão de icones.ts).
-function iconeColorido(meta: MetaSaida): ReactNode {
-  const Icone = iconeDe(meta.icone)
-  return <Icone aria-hidden="true" size={20} color={meta.cor} />
-}
-
 // Porcentagem em texto ao lado da barra: a informação não depende só da cor (RNF-08).
-// A largura da barra usa a string da API; nunca passa por number.
+// A barra usa a porcentagem que a API devolve, limitada a 100.
 export function CardMeta({ meta }: CardMetaProps) {
   return (
-    <Link to={`/metas/${meta.id}`} className={styles.card}>
-      <span className={styles.nome}>
-        {iconeColorido(meta)}
-        {meta.nome}
+    <Link
+      to={`/metas/${meta.id}`}
+      className="flex flex-col gap-3 rounded-xl border bg-card p-4 text-card-foreground shadow-card outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    >
+      <span className="flex items-center gap-3">
+        <span style={meta.cor ? { color: meta.cor } : undefined} className="inline-flex">
+          <IconeQuadrado
+            icone={iconeDe(meta.icone)}
+            className={meta.cor ? 'bg-current/15 text-inherit' : undefined}
+          />
+        </span>
+        <span className="min-w-0 flex-1 truncate text-16 font-semibold">{meta.nome}</span>
+        {meta.situacao === 'concluida' && (
+          <Badge variant="entrada">
+            <CircleCheck aria-hidden="true" />
+            Concluída
+          </Badge>
+        )}
       </span>
-      <dl className={styles.dados}>
-        <div>
-          <dt className={styles.rotulo}>Valor atual</dt>
-          <dd className={styles.valor}>
+      <dl className="grid grid-cols-3 gap-2">
+        <div className="min-w-0">
+          <dt className="text-13 text-muted-foreground">Valor atual</dt>
+          <dd className="text-14 tabular-nums">
             <Dinheiro valor={meta.valor_atual} />
           </dd>
         </div>
-        <div>
-          <dt className={styles.rotulo}>Alvo</dt>
-          <dd className={styles.valor}>
+        <div className="min-w-0">
+          <dt className="text-13 text-muted-foreground">Alvo</dt>
+          <dd className="text-14 tabular-nums">
             <Dinheiro valor={meta.valor_alvo} />
           </dd>
         </div>
-        <div>
-          <dt className={styles.rotulo}>Falta</dt>
-          <dd className={styles.valor}>
+        <div className="min-w-0">
+          <dt className="text-13 text-muted-foreground">Falta</dt>
+          <dd className="text-14 tabular-nums">
             <Dinheiro valor={meta.falta} />
           </dd>
         </div>
       </dl>
-      <div className={styles.progresso}>
-        <div className={styles.barra} aria-hidden="true">
-          <div
-            className={styles.preenchimento}
-            style={{ width: `min(${meta.porcentagem}%, 100%)`, background: meta.cor }}
-          />
-        </div>
-        <p className={styles.porcentagem}>{formatarPercentual(meta.porcentagem)}</p>
+      <div className="flex items-center gap-3">
+        <Progress aria-label={`Progresso da meta ${meta.nome}`} value={Math.min(100, Number(meta.porcentagem))} />
+        <p className="text-13 font-semibold tabular-nums">{formatarPercentual(meta.porcentagem)}</p>
       </div>
       {meta.data_alvo !== null && (
-        <p className={styles.dataAlvo}>
+        <p className="text-13 text-muted-foreground tabular-nums">
           Data-alvo: <time dateTime={meta.data_alvo}>{formatarData(meta.data_alvo)}</time>
         </p>
       )}

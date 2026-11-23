@@ -1,32 +1,32 @@
 import { useQuery } from '@tanstack/react-query'
-import { Link } from 'react-router'
+import { Card } from '@/components/ui/card'
 import { ApiError, repetirSem4xx } from '../../api/cliente'
 import { obterRelatorioBalancoMensal } from '../../api/relatorios'
 import type { MesBalancoRelatorio } from '../../api/relatorios'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
 import { Dinheiro } from '../../componentes/Dinheiro'
 import { GraficoBarras } from '../../componentes/GraficoBarras'
-import estado from '../../componentes/estado.module.css'
 import { SeletorMes } from '../../componentes/SeletorMes'
+import { TituloBloco } from '../../componentes/TituloBloco'
 import { rotuloMes } from '../../formatacao/data'
 import { useMes } from '../../hooks/useMes'
-import styles from './balanco.module.css'
 
 type TipoDinheiro = 'entrada' | 'saida' | 'neutro'
 type Par = MesBalancoRelatorio['entradas']
 
 function BlocoPar({ rotulo, par, tipo = 'neutro' }: { rotulo: string; par: Par; tipo?: TipoDinheiro }) {
   return (
-    <div className={styles.bloco}>
-      <p className={styles.rotulo}>{rotulo}</p>
-      <dl className={styles.par}>
+    <div className="flex flex-col gap-1 border-t pt-3 first:border-t-0 first:pt-0">
+      <p className="text-14 font-semibold">{rotulo}</p>
+      <dl className="grid grid-cols-2 gap-2 text-14">
         <div>
-          <dt>Previsto</dt>
+          <dt className="text-13 text-muted-foreground">Previsto</dt>
           <dd>
             <Dinheiro valor={par.previsto} tipo={tipo} />
           </dd>
         </div>
         <div>
-          <dt>Realizado</dt>
+          <dt className="text-13 text-muted-foreground">Realizado</dt>
           <dd>
             <Dinheiro valor={par.realizado} tipo={tipo} />
           </dd>
@@ -54,26 +54,23 @@ export function RelatorioBalanco() {
   const dados = consulta.data
 
   return (
-    <div className={styles.pagina}>
+    <div className="flex flex-col gap-4 p-4">
       <SeletorMes mes={mes} onMudar={setMes} />
-      <Link to={`/controle/relatorios?mes=${mes}`} className={estado.voltar}>
-        Relatórios
-      </Link>
-      <h1 className={styles.titulo}>Balanço mensal</h1>
+      <CabecalhoTela titulo="Balanço mensal" voltarPara={`/controle/relatorios?mes=${mes}`} />
 
       {consulta.isError && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="text-14 text-saida-texto">
           {consulta.error instanceof ApiError
             ? consulta.error.mensagem
             : 'Erro inesperado. Tente novamente.'}
         </p>
       )}
-      {!dados && !consulta.isError && <p className={styles.aviso}>Carregando…</p>}
+      {!dados && !consulta.isError && <p className="text-14 text-muted-foreground">Carregando…</p>}
 
       {dados && (
         <>
-          <section className={styles.card}>
-            <h2 className={styles.nome}>Entradas × saídas (previsto)</h2>
+          <Card>
+            <TituloBloco titulo="Entradas × saídas (previsto)" />
             <GraficoBarras
               meses={dados.meses.map((item) => ({
                 rotulo: rotuloCurto(item.mes),
@@ -81,15 +78,15 @@ export function RelatorioBalanco() {
                 saidas: item.saidas.previsto,
               }))}
             />
-          </section>
+          </Card>
 
           {dados.meses.map((item) => (
-            <section key={item.mes} className={styles.card}>
-              <h2 className={styles.nome}>{rotuloMes(item.mes)}</h2>
+            <Card key={item.mes}>
+              <TituloBloco titulo={rotuloMes(item.mes)} />
               <BlocoPar rotulo="Entradas" par={item.entradas} tipo="entrada" />
               <BlocoPar rotulo="Saídas" par={item.saidas} tipo="saida" />
               <BlocoPar rotulo="Saldo do mês" par={item.saldo} />
-            </section>
+            </Card>
           ))}
         </>
       )}

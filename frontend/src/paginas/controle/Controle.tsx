@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
+import { Button } from '@/components/ui/button'
 import { listarCartoes } from '../../api/cartoes'
 import { listarCategorias } from '../../api/categorias'
 import { ApiError, repetirSem4xx } from '../../api/cliente'
@@ -9,22 +10,24 @@ import { type FiltrosControle, type ListaControle, type Par, obterLista } from '
 import { excluirLancamento, type LancamentoSaida } from '../../api/lancamentos'
 import { obterProporcao } from '../../api/proporcao'
 import { CardsProporcao } from '../../componentes/CardsProporcao'
-import { CardsResumo } from '../../componentes/CardsResumo'
-import { Dinheiro } from '../../componentes/Dinheiro'
+import { CardResumo, CardsResumo } from '../../componentes/CardsResumo'
 import type { Alcance } from '../../componentes/DialogoAlcance'
 import { DialogoConfirmacao } from '../../componentes/DialogoConfirmacao'
 import { EstadoVazio } from '../../componentes/EstadoVazio'
 import { FiltrosLista } from '../../componentes/FiltrosLista'
 import type { LancamentoItem } from '../../componentes/ItemLancamento'
 import { ListaLancamentos } from '../../componentes/ListaLancamentos'
+import { MenuCadastros } from '../../componentes/MenuCadastros'
 import { SeletorMes } from '../../componentes/SeletorMes'
+import { VisoesControle } from '../../componentes/VisoesControle'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
+import { formatarBRL } from '../../formatacao/dinheiro'
 import { ConfirmarLancamento } from '../../formularios/ConfirmarLancamento'
 import { DetalheLancamento } from '../../formularios/DetalheLancamento'
 import { useFormularios } from '../../formularios/FormulariosProvider'
 import { useFiltros } from '../../hooks/useFiltros'
 import { useMes } from '../../hooks/useMes'
 import { useSessao } from '../../hooks/useSessao'
-import styles from './controle.module.css'
 
 type Acao = { tipo: 'confirmar' | 'detalhe' | 'excluir'; id: number }
 
@@ -114,11 +117,11 @@ export function ListaDoMes({ mes, contaId, podeEscrever, filtros = {}, aoLimparF
   return (
     <>
       {consulta.isError && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="m-0 text-saida-texto">
           {erroConsulta}
         </p>
       )}
-      {!lista && !consulta.isError && <p className={styles.aviso}>Carregando…</p>}
+      {!lista && !consulta.isError && <p className="m-0 text-muted-foreground">Carregando…</p>}
 
       {semResultadoFiltrado && (
         <EstadoVazio
@@ -141,7 +144,7 @@ export function ListaDoMes({ mes, contaId, podeEscrever, filtros = {}, aoLimparF
       )}
 
       {excluir.isError && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="m-0 text-saida-texto">
           {erroExcluir}
         </p>
       )}
@@ -157,6 +160,7 @@ export function ListaDoMes({ mes, contaId, podeEscrever, filtros = {}, aoLimparF
           titulo="Excluir lançamento"
           texto="Excluir este lançamento?"
           rotuloAcao="Excluir"
+          destrutivo
           onConfirmar={() => excluir.mutate({ id: alvo.id })}
           onCancelar={fecharAcao}
         />
@@ -169,6 +173,7 @@ export function Controle() {
   const { mes, setMes } = useMes()
   const controle = useFiltros()
   const sessao = useSessao().data
+  const [menuAberto, setMenuAberto] = useState(false)
 
   // Mesma chave da lista de lançamentos: os cards não fazem segunda ida à rede.
   const lista = useQuery(opcoesLista(mes, controle.filtros)).data
@@ -228,58 +233,32 @@ export function Controle() {
   }
 
   return (
-    <div className={styles.pagina}>
-      <SeletorMes mes={mes} onMudar={setMes} />
-      <h1 className={styles.titulo}>Controle</h1>
-
-      <nav className={styles.chips} aria-label="Atalhos do controle">
-        <Link to="/controle/contas" className={styles.chip}>
-          Contas
-        </Link>
-        <Link to="/controle/categorias" className={styles.chip}>
-          Categorias
-        </Link>
-        <Link to="/controle/tags" className={styles.chip}>
-          Tags
-        </Link>
-        <Link to={`/controle/proporcao?mes=${mes}`} className={styles.chip}>
-          Proporção
-        </Link>
-        <Link to={`/controle/balanco?mes=${mes}`} className={styles.chip}>
-          Balanço
-        </Link>
-        <Link to={`/controle/relatorios?mes=${mes}`} className={styles.chip}>
-          Relatórios
-        </Link>
-        <Link to="/projecao" className={styles.chip}>
-          Projeção
-        </Link>
-      </nav>
+    <div className="flex flex-col gap-4 px-4 pb-4">
+      <div className="sticky top-0 z-10 flex flex-col gap-2 bg-background pb-2">
+        <SeletorMes mes={mes} onMudar={setMes} />
+        <CabecalhoTela
+          titulo="Controle"
+          acao={
+            <Button type="button" variant="ghost" size="sm" aria-haspopup="dialog" onClick={() => setMenuAberto(true)}>
+              Cadastros
+            </Button>
+          }
+        />
+        <VisoesControle mes={mes} />
+      </div>
+      {menuAberto && <MenuCadastros aoFechar={() => setMenuAberto(false)} />}
 
       {lista && (
         <CardsResumo>
-          <section className={styles.card}>
-            <h2 className={styles.nome}>Saldo atual total</h2>
-            <Dinheiro valor={lista.resumo.saldo_atual_total} />
-          </section>
+          <CardResumo rotulo="Saldo atual total" valor={lista.resumo.saldo_atual_total} />
           {cardsMes.map((card) => (
-            <section key={card.rotulo} className={styles.card}>
-              <h2 className={styles.nome}>{card.rotulo}</h2>
-              <dl className={styles.valores}>
-                <div>
-                  <dt>Previsto</dt>
-                  <dd>
-                    <Dinheiro valor={card.par.previsto} tipo={card.tipo} />
-                  </dd>
-                </div>
-                <div>
-                  <dt>Realizado</dt>
-                  <dd>
-                    <Dinheiro valor={card.par.realizado} tipo={card.tipo} />
-                  </dd>
-                </div>
-              </dl>
-            </section>
+            <CardResumo
+              key={card.rotulo}
+              rotulo={card.rotulo}
+              valor={card.par.realizado}
+              apoio={`Previsto ${formatarBRL(card.par.previsto)}`}
+              tom={card.tipo}
+            />
           ))}
         </CardsResumo>
       )}

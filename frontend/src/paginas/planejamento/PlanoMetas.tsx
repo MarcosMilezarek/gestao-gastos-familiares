@@ -4,11 +4,14 @@ import { ApiError, repetirSem4xx } from '../../api/cliente'
 import { listarMetas, type MetaSaida } from '../../api/metas'
 import { calcularPlano } from '../../api/planoMetas'
 import { Campo } from '../../componentes/Campo'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
 import { Dinheiro } from '../../componentes/Dinheiro'
-import estado from '../../componentes/estado.module.css'
+import { TituloBloco } from '../../componentes/TituloBloco'
 import { eZero, mascararEntrada, paraApi } from '../../formatacao/dinheiro'
-import css from '../../formularios/formularios.module.css'
-import styles from './planejamento.module.css'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
 
 // Valor da API ("1234.50") -> texto mascarado ("1.234,50"), sem passar por number.
 // Igual ao de FormMeta.tsx (a consolidação fica para uma tarefa própria).
@@ -89,45 +92,38 @@ export function PlanoMetas() {
   const resultado = calcular.data
 
   return (
-    <div className={styles.pagina}>
-      <header className={styles.topo}>
-        <h1 className={styles.titulo}>Plano de metas</h1>
-      </header>
+    <div className="flex flex-col gap-4 p-4">
+      <CabecalhoTela titulo="Plano de metas" voltarPara="/planejamento" />
 
-      <p className={styles.aviso}>Este plano não é salvo: é só um cálculo.</p>
+      <p className="text-14 text-muted-foreground">Este plano não é salvo: é só um cálculo.</p>
 
       {metas.isError && (
-        <p role="alert" className={css.erro}>
+        <p role="alert" className="rounded-lg bg-saida-suave p-3 text-14 text-saida-texto">
           {mensagemErro(metas.error)}
         </p>
       )}
       {aviso && (
-        <p role="alert" className={css.erro}>
+        <p role="alert" className="rounded-lg bg-saida-suave p-3 text-14 text-saida-texto">
           {aviso}
         </p>
       )}
 
-      <form ref={formRef} className={css.campos} onSubmit={enviar}>
+      <form ref={formRef} className="flex flex-col gap-4" onSubmit={enviar}>
         {metas.data && metas.data.metas.length > 0 && (
           <Campo rotulo="Meta (opcional)">
-            <select
-              className={css.controle}
-              value={metaId}
-              onChange={(evento) => escolherMeta(evento.target.value)}
-            >
+            <Select value={metaId} onChange={(evento) => escolherMeta(evento.target.value)}>
               <option value="">Sem meta: digitar valores</option>
               {metas.data.metas.map((meta) => (
                 <option key={meta.id} value={String(meta.id)}>
                   {meta.nome}
                 </option>
               ))}
-            </select>
+            </Select>
           </Campo>
         )}
 
         <Campo rotulo="Valor-alvo" erro={erros.valor_alvo}>
-          <input
-            className={css.controle}
+          <Input
             type="text"
             inputMode="numeric"
             placeholder="0,00"
@@ -140,8 +136,7 @@ export function PlanoMetas() {
         </Campo>
 
         <Campo rotulo="Valor atual" erro={erros.valor_atual}>
-          <input
-            className={css.controle}
+          <Input
             type="text"
             inputMode="numeric"
             value={valorAtual}
@@ -153,8 +148,7 @@ export function PlanoMetas() {
         </Campo>
 
         <Campo rotulo="Mês-alvo" erro={erros.mes_alvo}>
-          <input
-            className={css.controle}
+          <Input
             type="month"
             value={mesAlvo}
             onChange={(evento) => {
@@ -164,36 +158,38 @@ export function PlanoMetas() {
           />
         </Campo>
 
-        <button type="submit" className={estado.acao} disabled={calcular.isPending}>
+        <Button type="submit" disabled={calcular.isPending}>
           Calcular
-        </button>
+        </Button>
       </form>
 
       {resultado && (
-        <section className={styles.resultado} aria-live="polite">
-          <h2 className={styles.subtitulo}>Resultado</h2>
-          {resultado.atingida ? (
-            <p className={styles.atingida}>Meta já atingida.</p>
-          ) : (
-            <dl className={styles.lista}>
-              <div>
-                <dt>Meses</dt>
-                <dd>{resultado.meses}</dd>
-              </div>
-              <div>
-                <dt>Aplicação mensal</dt>
-                <dd>
-                  <Dinheiro valor={resultado.aplicacao_mensal} />
-                </dd>
-              </div>
-              <div>
-                <dt>Total a aplicar</dt>
-                <dd>
-                  <Dinheiro valor={resultado.total_a_aplicar} />
-                </dd>
-              </div>
-            </dl>
-          )}
+        <section aria-live="polite">
+          <Card>
+            <TituloBloco titulo="Resultado" />
+            {resultado.atingida ? (
+              <p className="font-semibold">Meta já atingida.</p>
+            ) : (
+              <dl className="flex flex-col gap-3 tabular-nums">
+                <div className="flex items-center justify-between gap-2">
+                  <dt>Meses</dt>
+                  <dd className="font-semibold">{resultado.meses}</dd>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <dt>Aplicação mensal</dt>
+                  <dd>
+                    <Dinheiro valor={resultado.aplicacao_mensal} />
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <dt>Total a aplicar</dt>
+                  <dd>
+                    <Dinheiro valor={resultado.total_a_aplicar} />
+                  </dd>
+                </div>
+              </dl>
+            )}
+          </Card>
         </section>
       )}
     </div>

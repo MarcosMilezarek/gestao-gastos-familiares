@@ -9,9 +9,12 @@ import {
   obterVinculo,
   recusarConvite,
 } from '../../api/vinculo'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
 import { Campo } from '../../componentes/Campo'
 import { DialogoConfirmacao } from '../../componentes/DialogoConfirmacao'
-import styles from './vinculo.module.css'
 
 export function Vinculo() {
   const queryClient = useQueryClient()
@@ -45,16 +48,16 @@ export function Vinculo() {
   const dados = consulta.data
   if (!dados) {
     return (
-      <div className={styles.pagina}>
-        <h1 className={styles.titulo}>Vínculo do casal</h1>
+      <div className="flex flex-col gap-4 p-4">
+        <CabecalhoTela titulo="Vínculo do casal" voltarPara="/configuracoes" />
         {consulta.isError ? (
-          <p role="alert" className={styles.erro}>
+          <p role="alert" className="text-14 text-saida-texto">
             {consulta.error instanceof ApiError
               ? consulta.error.mensagem
               : 'Erro inesperado. Tente novamente.'}
           </p>
         ) : (
-          <p className={styles.texto}>Carregando…</p>
+          <p className="text-16">Carregando…</p>
         )}
       </div>
     )
@@ -79,90 +82,85 @@ export function Vinculo() {
   }
 
   return (
-    <div className={styles.pagina}>
-      <h1 className={styles.titulo}>Vínculo do casal</h1>
+    <div className="flex flex-col gap-4 p-4">
+      <CabecalhoTela titulo="Vínculo do casal" voltarPara="/configuracoes" />
 
       {erroGeral && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="text-14 text-saida-texto">
           {erroGeral instanceof ApiError ? erroGeral.mensagem : 'Erro inesperado. Tente novamente.'}
         </p>
       )}
 
       {dados.estado === 'sem_vinculo' && (
-        <section className={styles.bloco}>
-          <form ref={formRef} className={styles.formulario} onSubmit={aoEnviarConvite}>
+        <Card>
+          <form ref={formRef} className="flex flex-col gap-4" onSubmit={aoEnviarConvite}>
             <Campo rotulo="E-mail do parceiro(a)" erro={campoEmail}>
-              <input
+              <Input
                 type="email"
                 required
                 autoComplete="email"
-                className={styles.entrada}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </Campo>
-            <div className={styles.acoes}>
-              <button type="submit" className={styles.botao} disabled={enviarConvite.isPending}>
+            <div className="flex flex-col gap-2">
+              <Button type="submit" className="w-full" disabled={enviarConvite.isPending}>
                 Enviar convite
-              </button>
+              </Button>
             </div>
           </form>
-        </section>
+        </Card>
       )}
 
       {enviado && (
-        <section className={styles.bloco}>
-          <p className={styles.texto}>Convite enviado para {enviado.email_convidado}</p>
-          <div className={styles.acoes}>
-            <button
+        <Card>
+          <p className="text-16">Convite enviado para {enviado.email_convidado}</p>
+          <div className="flex flex-col gap-2">
+            <Button variant="secondary" className="w-full"
               type="button"
-              className={styles.botao}
               disabled={cancelar.isPending}
               onClick={() => cancelar.mutate(enviado.id)}
             >
               Cancelar convite
-            </button>
+            </Button>
           </div>
-        </section>
+        </Card>
       )}
 
       {dados.convites_recebidos.map((convite) => (
-        <section key={convite.id} className={styles.bloco}>
-          <p className={styles.texto}>{convite.convidante_nome} convidou você</p>
-          <div className={styles.acoes}>
-            <button
+        <Card key={convite.id}>
+          <p className="text-16">{convite.convidante_nome} convidou você</p>
+          <div className="flex flex-col gap-2">
+            <Button className="w-full"
               type="button"
-              className={styles.botao}
               disabled={aceitar.isPending || recusar.isPending}
               onClick={() => aceitar.mutate(convite.id)}
             >
               Aceitar
-            </button>
-            <button
+            </Button>
+            <Button variant="secondary" className="w-full"
               type="button"
-              className={styles.botao}
               disabled={aceitar.isPending || recusar.isPending}
               onClick={() => recusar.mutate(convite.id)}
             >
               Recusar
-            </button>
+            </Button>
           </div>
-        </section>
+        </Card>
       ))}
 
       {dados.parceiro && (
-        <section className={styles.bloco}>
-          <p className={styles.texto}>Vinculado(a) com {dados.parceiro.nome}</p>
-          <div className={styles.acoes}>
-            <button
+        <Card>
+          <p className="text-16">Vinculado(a) com {dados.parceiro.nome}</p>
+          <div className="flex flex-col gap-2">
+            <Button variant="secondary" className="w-full"
               type="button"
-              className={styles.botao}
               onClick={() => setConfirmandoDesvinculo(true)}
             >
               Desvincular
-            </button>
+            </Button>
           </div>
-        </section>
+        </Card>
       )}
 
       {confirmandoDesvinculo && (
@@ -170,6 +168,7 @@ export function Vinculo() {
           titulo="Desvincular do casal?"
           texto="A conta conjunta será arquivada, e vocês deixam de ver os dados um do outro."
           rotuloAcao="Desvincular"
+          destrutivo
           onCancelar={() => setConfirmandoDesvinculo(false)}
           onConfirmar={() => {
             setConfirmandoDesvinculo(false)

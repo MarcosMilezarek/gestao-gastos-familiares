@@ -8,14 +8,15 @@ import {
   type ContaSaida,
   type TipoConta,
 } from '../../api/contas'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
 import { BottomSheet } from '../../componentes/BottomSheet'
 import { Campo } from '../../componentes/Campo'
 import { DialogoConfirmacao } from '../../componentes/DialogoConfirmacao'
 import { Dinheiro } from '../../componentes/Dinheiro'
 import { SeletorCor } from '../../componentes/SeletorCor'
 import { formatarBRL, mascararEntrada, paraApi } from '../../formatacao/dinheiro'
-import configuracoes from '../configuracoes/configuracoes.module.css'
-import styles from '../../componentes/cardConta.module.css'
 
 const TIPOS: { valor: TipoConta; rotulo: string }[] = [
   { valor: 'conta_corrente', rotulo: 'Conta corrente' },
@@ -152,46 +153,38 @@ export function FormConta({ conta, aoFechar }: FormContaProps) {
         // Com o diálogo de arquivar aberto, Esc deve fechar só o diálogo: os dois sheets ouvem o teclado.
         aoFechar={confirmandoArquivar ? () => {} : aoFechar}
         rodape={
-          <button
-            type="submit"
-            form="form-conta"
-            className={configuracoes.botao}
-            disabled={salvar.isPending}
-          >
+          <Button type="submit" form="form-conta" className="w-full" disabled={salvar.isPending}>
             Salvar
-          </button>
+          </Button>
         }
       >
-        <div ref={corpoRef}>
+        <div ref={corpoRef} className="flex flex-col gap-5">
           {aviso && (
-            <p role="alert" className={configuracoes.aviso}>
+            <p role="alert" className="text-14 text-saida-texto">
               {aviso}
             </p>
           )}
 
-          <form id="form-conta" className={configuracoes.secao} onSubmit={enviarEdicao}>
+          <form id="form-conta" className="flex flex-col gap-4" onSubmit={enviarEdicao}>
             <Campo rotulo="Nome" erro={erros.nome}>
-              <input
+              <Input
                 id="conta-nome"
-                className={configuracoes.entrada}
                 value={nome}
                 onChange={(evento) => setNome(evento.target.value)}
                 autoComplete="off"
               />
             </Campo>
             <Campo rotulo="Instituição" erro={erros.instituicao}>
-              <input
+              <Input
                 id="conta-instituicao"
-                className={configuracoes.entrada}
                 value={instituicao}
                 onChange={(evento) => setInstituicao(evento.target.value)}
                 autoComplete="off"
               />
             </Campo>
             <Campo rotulo="Tipo" erro={erros.tipo}>
-              <select
+              <Select
                 id="conta-tipo"
-                className={configuracoes.entrada}
                 value={tipo}
                 onChange={(evento) => setTipo(evento.target.value as TipoConta)}
               >
@@ -200,7 +193,7 @@ export function FormConta({ conta, aoFechar }: FormContaProps) {
                     {opcao.rotulo}
                   </option>
                 ))}
-              </select>
+              </Select>
             </Campo>
             <SeletorCor valor={cor} onChange={setCor} />
             <CampoValor
@@ -212,9 +205,9 @@ export function FormConta({ conta, aoFechar }: FormContaProps) {
             />
           </form>
 
-          <fieldset className={configuracoes.secao}>
-            <legend className={configuracoes.legenda}>Reajuste de saldo</legend>
-            <p className={styles.rotulo}>
+          <fieldset className="m-0 flex min-w-0 flex-col gap-4 rounded-xl border bg-card p-4">
+            <legend className="px-1 text-16 font-semibold">Reajuste de saldo</legend>
+            <p className="text-14 text-muted-foreground">
               Saldo atual: <Dinheiro valor={conta.saldo_atual} />
             </p>
             <CampoValor
@@ -224,30 +217,24 @@ export function FormConta({ conta, aoFechar }: FormContaProps) {
               erro={erros.saldo_real}
               aoMudar={setSaldoReal}
             />
-            <button
+            <Button
               type="button"
-              className={styles.acao}
+              variant="outline"
               onClick={enviarReajuste}
               disabled={reajustar.isPending}
             >
               Reajustar saldo
-            </button>
+            </Button>
             {status && (
-              <p role="status" className={configuracoes.status}>
+              <p role="status" className="text-14 text-muted-foreground">
                 {status}
               </p>
             )}
           </fieldset>
 
-          <div className={styles.acoes}>
-            <button
-              type="button"
-              className={styles.acao}
-              onClick={() => setConfirmandoArquivar(true)}
-            >
-              Arquivar conta
-            </button>
-          </div>
+          <Button type="button" variant="ghost" onClick={() => setConfirmandoArquivar(true)}>
+            Arquivar conta
+          </Button>
         </div>
       </BottomSheet>
 
@@ -276,24 +263,25 @@ type CampoValorProps = {
 export function CampoValor({ id, rotulo, texto, erro, aoMudar }: CampoValorProps) {
   const negativo = texto.startsWith('-')
   return (
-    <div className={configuracoes.secao}>
+    <div className="flex flex-col gap-2">
       <Campo rotulo={rotulo} erro={erro}>
-        <input
+        <Input
           id={id}
-          className={configuracoes.entrada}
           inputMode="numeric"
           value={texto}
           onChange={(evento) => aoMudar(digitarValor(evento.target.value))}
         />
       </Campo>
-      <button
+      <Button
         type="button"
-        className={configuracoes.opcao}
+        variant="secondary"
+        size="sm"
+        className="self-start aria-pressed:border-primary aria-pressed:bg-primary-suave"
         aria-pressed={negativo}
         onClick={() => aoMudar(alternarSinal(texto))}
       >
         Valor negativo
-      </button>
+      </Button>
     </div>
   )
 }

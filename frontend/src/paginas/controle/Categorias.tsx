@@ -1,12 +1,15 @@
-import { useState, type CSSProperties, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import { ApiError } from '../../api/cliente'
 import { listarCategorias, type CategoriaSaida, type TipoCategoria } from '../../api/categorias'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
 import { EstadoVazio } from '../../componentes/EstadoVazio'
+import { IconeQuadrado } from '../../componentes/IconeQuadrado'
 import { iconeDe } from '../../componentes/icones'
 import { ArquivarCategoria } from './ArquivarCategoria'
 import { FormCategoria } from './FormCategoria'
-import styles from './controle.module.css'
 
 type CategoriaItem = CategoriaSaida['subcategorias'][number]
 
@@ -19,35 +22,22 @@ const ABAS: { tipo: TipoCategoria; rotulo: string }[] = [
 type Formulario = { categoria?: CategoriaItem; pai?: CategoriaSaida }
 type Arquivamento = { categoria: CategoriaItem; modo: 'arquivar' | 'mover' }
 
-const ABA_SELECIONADA: CSSProperties = { background: 'var(--cor-primaria)', color: 'var(--cor-fundo)' }
-const LISTA: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 'var(--espaco-3)',
-  margin: 0,
-  padding: 0,
-  listStyle: 'none',
-}
-const SUBLISTA: CSSProperties = { ...LISTA, paddingLeft: 'var(--espaco-4)' }
+type ItemProps = { categoria: CategoriaItem; acoes: ReactNode; sub?: boolean }
 
-// Ícone da categoria na cor dela (nome desconhecido cai no padrão de icones.ts).
-function iconeColorido(categoria: CategoriaItem): ReactNode {
-  const Icone = iconeDe(categoria.icone)
-  return <Icone aria-hidden="true" size={20} color={categoria.cor} />
-}
-
-type ItemProps = { categoria: CategoriaItem; acoes: ReactNode }
-
-// Linha de uma categoria: ícone e cor, nome e as ações em botões de toque.
-function Item({ categoria, acoes }: ItemProps) {
+// Linha de uma categoria: ícone na cor dela (nome desconhecido cai no padrão de icones.ts), nome e as ações em botões de toque.
+function Item({ categoria, acoes, sub = false }: ItemProps) {
   return (
-    <div style={LISTA}>
-      <p style={{ display: 'flex', alignItems: 'center', gap: 'var(--espaco-2)', margin: 0 }}>
-        {iconeColorido(categoria)}
-        <span style={{ color: 'var(--cor-texto)' }}>{categoria.nome}</span>
-      </p>
-      <div className={styles.chips}>{acoes}</div>
-    </div>
+    <Card className="flex-row flex-wrap items-center gap-3 p-4">
+      <div className="inline-flex" style={{ color: categoria.cor }}>
+        <IconeQuadrado
+          icone={iconeDe(categoria.icone)}
+          tamanho={sub ? 'sm' : 'default'}
+          className="bg-current/15 text-inherit"
+        />
+      </div>
+      <span className="min-w-0 flex-1 truncate text-16 font-semibold">{categoria.nome}</span>
+      <div className="flex w-full flex-wrap gap-2">{acoes}</div>
+    </Card>
   )
 }
 
@@ -66,62 +56,70 @@ export function Categorias() {
   // Editar, mover lançamentos e arquivar: Salário (fixa) não arquiva; o nome dela não muda no FormCategoria.
   const acoesDe = (item: CategoriaItem) => (
     <>
-      <button
+      <Button
         type="button"
-        className={styles.chip}
+        variant="secondary"
+        size="sm"
         onClick={() => setFormulario({ categoria: item })}
       >
         Editar
-      </button>
+      </Button>
       {!item.fixa && (
-        <button
+        <Button
           type="button"
-          className={styles.chip}
+          variant="secondary"
+          size="sm"
           onClick={() => setArquivamento({ categoria: item, modo: 'arquivar' })}
         >
           Arquivar
-        </button>
+        </Button>
       )}
-      <button
+      <Button
         type="button"
-        className={styles.chip}
+        variant="secondary"
+        size="sm"
         onClick={() => setArquivamento({ categoria: item, modo: 'mover' })}
       >
         Mover lançamentos
-      </button>
+      </Button>
     </>
   )
 
   return (
-    <div className={styles.pagina}>
-      <h1 className={styles.titulo}>Categorias</h1>
+    <div className="flex flex-col gap-4 p-4">
+      <CabecalhoTela
+        titulo="Categorias"
+        voltarPara="/controle"
+        acao={
+          <Button type="button" size="sm" onClick={() => setFormulario({})}>
+            Nova categoria
+          </Button>
+        }
+      />
 
-      <div className={styles.chips} role="group" aria-label="Tipo de categoria">
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Tipo de categoria">
         {ABAS.map((aba) => (
-          <button
+          <Button
             key={aba.tipo}
             type="button"
-            className={styles.chip}
+            size="sm"
+            variant={tipo === aba.tipo ? 'outline' : 'secondary'}
             aria-pressed={tipo === aba.tipo}
-            style={tipo === aba.tipo ? ABA_SELECIONADA : undefined}
             onClick={() => setTipo(aba.tipo)}
           >
             {aba.rotulo}
-          </button>
+          </Button>
         ))}
-        <button type="button" className={styles.chip} onClick={() => setFormulario({})}>
-          Nova categoria
-        </button>
       </div>
 
       {consulta.isError && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="text-14 text-saida-texto">
           {consulta.error instanceof ApiError
             ? consulta.error.mensagem
             : 'Erro inesperado. Tente novamente.'}
         </p>
       )}
-      {!dados && !consulta.isError && <p className={styles.aviso}>Carregando…</p>}
+      {!dados && !consulta.isError && <p className="text-14 text-muted-foreground">Carregando…</p>}
 
       {dados && dados.length === 0 && (
         <EstadoVazio
@@ -132,29 +130,30 @@ export function Categorias() {
       )}
 
       {dados && dados.length > 0 && (
-        <ul style={LISTA}>
+        <ul className="m-0 flex list-none flex-col gap-3 p-0">
           {dados.map((raiz) => (
             <li key={raiz.id}>
               <Item
                 categoria={raiz}
                 acoes={
                   <>
-                    <button
+                    <Button
                       type="button"
-                      className={styles.chip}
+                      variant="secondary"
+                      size="sm"
                       onClick={() => setFormulario({ pai: raiz })}
                     >
                       Nova subcategoria
-                    </button>
+                    </Button>
                     {acoesDe(raiz)}
                   </>
                 }
               />
               {raiz.subcategorias.length > 0 && (
-                <ul style={{ ...SUBLISTA, marginTop: 'var(--espaco-3)' }}>
+                <ul className="m-0 mt-3 flex list-none flex-col gap-3 p-0 pl-4">
                   {raiz.subcategorias.map((sub) => (
                     <li key={sub.id}>
-                      <Item categoria={sub} acoes={acoesDe(sub)} />
+                      <Item categoria={sub} acoes={acoesDe(sub)} sub />
                     </li>
                   ))}
                 </ul>

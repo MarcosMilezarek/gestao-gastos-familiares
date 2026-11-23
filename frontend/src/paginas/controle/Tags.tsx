@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import { ApiError } from '../../api/cliente'
 import { excluirTag, listarTags, type TagSaida } from '../../api/categorias'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
 import { DialogoConfirmacao } from '../../componentes/DialogoConfirmacao'
 import { EstadoVazio } from '../../componentes/EstadoVazio'
-import estado from '../../componentes/estado.module.css'
-import contas from '../../componentes/cardConta.module.css'
-import styles from './controle.module.css'
 import { FormTag } from './FormTag'
 
 // Lista de tags: criar e renomear abrem o FormTag; excluir pede confirmação (RF-2.12, fatia-2.md §5.1).
@@ -31,27 +31,32 @@ export function Tags() {
   })
 
   return (
-    <div className={styles.pagina}>
-      <h1 className={styles.titulo}>Tags</h1>
-      <button type="button" className={estado.acao} onClick={() => setCriando(true)}>
-        Nova tag
-      </button>
+    <div className="flex flex-col gap-4 p-4">
+      <CabecalhoTela
+        titulo="Tags"
+        voltarPara="/controle"
+        acao={
+          <Button type="button" size="sm" onClick={() => setCriando(true)}>
+            Nova tag
+          </Button>
+        }
+      />
 
       {consulta.isError && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="text-14 text-saida-texto">
           {consulta.error instanceof ApiError
             ? consulta.error.mensagem
             : 'Erro inesperado. Tente novamente.'}
         </p>
       )}
       {excluir.isError && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="text-14 text-saida-texto">
           {excluir.error instanceof ApiError
             ? excluir.error.mensagem
             : 'Erro inesperado. Tente novamente.'}
         </p>
       )}
-      {!dados && !consulta.isError && <p className={styles.aviso}>Carregando…</p>}
+      {!dados && !consulta.isError && <p className="text-14 text-muted-foreground">Carregando…</p>}
 
       {dados &&
         (dados.length === 0 ? (
@@ -61,26 +66,30 @@ export function Tags() {
             onAcao={() => setCriando(true)}
           />
         ) : (
-          <ul className={contas.lista}>
+          <ul className="m-0 flex list-none flex-col gap-3 p-0">
             {dados.map((tag) => (
-              <li key={tag.id} className={contas.card}>
-                <p className={contas.nomeConta}>{tag.nome}</p>
-                <div className={contas.acoes}>
-                  <button
-                    type="button"
-                    className={contas.acao}
-                    onClick={() => setRenomeando(tag)}
-                  >
-                    Renomear
-                  </button>
-                  <button
-                    type="button"
-                    className={contas.acao}
-                    onClick={() => setExcluindo(tag)}
-                  >
-                    Excluir
-                  </button>
-                </div>
+              <li key={tag.id}>
+                <Card className="gap-3 p-4">
+                  <p className="m-0 min-w-0 truncate text-16 font-semibold">{tag.nome}</p>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setRenomeando(tag)}
+                    >
+                      Renomear
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setExcluindo(tag)}
+                    >
+                      Excluir
+                    </Button>
+                  </div>
+                </Card>
               </li>
             ))}
           </ul>
@@ -95,6 +104,7 @@ export function Tags() {
           titulo="Excluir tag"
           texto="A tag sai de todos os lançamentos, mas os lançamentos continuam guardados."
           rotuloAcao="Excluir"
+          destrutivo
           onConfirmar={() => excluir.mutate(excluindo.id)}
           onCancelar={() => setExcluindo(null)}
         />

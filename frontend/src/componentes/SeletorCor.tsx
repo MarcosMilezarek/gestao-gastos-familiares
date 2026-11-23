@@ -1,5 +1,4 @@
 import { Check } from 'lucide-react'
-import type { CSSProperties } from 'react'
 
 // Paleta fixa de 13 cores (#RRGGBB), com nome em pt-BR para o nome acessível.
 // `visto` é a cor do visto sobre a própria cor (escuro onde o branco tem pouco contraste).
@@ -21,37 +20,21 @@ const PALETA = [
 
 type Props = { valor: string; onChange(cor: string): void }
 
-const grade: CSSProperties = {
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: 'var(--espaco-2)',
-}
-
 // Controlado: a cor escolhida recebe um "visto" (não só cor) e fica "pressionada".
 export function SeletorCor({ valor, onChange }: Props) {
   return (
-    <div role="group" aria-label="Cor" style={grade}>
+    <div role="group" aria-label="Cor" className="flex flex-wrap gap-2">
       {PALETA.map(({ hex, nome, visto }) => {
         const selecionado = hex === valor
         return (
           <button
             key={hex}
             type="button"
-            className="alvo-toque"
             aria-label={`cor ${nome}`}
             aria-pressed={selecionado}
             onClick={() => onChange(hex)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 0,
-              borderRadius: '50%',
-              border: '2px solid var(--cor-texto-suave)',
-              background: hex,
-              color: visto,
-              cursor: 'pointer',
-            }}
+            style={{ background: hex, color: visto }}
+            className="inline-flex size-11 cursor-pointer items-center justify-center rounded-full border-2 border-input p-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none aria-pressed:ring-2 aria-pressed:ring-primary aria-pressed:ring-offset-2 aria-pressed:ring-offset-background"
           >
             {selecionado && <Check aria-hidden="true" size={20} strokeWidth={3} />}
           </button>

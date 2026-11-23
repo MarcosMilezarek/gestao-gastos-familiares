@@ -2,21 +2,25 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ApiError, repetirSem4xx } from '../../api/cliente'
 import { copiarDoAnterior, excluirOrcamento, obterOrcamento } from '../../api/orcamentos'
+import { Button } from '@/components/ui/button'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
 import { CardsResumo } from '../../componentes/CardsResumo'
 import { Dinheiro } from '../../componentes/Dinheiro'
 import { DialogoConfirmacao } from '../../componentes/DialogoConfirmacao'
 import { EstadoVazio } from '../../componentes/EstadoVazio'
-import estado from '../../componentes/estado.module.css'
 import { SeletorMes } from '../../componentes/SeletorMes'
 import { formatarPercentual } from '../../formatacao/percentual'
 import { useMes } from '../../hooks/useMes'
 import { AssistenteOrcamento } from './AssistenteOrcamento'
 import { ComparacaoOrcamento } from './ComparacaoOrcamento'
-import styles from './orcamento.module.css'
 
 function mensagemErro(erro: unknown): string {
   return erro instanceof ApiError ? erro.mensagem : 'Erro inesperado. Tente novamente.'
 }
+
+const CLASSES_ERRO = 'text-14 text-saida-texto'
+const CLASSES_CARD = 'flex w-36 flex-col items-start gap-1 rounded-xl border bg-card p-3 shadow-card'
+const CLASSES_ROTULO = 'text-13 text-muted-foreground'
 
 export function Orcamento() {
   const queryClient = useQueryClient()
@@ -78,42 +82,40 @@ export function Orcamento() {
   }
 
   const botaoCopiar = (
-    <button
+    <Button
       type="button"
-      className={styles.copiar}
+      variant="secondary"
       disabled={copiar.isPending}
       onClick={() => copiar.mutate(false)}
     >
       Copiar do mês anterior
-    </button>
+    </Button>
   )
 
   return (
-    <div className={styles.pagina}>
-      <header className={styles.topo}>
-        <h1 className={styles.titulo}>Orçamento</h1>
-        <SeletorMes mes={mes} onMudar={trocarMes} />
-      </header>
+    <div className="flex flex-col gap-4 p-4">
+      <CabecalhoTela titulo="Orçamento" voltarPara="/planejamento" />
+      <SeletorMes mes={mes} onMudar={trocarMes} />
 
       {consulta.isError && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className={CLASSES_ERRO}>
           {mensagemErro(consulta.error)}
         </p>
       )}
       {erroCopia && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className={CLASSES_ERRO}>
           {mensagemErro(erroCopia)}
         </p>
       )}
       {excluir.isError && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className={CLASSES_ERRO}>
           {mensagemErro(excluir.error)}
         </p>
       )}
-      {!dados && !consulta.isError && <p className={styles.aviso}>Carregando…</p>}
+      {!dados && !consulta.isError && <p className="text-14 text-muted-foreground">Carregando…</p>}
 
       {dados && orcamento === null && (
-        <div className={styles.vazio}>
+        <div className="flex flex-col items-center gap-2">
           <EstadoVazio
             frase="Este mês ainda não tem orçamento."
             acaoRotulo="Definir novo orçamento"
@@ -126,39 +128,35 @@ export function Orcamento() {
       {dados && orcamento !== null && (
         <>
           <CardsResumo>
-            <div className={styles.card}>
-              <span className={styles.rotulo}>Renda</span>
+            <div className={CLASSES_CARD}>
+              <span className={CLASSES_ROTULO}>Renda</span>
               <Dinheiro valor={orcamento.resumo.renda} tipo="entrada" />
             </div>
-            <div className={styles.card}>
-              <span className={styles.rotulo}>Gastos planejados</span>
+            <div className={CLASSES_CARD}>
+              <span className={CLASSES_ROTULO}>Gastos planejados</span>
               <Dinheiro valor={orcamento.resumo.gastos_planejados} tipo="saida" />
             </div>
-            <div className={styles.card}>
-              <span className={styles.rotulo}>Balanço planejado</span>
+            <div className={CLASSES_CARD}>
+              <span className={CLASSES_ROTULO}>Balanço planejado</span>
               <Dinheiro valor={orcamento.resumo.balanco_planejado} />
             </div>
-            <div className={styles.card}>
-              <span className={styles.rotulo}>Economia planejada</span>
+            <div className={CLASSES_CARD}>
+              <span className={CLASSES_ROTULO}>Economia planejada</span>
               {orcamento.resumo.economia_planejada === null ? (
-                <span>—</span>
+                <span className="text-16 font-semibold">—</span>
               ) : (
-                <span>{formatarPercentual(orcamento.resumo.economia_planejada)}</span>
+                <span className="text-16 font-semibold tabular-nums">{formatarPercentual(orcamento.resumo.economia_planejada)}</span>
               )}
             </div>
           </CardsResumo>
 
-          <div className={styles.acoes}>
-            <button type="button" className={estado.acao} onClick={abrirAssistente}>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" onClick={abrirAssistente}>
               Editar
-            </button>
-            <button
-              type="button"
-              className={estado.acao}
-              onClick={() => setConfirmarExclusao(true)}
-            >
+            </Button>
+            <Button type="button" variant="outline" onClick={() => setConfirmarExclusao(true)}>
               Excluir
-            </button>
+            </Button>
             {botaoCopiar}
           </div>
 
@@ -194,6 +192,7 @@ export function Orcamento() {
           titulo="Excluir orçamento"
           texto="O orçamento deste mês será apagado."
           rotuloAcao="Excluir"
+          destrutivo
           onConfirmar={() => excluir.mutate()}
           onCancelar={() => setConfirmarExclusao(false)}
         />

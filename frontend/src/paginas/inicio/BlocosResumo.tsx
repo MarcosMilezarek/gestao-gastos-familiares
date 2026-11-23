@@ -1,16 +1,17 @@
 import { useState, type ReactNode } from 'react'
+import { Button } from '@/components/ui/button'
 import type { ItemLancamentoLista } from '../../api/controle'
 import type { InicioSaida } from '../../api/inicio'
 import type { LancamentoSaida } from '../../api/lancamentos'
 import type { ProporcaoSaida } from '../../api/proporcao'
 import { CardsProporcao } from '../../componentes/CardsProporcao'
-import { CardsResumo } from '../../componentes/CardsResumo'
+import { CartaoDestaque } from '../../componentes/CartaoDestaque'
 import { Dinheiro } from '../../componentes/Dinheiro'
 import { EstadoVazio } from '../../componentes/EstadoVazio'
 import { ItemLancamento, type LancamentoItem } from '../../componentes/ItemLancamento'
+import { TituloBloco } from '../../componentes/TituloBloco'
 import { ConfirmarLancamento } from '../../formularios/ConfirmarLancamento'
 import { useFormularios } from '../../formularios/FormulariosProvider'
-import styles from './inicio.module.css'
 
 type BlocosResumoProps = { inicio: InicioSaida }
 
@@ -32,15 +33,27 @@ export function BlocosResumo({ inicio }: BlocosResumoProps) {
   const [confirmando, setConfirmando] = useState<LancamentoSaida | null>(null)
   const { saldos, total_faturas_mes } = inicio.cards
   const conjunta = saldos.find((conta) => conta.dono_usuario_id === null)
+  const individuais = saldos.filter((conta) => conta.dono_usuario_id !== null)
+  const chips = [
+    ...(conjunta ? individuais.slice(0, 2) : []).map((conta) => ({
+      rotulo: conta.nome,
+      valor: conta.saldo_atual,
+    })),
+    { rotulo: 'Faturas do mês', valor: total_faturas_mes },
+  ]
+  // Sem conta conjunta todas as contas vão para a lista; com ela, só as individuais excedentes.
+  const contasNaLista = conjunta ? individuais.slice(2) : saldos
 
   // Aporte vai da conta individual da pessoa para a conjunta; sem uma das duas, não há botão.
+  // Só a primeira pessoa tem o botão primário: a tela tem um único primário.
   function botaoAporte(pessoa: PessoaProporcao): ReactNode {
     const origem = saldos.find((conta) => conta.dono_usuario_id === pessoa.usuario_id)
     if (!origem || !conjunta) return null
+    const primeira = inicio.proporcao?.pessoas[0]?.usuario_id === pessoa.usuario_id
     return (
-      <button
+      <Button
         type="button"
-        className={styles.aporte}
+        variant={primeira ? 'default' : 'outline'}
         onClick={() =>
           abrir('transferencia', undefined, undefined, undefined, {
             conta_id: origem.conta_id,
@@ -49,60 +62,65 @@ export function BlocosResumo({ inicio }: BlocosResumoProps) {
         }
       >
         Fazer aporte
-      </button>
+      </Button>
     )
   }
 
   return (
     <>
-      <section className={styles.bloco}>
-        <h2 className={styles.tituloBloco}>Saldos e faturas do mês</h2>
-        <CardsResumo>
-          {saldos.map((conta) => (
-            <section key={conta.conta_id} className={styles.card}>
-              <h3 className={styles.nome}>{conta.nome}</h3>
-              <Dinheiro valor={conta.saldo_atual} />
-            </section>
-          ))}
-          <section className={styles.card}>
-            <h3 className={styles.nome}>Faturas do mês</h3>
-            <Dinheiro valor={total_faturas_mes} />
-          </section>
-        </CardsResumo>
-        {saldos.length === 0 && <EstadoVazio frase="Nenhuma conta ativa ainda." />}
-      </section>
+      {conjunta && (
+        <CartaoDestaque rotulo="Saldo da conta conjunta" valor={conjunta.saldo_atual} chips={chips} />
+      )}
 
-      <section className={styles.bloco}>
-        <h2 className={styles.tituloBloco}>Proporção e aporte</h2>
+      {saldos.length === 0 && <EstadoVazio compacto frase="Nenhuma conta ativa ainda." />}
+
+      {(contasNaLista.length > 0 || (saldos.length > 0 && !conjunta)) && (
+        <section className="flex flex-col gap-2">
+          <TituloBloco titulo="Saldos" />
+          <ul className="flex flex-col gap-2">
+            {contasNaLista.map((conta) => (
+              <li key={conta.conta_id} className="flex items-center justify-between gap-3 text-14">
+                <span className="min-w-0 truncate">{conta.nome}</span>
+                <Dinheiro valor={conta.saldo_atual} />
+              </li>
+            ))}
+            {!conjunta && (
+              <li className="flex items-center justify-between gap-3 text-14">
+                <span className="min-w-0 truncate">Faturas do mês</span>
+                <Dinheiro valor={total_faturas_mes} />
+              </li>
+            )}
+          </ul>
+        </section>
+      )}
+
+      <section className="flex flex-col gap-2">
+        <TituloBloco titulo="Aporte do mês" />
         {inicio.proporcao ? (
           <CardsProporcao proporcao={inicio.proporcao} acaoPessoa={botaoAporte} />
         ) : (
-          <EstadoVazio frase="Sem casal vinculado, não há proporção para mostrar." />
+          <EstadoVazio compacto frase="Sem casal vinculado, não há proporção para mostrar." />
         )}
       </section>
 
-      <section className={styles.bloco}>
-        <h2 className={styles.tituloBloco}>A confirmar e atrasadas</h2>
+      <section className="flex flex-col gap-2">
+        <TituloBloco titulo="A confirmar e atrasadas" />
         {inicio.pendentes.length === 0 ? (
-          <EstadoVazio frase="Nenhum lançamento a confirmar." />
+          <EstadoVazio compacto frase="Nenhum lançamento a confirmar." />
         ) : (
-          <div className={styles.pendentes}>
+          <ul className="flex flex-col gap-3">
             {inicio.pendentes.map((item) => {
               if (item.kind !== 'lancamento') return null
-              const atrasada = item.lancamento.situacao === 'atrasada'
-              // Um item por lista: ItemLancamento é um <li>, e o destaque fica no bloco que o envolve.
               return (
-                <div key={item.lancamento.id} className={atrasada ? styles.atrasada : undefined}>
-                  <ul className={styles.lista}>
-                    <ItemLancamento
-                      item={paraLancamentoItem(item)}
-                      aoConfirmar={() => setConfirmando(item.lancamento)}
-                    />
-                  </ul>
-                </div>
+                <ItemLancamento
+                  key={item.lancamento.id}
+                  item={paraLancamentoItem(item)}
+                  aoConfirmar={() => setConfirmando(item.lancamento)}
+                  variante="confirmar"
+                />
               )
             })}
-          </div>
+          </ul>
         )}
       </section>
 

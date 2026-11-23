@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { ChevronDown } from 'lucide-react'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
+import { Button } from '@/components/ui/button'
 import { listarCartoes } from '../../api/cartoes'
 import { ApiError, repetirSem4xx } from '../../api/cliente'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
 import { CardCartao } from '../../componentes/CardCartao'
-import { CardsResumo } from '../../componentes/CardsResumo'
-import { Dinheiro } from '../../componentes/Dinheiro'
+import { CardResumo, CardsResumo } from '../../componentes/CardsResumo'
 import { EstadoVazio } from '../../componentes/EstadoVazio'
-import cardConta from '../../componentes/cardConta.module.css'
-import styles from './cartoes.module.css'
 
 function mensagemErro(erro: unknown): string {
   return erro instanceof ApiError ? erro.mensagem : 'Erro inesperado. Tente novamente.'
@@ -36,29 +35,32 @@ export function Cartoes() {
   const arquivados = consultaArquivadas.data
 
   return (
-    <div className={styles.pagina}>
-      <h1 className={styles.titulo}>Cartões</h1>
+    <div className="flex flex-col gap-4 p-4">
+      <CabecalhoTela
+        titulo="Cartões"
+        acao={
+          <Button asChild size="sm">
+            <Link to="/cartoes/novo">Novo cartão</Link>
+          </Button>
+        }
+      />
 
       {consulta.isError && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="text-14 text-saida-texto">
           {mensagemErro(consulta.error)}
         </p>
       )}
-      {!dados && !consulta.isError && <p className={styles.aviso}>Carregando…</p>}
+      {!dados && !consulta.isError && <p className="text-14 text-muted-foreground">Carregando…</p>}
 
       {dados && (
         <>
           <CardsResumo>
-            <div className={styles.total}>
-              <span className={cardConta.rotulo}>Limite disponível</span>
-              {dados.limite_disponivel_total !== null && (
-                <Dinheiro valor={dados.limite_disponivel_total} />
-              )}
-            </div>
-            <div className={styles.total}>
-              <span className={cardConta.rotulo}>Faturas do mês</span>
-              {dados.total_faturas_mes !== null && <Dinheiro valor={dados.total_faturas_mes} />}
-            </div>
+            {dados.limite_disponivel_total !== null && (
+              <CardResumo rotulo="Limite disponível" valor={dados.limite_disponivel_total} />
+            )}
+            {dados.total_faturas_mes !== null && (
+              <CardResumo rotulo="Faturas do mês" valor={dados.total_faturas_mes} />
+            )}
           </CardsResumo>
 
           {dados.cartoes.length === 0 ? (
@@ -68,7 +70,7 @@ export function Cartoes() {
               onAcao={() => navigate('/cartoes/novo')}
             />
           ) : (
-            <ul className={styles.lista}>
+            <ul className="flex flex-col gap-3">
               {dados.cartoes.map((cartao) => (
                 <li key={cartao.id}>
                   <CardCartao cartao={cartao} />
@@ -79,10 +81,11 @@ export function Cartoes() {
         </>
       )}
 
-      <section>
-        <button
+      <section className="flex flex-col gap-3">
+        <Button
           type="button"
-          className={styles.colapsavel}
+          variant="ghost"
+          className="justify-between"
           aria-expanded={arquivadasAbertas}
           aria-controls="cartoes-arquivadas"
           onClick={() => setArquivadasAbertas((aberta) => !aberta)}
@@ -90,26 +93,25 @@ export function Cartoes() {
           Contas arquivadas
           <ChevronDown
             aria-hidden="true"
-            size={20}
-            className={arquivadasAbertas ? styles.setaAberta : styles.seta}
+            className={arquivadasAbertas ? 'rotate-180 transition-transform' : 'transition-transform'}
           />
-        </button>
+        </Button>
 
         {arquivadasAbertas && (
-          <div id="cartoes-arquivadas" className={styles.arquivadas}>
+          <div id="cartoes-arquivadas" className="flex flex-col gap-3">
             {consultaArquivadas.isError && (
-              <p role="alert" className={styles.erro}>
+              <p role="alert" className="text-14 text-saida-texto">
                 {mensagemErro(consultaArquivadas.error)}
               </p>
             )}
             {!arquivados && !consultaArquivadas.isError && (
-              <p className={styles.aviso}>Carregando…</p>
+              <p className="text-14 text-muted-foreground">Carregando…</p>
             )}
             {arquivados &&
               (arquivados.cartoes.length === 0 ? (
-                <p className={styles.aviso}>Nenhum cartão em contas arquivadas.</p>
+                <p className="text-14 text-muted-foreground">Nenhum cartão em contas arquivadas.</p>
               ) : (
-                <ul className={styles.lista}>
+                <ul className="flex flex-col gap-3">
                   {arquivados.cartoes.map((cartao) => (
                     <li key={cartao.id}>
                       <CardCartao cartao={cartao} />

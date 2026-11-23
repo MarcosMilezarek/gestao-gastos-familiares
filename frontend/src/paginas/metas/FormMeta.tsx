@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { ApiError } from '../../api/cliente'
 import { criarMeta, editarMeta, type MetaSaida } from '../../api/metas'
 import { BottomSheet } from '../../componentes/BottomSheet'
 import { Campo } from '../../componentes/Campo'
-import estado from '../../componentes/estado.module.css'
 import { SeletorCor } from '../../componentes/SeletorCor'
 import { SeletorIcone } from '../../componentes/SeletorIcone'
 import { eZero, mascararEntrada, paraApi } from '../../formatacao/dinheiro'
-import css from '../../formularios/formularios.module.css'
 import { SeletorModelo } from './SeletorModelo'
 import type { ModeloMeta } from './modelosMeta'
 
@@ -106,28 +107,22 @@ export function FormMeta({ meta, aoFechar }: FormMetaProps) {
       titulo={meta ? 'Editar meta' : 'Nova meta'}
       aoFechar={aoFechar}
       rodape={
-        <button
-          type="submit"
-          form="form-meta"
-          className={estado.acao}
-          disabled={salvar.isPending}
-        >
+        <Button type="submit" form="form-meta" className="w-full" disabled={salvar.isPending}>
           Salvar
-        </button>
+        </Button>
       }
     >
       {aviso && (
-        <p role="alert" className={css.erro}>
+        <p role="alert" className="mb-4 text-14 text-saida-texto">
           {aviso}
         </p>
       )}
 
-      <form ref={formRef} id="form-meta" className={css.campos} onSubmit={enviar}>
+      <form ref={formRef} id="form-meta" className="flex flex-col gap-4" onSubmit={enviar}>
         {!meta && <SeletorModelo aoEscolher={aplicarModelo} />}
 
         <Campo rotulo="Nome" erro={erros.nome}>
-          <input
-            className={css.controle}
+          <Input
             value={nome}
             onChange={(evento) => setNome(evento.target.value)}
             autoComplete="off"
@@ -135,8 +130,7 @@ export function FormMeta({ meta, aoFechar }: FormMetaProps) {
         </Campo>
 
         <Campo rotulo="Valor-alvo" erro={erros.valor_alvo}>
-          <input
-            className={css.controle}
+          <Input
             type="text"
             inputMode="numeric"
             placeholder="0,00"
@@ -146,8 +140,7 @@ export function FormMeta({ meta, aoFechar }: FormMetaProps) {
         </Campo>
 
         <Campo rotulo="Data-alvo (opcional)" erro={erros.data_alvo}>
-          <input
-            className={css.controle}
+          <Input
             type="date"
             value={dataAlvo}
             onChange={(evento) => setDataAlvo(evento.target.value)}
@@ -155,8 +148,7 @@ export function FormMeta({ meta, aoFechar }: FormMetaProps) {
         </Campo>
 
         <Campo rotulo="Valor inicial" erro={erros.valor_inicial}>
-          <input
-            className={css.controle}
+          <Input
             type="text"
             inputMode="numeric"
             value={valorInicial}
@@ -168,7 +160,7 @@ export function FormMeta({ meta, aoFechar }: FormMetaProps) {
           <SeletorCor valor={cor} onChange={setCor} />
         </div>
         {erros.cor && (
-          <p role="alert" className={css.erro}>
+          <p role="alert" className="text-14 text-saida-texto">
             {erros.cor}
           </p>
         )}
@@ -177,14 +169,13 @@ export function FormMeta({ meta, aoFechar }: FormMetaProps) {
           <SeletorIcone valor={icone} onChange={setIcone} />
         </div>
         {erros.icone && (
-          <p role="alert" className={css.erro}>
+          <p role="alert" className="text-14 text-saida-texto">
             {erros.icone}
           </p>
         )}
 
         <Campo rotulo="Descrição (opcional)" erro={erros.descricao}>
-          <textarea
-            className={css.controle}
+          <Textarea
             value={descricao}
             onChange={(evento) => setDescricao(evento.target.value)}
           />

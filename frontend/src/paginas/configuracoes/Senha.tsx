@@ -2,8 +2,11 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { ApiError } from '../../api/cliente'
 import { alterarSenha } from '../../api/perfil'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
 import { Campo } from '../../componentes/Campo'
-import css from './configuracoes.module.css'
 
 export function Senha() {
   const [senhaAtual, setSenhaAtual] = useState('')
@@ -36,13 +39,13 @@ export function Senha() {
   }, [alterar.error])
 
   return (
-    <div className={css.pagina}>
-      <h1 className={css.titulo}>Alterar senha</h1>
+    <div className="flex flex-col gap-4 p-4">
+      <CabecalhoTela titulo="Alterar senha" voltarPara="/configuracoes" />
 
-      <form ref={formRef} className={css.secao} onSubmit={enviar}>
+      <Card>
+      <form ref={formRef} className="flex flex-col gap-4" onSubmit={enviar}>
         <Campo rotulo="Senha atual" erro={erroSenhaAtual}>
-          <input
-            className={css.entrada}
+          <Input
             type="password"
             value={senhaAtual}
             onChange={(evento) => setSenhaAtual(evento.target.value)}
@@ -52,8 +55,7 @@ export function Senha() {
         </Campo>
 
         <Campo rotulo="Nova senha" ajuda="Mínimo 8 caracteres." erro={erroSenhaNova}>
-          <input
-            className={css.entrada}
+          <Input
             type="password"
             value={senhaNova}
             onChange={(evento) => setSenhaNova(evento.target.value)}
@@ -63,19 +65,20 @@ export function Senha() {
         </Campo>
 
         {erroGeral && (
-          <p className={css.aviso} role="alert">
+          <p className="text-14 text-saida-texto" role="alert">
             {erroGeral}
           </p>
         )}
         {alterar.isSuccess && (
-          <p className={css.status} role="status">
+          <p className="text-14 text-entrada-texto" role="status">
             Senha alterada.
           </p>
         )}
-        <button type="submit" className={css.botao} disabled={alterar.isPending}>
+        <Button type="submit" disabled={alterar.isPending} className="w-full">
           Alterar senha
-        </button>
+        </Button>
       </form>
+      </Card>
     </div>
   )
 }

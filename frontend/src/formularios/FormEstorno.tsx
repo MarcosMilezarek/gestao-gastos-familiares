@@ -3,15 +3,15 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { ItemFaturaSaida } from '../api/cartoes'
 import { ApiError } from '../api/cliente'
 import { editarItem, lancarEstorno, type EstornoEntrada } from '../api/itensFatura'
+import { Button } from '@/components/ui/button'
+import { Select } from '@/components/ui/select'
 import { BottomSheet } from '../componentes/BottomSheet'
 import { Campo } from '../componentes/Campo'
-import estado from '../componentes/estado.module.css'
 import type { Sessao } from '../api/sessao'
 import { formatarData } from '../formatacao/data'
 import { mascararEntrada, paraApi } from '../formatacao/dinheiro'
 import { useSessao } from '../hooks/useSessao'
 import { CamposLancamento, type ValoresCampos } from './CamposLancamento'
-import css from './formularios.module.css'
 import { SeletorFatura } from './SeletorFatura'
 import { valoresAbertura } from './valoresLancamento'
 
@@ -148,14 +148,9 @@ function FormularioEstorno({
       titulo={editando ? 'Editar estorno' : 'Lançar estorno'}
       aoFechar={aoFechar}
       rodape={
-        <button
-          type="button"
-          className={estado.acao}
-          disabled={salvar.isPending}
-          onClick={enviar}
-        >
+        <Button type="button" disabled={salvar.isPending} onClick={enviar}>
           Salvar
-        </button>
+        </Button>
       }
     >
       <div ref={corpoRef}>
@@ -180,8 +175,7 @@ function FormularioEstorno({
                 erro={erros.item_origem_id}
                 ajuda={editando ? 'O vínculo não muda na edição.' : undefined}
               >
-                <select
-                  className={css.controle}
+                <Select
                   value={origem ?? ''}
                   disabled={editando}
                   onChange={escolherCompra}
@@ -196,13 +190,13 @@ function FormularioEstorno({
                   {origem !== null && !compras.some((c) => c.id === origem) && (
                     <option value={origem}>Compra de outra fatura</option>
                   )}
-                </select>
+                </Select>
               </Campo>
             </>
           }
         />
         {erroGeral && (
-          <p role="alert" className={css.erro}>
+          <p role="alert" className="text-14 text-saida-texto">
             {erroGeral}
           </p>
         )}

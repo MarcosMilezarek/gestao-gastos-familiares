@@ -2,9 +2,9 @@ import { useEffect, useEffectEvent, useState, type ChangeEvent } from 'react'
 import { skipToken, useQuery } from '@tanstack/react-query'
 import { listarFaturas, type FaturaStatus } from '../api/cartoes'
 import { repetirSem4xx } from '../api/cliente'
+import { Select } from '@/components/ui/select'
 import { Campo } from '../componentes/Campo'
 import { rotuloMes } from '../formatacao/data'
-import css from './formularios.module.css'
 
 const STATUS_ROTULO: Record<FaturaStatus, string> = {
   aberta: 'Aberta',
@@ -58,7 +58,7 @@ export function SeletorFatura({ cartaoId, data, valor, aoMudar, erro }: Props) {
       erro={erro}
       ajuda={!escolheu && sugeridaPaga ? 'A fatura da data já está paga: escolha outra' : undefined}
     >
-      <select className={css.controle} value={valor ?? ''} onChange={escolher}>
+      <Select value={valor ?? ''} onChange={escolher}>
         <option value="">Escolha a fatura</option>
         {/* Fatura com valor fora da janela da consulta (I3): sem esta opção o campo mostraria "Escolha a fatura". */}
         {valor !== null && !faturas.some((f) => f.mes === valor) && (
@@ -69,7 +69,7 @@ export function SeletorFatura({ cartaoId, data, valor, aoMudar, erro }: Props) {
             {`${rotuloMes(fatura.mes)} · ${STATUS_ROTULO[fatura.status]}`}
           </option>
         ))}
-      </select>
+      </Select>
     </Campo>
   )
 }
