@@ -6,9 +6,10 @@ import { formatarBRL } from '../formatacao/dinheiro'
 import { IconeQuadrado } from './IconeQuadrado'
 
 // Faixa com rolagem horizontal só no contêiner (RF-0.04): a página nunca rola de lado.
+// A partir de md: vira grade que quebra linha em vez de rolar (§11.7).
 export function CardsResumo({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-w-0 snap-x snap-proximity gap-3 overflow-x-auto pb-1 [&>*]:w-36 [&>*]:shrink-0 [&>*]:snap-start">
+    <div className="flex min-w-0 snap-x snap-proximity gap-3 overflow-x-auto pb-1 md:grid md:grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] md:gap-3 md:overflow-x-visible md:pb-0 [&>*]:w-36 [&>*]:shrink-0 [&>*]:snap-start md:[&>*]:w-auto md:[&>*]:min-w-0">
       {children}
     </div>
   )

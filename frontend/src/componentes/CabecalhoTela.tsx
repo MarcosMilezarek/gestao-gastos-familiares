@@ -15,7 +15,7 @@ export function CabecalhoTela({ titulo, voltarPara, acao }: Props) {
             <ChevronLeft aria-hidden="true" />
           </Link>
         </Button>
-        <h1 className="min-w-0 flex-1 truncate text-center text-18 font-semibold">
+        <h1 className="min-w-0 flex-1 truncate text-center text-18 font-semibold md:text-left md:text-22 md:font-bold">
           {titulo}
         </h1>
         <div className="flex min-w-11 justify-end">{acao}</div>
