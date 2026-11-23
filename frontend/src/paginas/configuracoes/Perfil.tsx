@@ -2,10 +2,14 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ApiError } from '../../api/cliente'
 import { atualizarPerfil } from '../../api/perfil'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
 import { Campo } from '../../componentes/Campo'
 import { useSessao } from '../../hooks/useSessao'
+import { Check } from 'lucide-react'
 import { useTema, type Tema } from '../../tema/TemaProvider'
-import css from './configuracoes.module.css'
 
 const TEMAS: { valor: Tema; rotulo: string }[] = [
   { valor: 'claro', rotulo: 'Claro' },
@@ -58,50 +62,55 @@ function PerfilFormulario({ nomeInicial }: { nomeInicial: string }) {
   }, [salvarNome.error])
 
   return (
-    <div className={css.pagina}>
-      <h1 className={css.titulo}>Perfil e tema</h1>
+    <div className="flex flex-col gap-4">
+      <CabecalhoTela titulo="Perfil e tema" voltarPara="/configuracoes" />
 
-      <form ref={formRef} className={css.secao} onSubmit={enviarNome}>
-        <Campo rotulo="Nome" erro={erroNome}>
-          <input
-            className={css.entrada}
-            value={nome}
-            onChange={(evento) => setNome(evento.target.value)}
-            autoComplete="name"
-            required
-          />
-        </Campo>
-        {salvarNome.isSuccess && (
-          <p className={css.status} role="status">
-            Nome salvo.
-          </p>
-        )}
-        <button type="submit" className={css.botao} disabled={salvarNome.isPending}>
-          Salvar nome
-        </button>
-      </form>
+      <Card>
+        <form ref={formRef} className="flex flex-col gap-4" onSubmit={enviarNome}>
+          <Campo rotulo="Nome" erro={erroNome}>
+            <Input
+              value={nome}
+              onChange={(evento) => setNome(evento.target.value)}
+              autoComplete="name"
+              required
+            />
+          </Campo>
+          {salvarNome.isSuccess && (
+            <p className="text-14 text-entrada-texto" role="status">
+              Nome salvo.
+            </p>
+          )}
+          <Button type="submit" disabled={salvarNome.isPending} className="w-full">
+            Salvar nome
+          </Button>
+        </form>
+      </Card>
 
-      <fieldset className={css.secao}>
-        <legend className={css.legenda}>Tema</legend>
-        <div className={css.opcoes}>
-          {TEMAS.map((opcao) => (
-            <button
-              key={opcao.valor}
-              type="button"
-              className={css.opcao}
-              aria-pressed={tema === opcao.valor}
-              onClick={() => escolherTema(opcao.valor)}
-            >
-              {opcao.rotulo}
-            </button>
-          ))}
-        </div>
-        {trocarTema.error && (
-          <p className={css.aviso} role="alert">
-            {trocarTema.error.message}
-          </p>
-        )}
-      </fieldset>
+      <Card>
+        <fieldset className="flex min-w-0 flex-col gap-4">
+          <legend className="text-16 font-semibold">Tema</legend>
+          <div className="flex gap-2">
+            {TEMAS.map((opcao) => (
+              <Button
+                key={opcao.valor}
+                type="button"
+                variant={tema === opcao.valor ? 'default' : 'secondary'}
+                size="sm"
+                aria-pressed={tema === opcao.valor}
+                onClick={() => escolherTema(opcao.valor)}
+              >
+                {tema === opcao.valor && <Check aria-hidden="true" />}
+                {opcao.rotulo}
+              </Button>
+            ))}
+          </div>
+          {trocarTema.error && (
+            <p className="text-14 text-saida-texto" role="alert">
+              {trocarTema.error.message}
+            </p>
+          )}
+        </fieldset>
+      </Card>
     </div>
   )
 }

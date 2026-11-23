@@ -3,9 +3,11 @@ import { Link, Navigate, useNavigate } from 'react-router'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ApiError } from '../../api/cliente'
 import { entrar } from '../../api/sessao'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import { Campo } from '../../componentes/Campo'
 import { useSessao } from '../../hooks/useSessao'
-import css from './entrada.module.css'
 
 export function Entrar() {
   const navigate = useNavigate()
@@ -33,41 +35,41 @@ export function Entrar() {
   }
 
   return (
-    <main className={css.pagina}>
-      <form className={css.formulario} onSubmit={enviar}>
-        <h1 className={css.titulo}>Entrar</h1>
+    <main className="mx-auto flex min-h-dvh w-full max-w-[360px] flex-col justify-center gap-6 p-4">
+      <h1 className="text-center text-22 font-bold">Entrar</h1>
+      <Card>
+      <form className="flex flex-col gap-4" onSubmit={enviar}>
         <Campo rotulo="E-mail">
-          <input
+          <Input
             type="email"
             autoComplete="email"
             required
-            className={css.controle}
             value={email}
             onChange={(evento) => setEmail(evento.target.value)}
           />
         </Campo>
         <Campo rotulo="Senha">
-          <input
+          <Input
             type="password"
             autoComplete="current-password"
             required
-            className={css.controle}
             value={senha}
             onChange={(evento) => setSenha(evento.target.value)}
           />
         </Campo>
         {erroGeral && (
-          <p role="alert" className={css.erroGeral}>
+          <p role="alert" className="text-14 text-saida-texto">
             {erroGeral}
           </p>
         )}
-        <button type="submit" className={css.botao} disabled={mutation.isPending}>
+        <Button type="submit" disabled={mutation.isPending} className="w-full">
           Entrar
-        </button>
-        <p className={css.apoio}>
-          Não tem conta? <Link to="/cadastrar" className={css.link}>Cadastrar</Link>
+        </Button>
+        <p className="text-center text-14 [&_a]:inline-flex [&_a]:min-h-11 [&_a]:items-center">
+          Não tem conta? <Link to="/cadastrar" className="font-semibold text-primary-texto underline underline-offset-4">Cadastrar</Link>
         </p>
       </form>
+      </Card>
     </main>
   )
 }
