@@ -106,9 +106,9 @@ export function ComparacaoOrcamento({ mes }: { mes: string }) {
 
       {dados && (
         <>
-          <ul className="flex flex-col gap-3">
+          <ul className="flex flex-col gap-3 lg:grid lg:grid-cols-2 lg:items-start lg:gap-4">
             {dados.linhas.map((linha) => (
-              <li key={linha.categoria_id ?? linha.nome}>
+              <li key={linha.categoria_id ?? linha.nome} className="min-w-0">
                 <Card className="gap-3 p-4">
                   <Nome linha={linha} />
                   <Medidas valores={linha} />
