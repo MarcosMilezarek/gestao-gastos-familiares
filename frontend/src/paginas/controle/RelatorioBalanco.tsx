@@ -54,7 +54,7 @@ export function RelatorioBalanco() {
   const dados = consulta.data
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4">
       <SeletorMes mes={mes} onMudar={setMes} />
       <CabecalhoTela titulo="Balanço mensal" voltarPara={`/controle/relatorios?mes=${mes}`} />
 

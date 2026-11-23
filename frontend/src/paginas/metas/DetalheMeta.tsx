@@ -59,7 +59,7 @@ export function DetalheMeta() {
     !idValido || (consulta.error instanceof ApiError && consulta.error.status === 404)
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4">
       <CabecalhoTela titulo={meta?.nome ?? 'Meta'} voltarPara="/metas" />
 
       {naoEncontrada && (
@@ -137,7 +137,7 @@ function DadosMeta({ meta }: DadosMetaProps) {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Progress value={Math.min(100, Number(meta.porcentagem))} />
+          <Progress aria-label={`Progresso da meta ${meta.nome}`} value={Math.min(100, Number(meta.porcentagem))} />
           <p className="text-14 font-semibold tabular-nums">
             {formatarPercentual(meta.porcentagem)}
           </p>
@@ -192,6 +192,7 @@ function DadosMeta({ meta }: DadosMetaProps) {
           titulo="Excluir meta"
           texto="A meta só pode ser excluída sem aplicações, resgates ou rendimentos."
           rotuloAcao="Excluir"
+          destrutivo
           onConfirmar={() => excluir.mutate()}
           onCancelar={() => setConfirmandoExcluir(false)}
         />

@@ -92,7 +92,7 @@ export function PlanoMetas() {
   const resultado = calcular.data
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4">
       <CabecalhoTela titulo="Plano de metas" voltarPara="/planejamento" />
 
       <p className="text-14 text-muted-foreground">Este plano não é salvo: é só um cálculo.</p>

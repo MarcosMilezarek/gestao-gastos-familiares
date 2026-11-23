@@ -28,7 +28,7 @@ export function DetalheCartao() {
 
   if (!Number.isInteger(id)) {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 p-4">
         <p role="alert" className="text-14 text-saida-texto">
           Cartão não encontrado.
         </p>
@@ -37,7 +37,7 @@ export function DetalheCartao() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4">
       <CabecalhoTela titulo={cartao?.nome ?? 'Cartão'} voltarPara="/cartoes" />
 
       {consulta.isError && (
