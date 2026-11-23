@@ -4,15 +4,12 @@ import { Link, useNavigate } from 'react-router'
 import { ApiError } from '../../api/cliente'
 import { listarContas, type ContaSaida } from '../../api/contas'
 import { CardConta } from '../../componentes/CardConta'
-import { CardsResumo } from '../../componentes/CardsResumo'
-import { Dinheiro } from '../../componentes/Dinheiro'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
+import { CardResumo, CardsResumo } from '../../componentes/CardsResumo'
 import { EstadoVazio } from '../../componentes/EstadoVazio'
-import cardConta from '../../componentes/cardConta.module.css'
-import estado from '../../componentes/estado.module.css'
 import { SeletorMes } from '../../componentes/SeletorMes'
 import { useMes } from '../../hooks/useMes'
 import { FormConta } from './FormConta'
-import styles from './contas.module.css'
 
 export function Contas() {
   const navigate = useNavigate()
@@ -30,38 +27,34 @@ export function Contas() {
   const abrirFormConta = (conta: ContaSaida) => () => setContaEditando(conta)
 
   return (
-    <div className={styles.pagina}>
-      <h1 className={styles.titulo}>Contas</h1>
+    <div className="flex flex-col gap-4 p-4">
+      <CabecalhoTela titulo="Contas" voltarPara="/controle" />
       <SeletorMes mes={mes} onMudar={setMes} />
 
       {consulta.isError && (
-        <p role="alert" className={styles.erro}>
+        <p role="alert" className="text-saida-texto">
           {consulta.error instanceof ApiError
             ? consulta.error.mensagem
             : 'Erro inesperado. Tente novamente.'}
         </p>
       )}
-      {!dados && !consulta.isError && <p className={styles.aviso}>Carregando…</p>}
+      {!dados && !consulta.isError && <p className="text-muted-foreground">Carregando…</p>}
 
       {dados && (
         <>
           <CardsResumo>
-            <div className={styles.total}>
-              <span className={cardConta.rotulo}>Saldo atual total</span>
-              {dados.total_saldo_atual !== null && <Dinheiro valor={dados.total_saldo_atual} />}
-            </div>
-            <div className={styles.total}>
-              <span className={cardConta.rotulo}>Saldo previsto total</span>
-              {dados.total_saldo_previsto !== null && (
-                <Dinheiro valor={dados.total_saldo_previsto} />
-              )}
-            </div>
+            {dados.total_saldo_atual !== null && (
+              <CardResumo rotulo="Saldo atual total" valor={dados.total_saldo_atual} />
+            )}
+            {dados.total_saldo_previsto !== null && (
+              <CardResumo rotulo="Saldo previsto total" valor={dados.total_saldo_previsto} />
+            )}
           </CardsResumo>
 
           {dados.contas.length === 0 ? (
             <EstadoVazio frase="Nenhuma conta ativa neste momento." />
           ) : (
-            <ul className={cardConta.lista}>
+            <ul className="m-0 flex list-none flex-col gap-3 p-0 sm:grid sm:grid-cols-2">
               {dados.contas.map((conta) => (
                 <li key={conta.id}>
                   <CardConta
@@ -79,7 +72,10 @@ export function Contas() {
             </ul>
           )}
 
-          <Link to="/controle/contas/arquivadas" className={estado.voltar}>
+          <Link
+            to="/controle/contas/arquivadas"
+            className="inline-flex h-11 items-center self-start text-14 font-semibold text-primary-texto underline underline-offset-4"
+          >
             Contas arquivadas
           </Link>
 
