@@ -50,7 +50,7 @@ export function ContasArquivadas() {
             onAcao={() => navigate('/controle/contas')}
           />
         ) : (
-          <ul className="m-0 flex list-none flex-col gap-3 p-0 sm:grid sm:grid-cols-2">
+          <ul className="m-0 flex list-none flex-col gap-3 p-0 md:grid md:grid-cols-2 md:gap-4 lg:grid-cols-3">
             {dados.contas.map((conta) => (
               <li key={conta.id} className="flex flex-col gap-2">
                 <CardConta
