@@ -92,7 +92,7 @@ export function PlanoMetas() {
   const resultado = calcular.data
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="mx-auto flex w-full max-w-240 flex-col gap-4 p-4 md:p-6">
       <CabecalhoTela titulo="Plano de metas" voltarPara="/planejamento" />
 
       <p className="text-14 text-muted-foreground">Este plano não é salvo: é só um cálculo.</p>
@@ -108,90 +108,92 @@ export function PlanoMetas() {
         </p>
       )}
 
-      <form ref={formRef} className="flex flex-col gap-4" onSubmit={enviar}>
-        {metas.data && metas.data.metas.length > 0 && (
-          <Campo rotulo="Meta (opcional)">
-            <Select value={metaId} onChange={(evento) => escolherMeta(evento.target.value)}>
-              <option value="">Sem meta: digitar valores</option>
-              {metas.data.metas.map((meta) => (
-                <option key={meta.id} value={String(meta.id)}>
-                  {meta.nome}
-                </option>
-              ))}
-            </Select>
+      <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6">
+        <form ref={formRef} className="flex min-w-0 flex-col gap-4" onSubmit={enviar}>
+          {metas.data && metas.data.metas.length > 0 && (
+            <Campo rotulo="Meta (opcional)">
+              <Select value={metaId} onChange={(evento) => escolherMeta(evento.target.value)}>
+                <option value="">Sem meta: digitar valores</option>
+                {metas.data.metas.map((meta) => (
+                  <option key={meta.id} value={String(meta.id)}>
+                    {meta.nome}
+                  </option>
+                ))}
+              </Select>
+            </Campo>
+          )}
+
+          <Campo rotulo="Valor-alvo" erro={erros.valor_alvo}>
+            <Input
+              type="text"
+              inputMode="numeric"
+              placeholder="0,00"
+              value={valorAlvo}
+              onChange={(evento) => {
+                setValorAlvo(mascararEntrada(evento.target.value))
+                mudarCampo()
+              }}
+            />
           </Campo>
+
+          <Campo rotulo="Valor atual" erro={erros.valor_atual}>
+            <Input
+              type="text"
+              inputMode="numeric"
+              value={valorAtual}
+              onChange={(evento) => {
+                setValorAtual(mascararEntrada(evento.target.value))
+                mudarCampo()
+              }}
+            />
+          </Campo>
+
+          <Campo rotulo="Mês-alvo" erro={erros.mes_alvo}>
+            <Input
+              type="month"
+              value={mesAlvo}
+              onChange={(evento) => {
+                setMesAlvo(evento.target.value)
+                mudarCampo()
+              }}
+            />
+          </Campo>
+
+          <Button type="submit" disabled={calcular.isPending}>
+            Calcular
+          </Button>
+        </form>
+
+        {resultado && (
+          <section aria-live="polite" className="min-w-0">
+            <Card>
+              <TituloBloco titulo="Resultado" />
+              {resultado.atingida ? (
+                <p className="font-semibold">Meta já atingida.</p>
+              ) : (
+                <dl className="flex flex-col gap-3 tabular-nums">
+                  <div className="flex items-center justify-between gap-2">
+                    <dt>Meses</dt>
+                    <dd className="font-semibold">{resultado.meses}</dd>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <dt>Aplicação mensal</dt>
+                    <dd>
+                      <Dinheiro valor={resultado.aplicacao_mensal} />
+                    </dd>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <dt>Total a aplicar</dt>
+                    <dd>
+                      <Dinheiro valor={resultado.total_a_aplicar} />
+                    </dd>
+                  </div>
+                </dl>
+              )}
+            </Card>
+          </section>
         )}
-
-        <Campo rotulo="Valor-alvo" erro={erros.valor_alvo}>
-          <Input
-            type="text"
-            inputMode="numeric"
-            placeholder="0,00"
-            value={valorAlvo}
-            onChange={(evento) => {
-              setValorAlvo(mascararEntrada(evento.target.value))
-              mudarCampo()
-            }}
-          />
-        </Campo>
-
-        <Campo rotulo="Valor atual" erro={erros.valor_atual}>
-          <Input
-            type="text"
-            inputMode="numeric"
-            value={valorAtual}
-            onChange={(evento) => {
-              setValorAtual(mascararEntrada(evento.target.value))
-              mudarCampo()
-            }}
-          />
-        </Campo>
-
-        <Campo rotulo="Mês-alvo" erro={erros.mes_alvo}>
-          <Input
-            type="month"
-            value={mesAlvo}
-            onChange={(evento) => {
-              setMesAlvo(evento.target.value)
-              mudarCampo()
-            }}
-          />
-        </Campo>
-
-        <Button type="submit" disabled={calcular.isPending}>
-          Calcular
-        </Button>
-      </form>
-
-      {resultado && (
-        <section aria-live="polite">
-          <Card>
-            <TituloBloco titulo="Resultado" />
-            {resultado.atingida ? (
-              <p className="font-semibold">Meta já atingida.</p>
-            ) : (
-              <dl className="flex flex-col gap-3 tabular-nums">
-                <div className="flex items-center justify-between gap-2">
-                  <dt>Meses</dt>
-                  <dd className="font-semibold">{resultado.meses}</dd>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <dt>Aplicação mensal</dt>
-                  <dd>
-                    <Dinheiro valor={resultado.aplicacao_mensal} />
-                  </dd>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <dt>Total a aplicar</dt>
-                  <dd>
-                    <Dinheiro valor={resultado.total_a_aplicar} />
-                  </dd>
-                </div>
-              </dl>
-            )}
-          </Card>
-        </section>
-      )}
+      </div>
     </div>
   )
 }
