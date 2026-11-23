@@ -1,20 +1,26 @@
-import { useState, type ReactNode } from 'react'
+import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link, useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
 import { ApiError, repetirSem4xx } from '../../api/cliente'
 import { excluirMeta, obterMeta, type MetaDetalhe } from '../../api/metas'
+import { CabecalhoTela } from '../../componentes/CabecalhoTela'
+import { CartaoDestaque } from '../../componentes/CartaoDestaque'
 import { Dinheiro } from '../../componentes/Dinheiro'
 import { DialogoConfirmacao } from '../../componentes/DialogoConfirmacao'
-import estado from '../../componentes/estado.module.css'
-import formato from '../../componentes/formato.module.css'
 import { iconeDe } from '../../componentes/icones'
+import { IconeQuadrado } from '../../componentes/IconeQuadrado'
 import { formatarData } from '../../formatacao/data'
 import { formatarPercentual } from '../../formatacao/percentual'
 import { FormAtualizarValor } from './FormAtualizarValor'
 import { FormMeta } from './FormMeta'
 import { FormMovimentoMeta } from './FormMovimentoMeta'
 import { HistoricoMeta } from './HistoricoMeta'
-import css from './detalheMeta.module.css'
+
+const CLASSE_ERRO = 'text-14 font-medium text-saida-texto'
+const CLASSE_AVISO = 'text-14 text-muted-foreground'
 
 // Formulários abertos pelos botões da tela.
 type Formulario = 'editar' | 'aplicar' | 'resgatar' | 'atualizar'
@@ -23,19 +29,13 @@ function mensagemErro(erro: unknown): string {
   return erro instanceof ApiError ? erro.mensagem : 'Erro inesperado. Tente novamente.'
 }
 
-// Ícone da meta na cor dela (mesmo padrão de CardMeta).
-function iconeColorido(meta: MetaDetalhe): ReactNode {
-  const Icone = iconeDe(meta.icone)
-  return <Icone aria-hidden="true" size={20} color={meta.cor} />
-}
-
 type IndicadorProps = { rotulo: string; valor: string }
 
 function Indicador({ rotulo, valor }: IndicadorProps) {
   return (
-    <div className={css.indicador}>
-      <dt className={css.rotuloIndicador}>{rotulo}</dt>
-      <dd className={css.valorIndicador}>
+    <div className="min-w-0">
+      <dt className="text-13 text-muted-foreground">{rotulo}</dt>
+      <dd>
         <Dinheiro valor={valor} />
       </dd>
     </div>
@@ -59,22 +59,20 @@ export function DetalheMeta() {
     !idValido || (consulta.error instanceof ApiError && consulta.error.status === 404)
 
   return (
-    <div className={css.pagina}>
-      <Link to="/metas" className={estado.voltar}>
-        Metas
-      </Link>
+    <div className="flex flex-col gap-4">
+      <CabecalhoTela titulo={meta?.nome ?? 'Meta'} voltarPara="/metas" />
 
       {naoEncontrada && (
-        <p role="alert" className={formato.erro}>
+        <p role="alert" className={CLASSE_ERRO}>
           Meta não encontrada.
         </p>
       )}
       {!naoEncontrada && consulta.isError && (
-        <p role="alert" className={formato.erro}>
+        <p role="alert" className={CLASSE_ERRO}>
           {mensagemErro(consulta.error)}
         </p>
       )}
-      {!meta && !consulta.isError && idValido && <p className={css.aviso}>Carregando…</p>}
+      {!meta && !consulta.isError && idValido && <p className={CLASSE_AVISO}>Carregando…</p>}
 
       {meta && <DadosMeta meta={meta} />}
     </div>
@@ -108,71 +106,70 @@ function DadosMeta({ meta }: DadosMetaProps) {
 
   return (
     <>
-      <header className={css.cabecalho}>
-        <h1 className={css.nome}>
-          {iconeColorido(meta)}
-          {meta.nome}
-        </h1>
-        {meta.descricao && <p className={css.secundario}>{meta.descricao}</p>}
-        {meta.data_alvo !== null && (
-          <p className={css.secundario}>
-            Data-alvo: <time dateTime={meta.data_alvo}>{formatarData(meta.data_alvo)}</time>
-          </p>
-        )}
-      </header>
-
       {meta.casal_encerrado && (
-        <p className={css.aviso}>O casal foi desfeito: esta meta só pode ser consultada.</p>
+        <p className={CLASSE_AVISO}>O casal foi desfeito: esta meta só pode ser consultada.</p>
       )}
 
-      <dl className={css.indicadores}>
-        <Indicador rotulo="Valor atual" valor={meta.valor_atual} />
-        <Indicador rotulo="Alvo" valor={meta.valor_alvo} />
-        <Indicador rotulo="Aplicado líquido" valor={meta.aplicado_liquido} />
-        <Indicador rotulo="Rendeu" valor={meta.rendeu} />
-        <Indicador rotulo="Falta" valor={meta.falta} />
-      </dl>
+      <CartaoDestaque
+        rotulo="Valor atual"
+        valor={meta.valor_atual}
+        chips={[
+          { rotulo: 'Alvo', valor: meta.valor_alvo },
+          { rotulo: 'Falta', valor: meta.falta },
+        ]}
+      />
 
-      <div className={css.progresso}>
-        <div className={css.barra} aria-hidden="true">
-          <div
-            className={css.preenchimento}
-            style={{ width: `min(${meta.porcentagem}%, 100%)`, background: meta.cor }}
-          />
+      <Card>
+        <div className="flex items-center gap-3">
+          <span style={meta.cor ? { color: meta.cor } : undefined} className="inline-flex">
+            <IconeQuadrado
+              icone={iconeDe(meta.icone)}
+              className={meta.cor ? 'bg-current/15 text-inherit' : undefined}
+            />
+          </span>
+          <div className="flex min-w-0 flex-col">
+            {meta.descricao && <p className="text-14 text-muted-foreground">{meta.descricao}</p>}
+            {meta.data_alvo !== null && (
+              <p className="text-14 text-muted-foreground tabular-nums">
+                Data-alvo: <time dateTime={meta.data_alvo}>{formatarData(meta.data_alvo)}</time>
+              </p>
+            )}
+          </div>
         </div>
-        <p className={css.porcentagem}>{formatarPercentual(meta.porcentagem)}</p>
-      </div>
+        <div className="flex items-center gap-3">
+          <Progress value={Math.min(100, Number(meta.porcentagem))} />
+          <p className="text-14 font-semibold tabular-nums">
+            {formatarPercentual(meta.porcentagem)}
+          </p>
+        </div>
+        <dl className="grid grid-cols-2 gap-3">
+          <Indicador rotulo="Aplicado líquido" valor={meta.aplicado_liquido} />
+          <Indicador rotulo="Rendeu" valor={meta.rendeu} />
+        </dl>
+      </Card>
 
       {podeEscrever && (
-        <div className={css.acoes}>
-          <button type="button" className={estado.acao} onClick={() => setFormulario('aplicar')}>
+        <div className="grid grid-cols-2 gap-2">
+          <Button className="col-span-2" onClick={() => setFormulario('aplicar')}>
             Aplicar
-          </button>
-          <button type="button" className={estado.acao} onClick={() => setFormulario('resgatar')}>
+          </Button>
+          <Button variant="secondary" size="sm" onClick={() => setFormulario('resgatar')}>
             Resgatar
-          </button>
-          <button
-            type="button"
-            className={estado.acao}
-            onClick={() => setFormulario('atualizar')}
-          >
+          </Button>
+          <Button variant="secondary" size="sm" onClick={() => setFormulario('atualizar')}>
             Atualizar valor atual
-          </button>
-          <button type="button" className={estado.acao} onClick={() => setFormulario('editar')}>
+          </Button>
+          <Button variant="secondary" size="sm" onClick={() => setFormulario('editar')}>
             Editar meta
-          </button>
-          <button
-            type="button"
-            className={estado.acao}
-            onClick={() => setConfirmandoExcluir(true)}
-          >
+          </Button>
+          <Button variant="secondary" size="sm" onClick={() => setConfirmandoExcluir(true)}>
             Excluir meta
-          </button>
+          </Button>
         </div>
       )}
 
       {excluir.isError && (
-        <p role="alert" className={formato.erro}>
+        <p role="alert" className={CLASSE_ERRO}>
           {mensagemErro(excluir.error)}
         </p>
       )}
