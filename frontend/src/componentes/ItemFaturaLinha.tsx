@@ -1,6 +1,8 @@
+import { Receipt } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { formatarData } from '../formatacao/data'
 import { Dinheiro } from './Dinheiro'
-import styles from './lancamentos.module.css'
+import { IconeQuadrado } from './IconeQuadrado'
 
 // Forma mínima do item da fatura que a linha exibe (subconjunto de ItemFaturaSaida).
 export type ItemFaturaLinhaItem = {
@@ -34,28 +36,36 @@ function rotuloCategoria(item: ItemFaturaLinhaItem): string | null {
 // Ajuste não tem "Editar" (só exclusão, D9). Ações só chegam quando a fatura é editável.
 export function ItemFaturaLinha({ item, aoEditar, aoExcluir }: ItemFaturaLinhaProps) {
   const categoria = rotuloCategoria(item)
+  const tipoDinheiro = TIPO_DINHEIRO[item.tipo]
 
   return (
-    <li className={styles.item}>
-      <div className={styles.abrir}>
-        <span className={styles.principal}>{item.descricao}</span>
-        <span className={styles.secundario}>
-          <time dateTime={item.data}>{formatarData(item.data)}</time>
-          {categoria && ` · ${categoria}`}
+    <li className="flex flex-col gap-3 rounded-xl border bg-card p-3">
+      <div className="flex min-h-11 items-center gap-3">
+        <IconeQuadrado icone={Receipt} tom={tipoDinheiro === 'saida' ? 'saida' : 'primaria'} />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <span className="truncate text-16 font-semibold text-foreground">{item.descricao}</span>
+          <span className="truncate text-13 text-muted-foreground">
+            <time dateTime={item.data} className="tabular-nums">
+              {formatarData(item.data)}
+            </time>
+            {categoria && ` · ${categoria}`}
+          </span>
+        </div>
+        <span className="shrink-0 text-16">
+          <Dinheiro valor={item.valor} tipo={tipoDinheiro} />
         </span>
       </div>
-      <Dinheiro valor={item.valor} tipo={TIPO_DINHEIRO[item.tipo]} />
       {(aoEditar || aoExcluir) && (
-        <div className={styles.acoes}>
+        <div className="flex flex-wrap gap-2">
           {aoEditar && item.tipo !== 'ajuste' && (
-            <button type="button" className={styles.acao} onClick={aoEditar}>
+            <Button type="button" variant="outline" size="sm" onClick={aoEditar}>
               Editar
-            </button>
+            </Button>
           )}
           {aoExcluir && (
-            <button type="button" className={styles.acao} onClick={aoExcluir}>
+            <Button type="button" variant="outline" size="sm" onClick={aoExcluir}>
               Excluir
-            </button>
+            </Button>
           )}
         </div>
       )}

@@ -1,5 +1,5 @@
 import { cloneElement, useId, type ReactElement } from 'react'
-import css from './formato.module.css'
+import { Label } from '@/components/ui/label'
 
 type ControleAcessivel = {
   id?: string
@@ -26,17 +26,18 @@ export function Campo({ rotulo, erro, ajuda, children }: CampoProps) {
       .join(' ') || undefined
 
   return (
-    <div className={css.campo}>
-      <label className={css.rotulo} htmlFor={id}>
-        {rotulo}
-      </label>
+    <div className="flex flex-col gap-2">
+      <Label htmlFor={id}>{rotulo}</Label>
       {cloneElement(children, {
         id,
         'aria-describedby': descritores,
         'aria-invalid': erro ? true : children.props['aria-invalid'],
       })}
       {mensagem && (
-        <p id={mensagemId} className={erro ? css.erro : css.ajuda}>
+        <p
+          id={mensagemId}
+          className={erro ? 'text-14 text-saida-texto' : 'text-14 text-muted-foreground'}
+        >
           {mensagem}
         </p>
       )}
