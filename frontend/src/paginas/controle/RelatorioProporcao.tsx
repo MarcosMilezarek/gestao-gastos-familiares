@@ -27,7 +27,7 @@ export function RelatorioProporcao() {
   const semVinculo = consulta.error instanceof ApiError && consulta.error.codigo === 'SEM_VINCULO'
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4">
       <SeletorMes mes={mes} onMudar={setMes} />
       <CabecalhoTela titulo="Proporção e aporte" voltarPara={`/controle/relatorios?mes=${mes}`} />
 

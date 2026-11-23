@@ -55,7 +55,7 @@ export function CardMeta({ meta }: CardMetaProps) {
         </div>
       </dl>
       <div className="flex items-center gap-3">
-        <Progress value={Math.min(100, Number(meta.porcentagem))} />
+        <Progress aria-label={`Progresso da meta ${meta.nome}`} value={Math.min(100, Number(meta.porcentagem))} />
         <p className="text-13 font-semibold tabular-nums">{formatarPercentual(meta.porcentagem)}</p>
       </div>
       {meta.data_alvo !== null && (

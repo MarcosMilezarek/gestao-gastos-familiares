@@ -39,7 +39,7 @@ export function Senha() {
   }, [alterar.error])
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4">
       <CabecalhoTela titulo="Alterar senha" voltarPara="/configuracoes" />
 
       <Card>

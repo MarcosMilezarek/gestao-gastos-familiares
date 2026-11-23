@@ -67,25 +67,6 @@
 
   --radius: 18px;
 
-  /* Apelidos dos tokens antigos (telas ainda em CSS Modules) */
-  --cor-fundo: var(--background);
-  --cor-superficie: var(--card);
-  --cor-texto: var(--foreground);
-  --cor-texto-suave: var(--muted-foreground);
-  --cor-borda: var(--border);
-  --cor-primaria: var(--primary-texto);
-  --cor-entrada: var(--entrada-texto);
-  --cor-saida: var(--saida-texto);
-  --cor-alerta: var(--alerta-texto);
-
-  --raio: 14px;
-  --espaco-1: 4px;
-  --espaco-2: 8px;
-  --espaco-3: 12px;
-  --espaco-4: 16px;
-  --espaco-5: 24px;
-  --espaco-6: 32px;
-  --alvo-min: 44px;
   --altura-barra: 144px;
 }
 
@@ -129,17 +110,6 @@
   --sombra-roxa: rgb(139 67 250 / 30%);
   --sombra-foco: rgb(139 67 250 / 24%);
   --sombra-foco-erro: rgb(255 107 107 / 24%);
-
-  /* Apelidos repetidos: o teste de tokens procura cada --cor-* nos dois blocos */
-  --cor-fundo: var(--background);
-  --cor-superficie: var(--card);
-  --cor-texto: var(--foreground);
-  --cor-texto-suave: var(--muted-foreground);
-  --cor-borda: var(--border);
-  --cor-primaria: var(--primary-texto);
-  --cor-entrada: var(--entrada-texto);
-  --cor-saida: var(--saida-texto);
-  --cor-alerta: var(--alerta-texto);
 }
 
 @theme inline {
@@ -264,9 +234,4 @@
     @apply bg-background text-foreground font-sans antialiased;
     margin: 0;
   }
-}
-
-.alvo-toque {
-  min-height: var(--alvo-min);
-  min-width: var(--alvo-min);
 }

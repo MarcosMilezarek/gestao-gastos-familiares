@@ -37,7 +37,7 @@ export function CardsProporcao({ proporcao, acaoPessoa }: CardsProporcaoProps) {
                 <h2 className="min-w-0 flex-1 truncate text-14 font-semibold">{pessoa.nome}</h2>
                 <p className="text-14 font-bold tabular-nums">{formatarPercentual(pessoa.porcentagem)}</p>
               </div>
-              <Progress value={Number(pessoa.porcentagem)} tom={tom} />
+              <Progress value={Number(pessoa.porcentagem)} tom={tom} aria-label={`Porcentagem de ${pessoa.nome}`} />
               <dl className="m-0 flex flex-col gap-1 text-14 tabular-nums">
                 <div className={linha}>
                   <dt className="text-muted-foreground">Devido</dt>

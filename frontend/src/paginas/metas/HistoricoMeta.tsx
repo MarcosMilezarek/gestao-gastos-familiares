@@ -154,6 +154,7 @@ export function HistoricoMeta({ meta }: Props) {
           titulo="Excluir movimento"
           texto="Excluir este movimento?"
           rotuloAcao="Excluir"
+          destrutivo
           onConfirmar={() => excluir.mutate(acao.movimento)}
           onCancelar={fechar}
         />

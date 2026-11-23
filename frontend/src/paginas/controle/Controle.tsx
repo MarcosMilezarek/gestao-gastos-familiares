@@ -160,6 +160,7 @@ export function ListaDoMes({ mes, contaId, podeEscrever, filtros = {}, aoLimparF
           titulo="Excluir lançamento"
           texto="Excluir este lançamento?"
           rotuloAcao="Excluir"
+          destrutivo
           onConfirmar={() => excluir.mutate({ id: alvo.id })}
           onCancelar={fecharAcao}
         />

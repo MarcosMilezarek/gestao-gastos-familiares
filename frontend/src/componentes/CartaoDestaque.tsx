@@ -53,14 +53,19 @@ export function CartaoDestaque({ rotulo, valor, chips, anel }: CartaoDestaquePro
           </div>
           {anel && <Anel percentual={anel.percentual} rotulo={anel.rotulo} />}
         </div>
-        <div className="flex gap-2">
-          {chips.map((chip) => (
-            <div key={chip.rotulo} className="flex min-w-0 flex-1 flex-col rounded-lg bg-branco-18 px-3 py-2">
-              <span className="truncate text-11">{chip.rotulo}</span>
-              <span className="truncate text-13 font-semibold tabular-nums">{formatarBRL(chip.valor)}</span>
-            </div>
-          ))}
-        </div>
+        {chips.length > 0 && (
+          <div className="flex flex-col gap-2">
+            {chips.map((chip) => (
+              <div
+                key={chip.rotulo}
+                className="flex items-center justify-between gap-3 rounded-lg bg-branco-18 px-3 py-2"
+              >
+                <span className="min-w-0 truncate text-13">{chip.rotulo}</span>
+                <span className="shrink-0 text-13 font-semibold tabular-nums">{formatarBRL(chip.valor)}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )

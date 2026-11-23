@@ -3,10 +3,7 @@ import { AlertDialog as AlertDialogPrimitive } from 'radix-ui'
 import { CircleAlert, Trash2 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
-
-// Ação e Cancelar: largura total, pílula, 56 de altura.
-const botaoBase =
-  'inline-flex h-14 w-full items-center justify-center rounded-full px-6 text-16 font-semibold focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none'
+import { buttonVariants } from '@/components/ui/button'
 
 function AlertDialog(props: React.ComponentProps<typeof AlertDialogPrimitive.Root>) {
   return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />
@@ -112,11 +109,7 @@ function AlertDialogAction({
   return (
     <AlertDialogPrimitive.Action
       data-slot="alert-dialog-action"
-      className={cn(
-        botaoBase,
-        destrutivo ? 'bg-destructive text-destructive-foreground' : 'bg-gradiente-botao text-primary-foreground shadow-roxa',
-        className,
-      )}
+      className={cn(buttonVariants({ variant: destrutivo ? 'destructive' : 'default', size: 'lg' }), 'w-full', className)}
       {...props}
     />
   )
@@ -126,7 +119,7 @@ function AlertDialogCancel({ className, ...props }: React.ComponentProps<typeof 
   return (
     <AlertDialogPrimitive.Cancel
       data-slot="alert-dialog-cancel"
-      className={cn(botaoBase, 'border-2 border-primary text-primary-texto', className)}
+      className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), 'w-full', className)}
       {...props}
     />
   )
